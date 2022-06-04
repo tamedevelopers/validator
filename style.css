@@ -1,0 +1,41 @@
+
+
+.hidden{
+    display: none;
+}
+.d-block{
+    display: block !important;
+}
+.form{
+    margin: 20px 0 0;
+    padding: 20px;
+}
+label{
+    display: block;
+}
+input{
+    margin: 0 0 7px;
+}
+.btn{
+    padding: 5px 10px;
+    min-width: 100px;
+    cursor: pointer;
+}
+.errorMSg{
+    display: none;
+    border: 1px solid red; 
+    padding: 5px 10px;
+    color: red;
+}
+.mt-1{
+    margin-top: 5px;
+}
+.mt-2{
+    margin-top: 10px;
+}
+.mt-3{
+    margin-top: 15px;
+}
+.mt-4{
+    margin-top: 20px;
+}
