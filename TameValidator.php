@@ -12,8 +12,8 @@ class TameValidator{
 
 
     /**
-    * @param  array    $param form array like $_POST or $_GET, case-insensitive
-    * @param  string   $type string like POST or GET.
+    * @param  array    $param form array like $_POST or $_GET.
+    * @param  string   $type string like POST or GET - case-insensitive
     * @return object   returns an object for chaining
     */
 
@@ -91,6 +91,7 @@ class TameValidator{
                 $function($this);
             }
         }
+        return $this;
     }
 
 
