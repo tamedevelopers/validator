@@ -1,0 +1,27 @@
+{
+    "name": "peterson/ultimate-validator",
+    "description": "PHP Library for easy form validation",
+    "keywords": ["php-form-validator", "form-validator", "form", "php-form", "php", "forms", "easy-validation", "easy-form"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fredrick Peterson",
+            "email": "tamedevelopers@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "UltimateValidator\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "minimum-stability": "dev"
+}

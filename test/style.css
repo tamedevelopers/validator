@@ -1,0 +1,69 @@
+*, ::before, ::after{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    padding: 5rem 30rem;
+}
+.hidden{
+    display: none;
+}
+.d-block{
+    display: block !important;
+}
+.form{
+    margin: 20px 0 0;
+    padding: 20px;
+    background: rgba(245, 243, 243, .32);
+}
+form h2{
+    margin: 0 0 20px;
+}
+label{
+    display: block;
+}
+input{
+    padding: 5px 10px;
+    width: 100%;
+    margin: 0 0 7px;
+    border: 0.5px solid lightgray;
+}
+input:focus{
+    border: 0.5px solid lightgray;
+    outline: none;
+}
+.btn{
+    padding: 5px 10px;
+    min-width: 100px;
+    cursor: pointer;
+}
+.mt-2{
+    margin-top: 10px;
+}
+.mt-5{
+    margin-top: 20px;
+}
+.mb-5{
+    margin-bottom: 20px;
+}
+.errorMSg{
+    display: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-weight: 500;
+}
+.danger{
+    border: 1px solid #ff0000;
+    color: #ff0000;
+}
+.success{
+    border: 1px solid #043c04;
+    color: #000;
+}
+
+@media (max-width: 767px) {
+    body{
+        padding: 1.5rem;
+    }
+}
