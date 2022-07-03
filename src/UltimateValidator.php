@@ -129,7 +129,13 @@ class UltimateValidator{
                         //operator function checker
                         $this->operator = $this->operatorMethod($keyPair);
 
-                        if($this->operator){
+                        if($this->operator === 'error'){
+                            $this->error        = false;
+                            $this->message[$keyPair['variable']]    = sprintf("Comparison Operator error for this variable `%s`", $keyPair['variable']);
+                            break;
+                        }
+
+                        elseif(!is_null($this->operator) && $this->operator){
                             if(!in_array($keyPair['variable'], array_keys($this->message))){
                                 $this->message[$keyPair['variable']]    = $message;
                             }
@@ -213,28 +219,28 @@ class UltimateValidator{
     */
     private function createFlags(array $flag)
     {
-        switch($flag['filter']){
-            case ($flag['filter'] === 'email' || $flag['filter'] === 'e'):
+        switch($flag['data_type']){
+            case ($flag['data_type'] === 'email' || $flag['data_type'] === 'e'):
                 $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_EMAIL);
                 break;
                 
-            case ($flag['filter'] === 'int' || $flag['filter'] === 'i'):
+            case ($flag['data_type'] === 'int' || $flag['data_type'] === 'i'):
                 $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_INT);
                 break;
                 
-            case ($flag['filter'] === 'float' || $flag['filter'] === 'f'):
+            case ($flag['data_type'] === 'float' || $flag['data_type'] === 'f'):
                 $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_FLOAT);
                 break;
                 
-            case ($flag['filter'] === 'url' || $flag['filter'] === 'u'):
+            case ($flag['data_type'] === 'url' || $flag['data_type'] === 'u'):
                 $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_URL);
                 break;
                 
-            case ($flag['filter'] === 'array' || $flag['filter'] === 'a'):
+            case ($flag['data_type'] === 'array' || $flag['data_type'] === 'a'):
                 $type = isset($this->param[$flag['variable']]) && is_array($this->param[$flag['variable']]) ? true : false;
                 break;
                 
-            case ($flag['filter'] === 'bool' || $flag['filter'] === 'b'):
+            case ($flag['data_type'] === 'bool' || $flag['data_type'] === 'b'):
                 $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_BOOLEAN);
                 break;
 
@@ -255,10 +261,13 @@ class UltimateValidator{
     private function operatorMethod(?array $flag = null)
     {
         $this->operator = null;
-        if(isset($flag['operator']) && !empty($flag['operator']) ){
-            $this->operator = $this->createOperator($flag);
+        //comparison operator command
+        if(isset($flag['operator']) && !empty($flag['operator'])){
+            $this->operator = 'error';
+            //value check command
+            if(isset($flag['value']))
+                $this->operator = $this->createOperator($flag);
         }
-
         return $this->operator;
     }
 
@@ -269,65 +278,78 @@ class UltimateValidator{
     */
     private function createOperator($flag)
     {
+        $this->operator = false;
+        $flagOperator = $flag['operator'];
+        $flagValue = $flag['value'];
 
         //equal to operator
-        if(count(explode("==", $flag['operator'])) === 2)
+        if(substr_count($flagOperator, "=") === 2)
         {
             $dataString = $this->param[$flag['variable']];
-            $operatorValue = explode("==", $flag['operator'])[1];
-            $this->operator = false;
-            if($dataString == $operatorValue){
+            if($dataString == $flagValue){
+                $this->operator = true;
+            }
+        }
+
+        //strictly equal to operator
+        elseif(substr_count($flagOperator, "=") === 3)
+        {
+            $dataString = $this->param[$flag['variable']];
+            if($dataString === $flagValue){
                 $this->operator = true;
             }
         }
 
         //not equal to operator
-        elseif(count(explode("!=", $flag['operator'])) === 2)
+        elseif(substr_count($flagOperator, "!=") === 1)
         {
             $dataString = $this->param[$flag['variable']];
-            $operatorValue = explode("!=", $flag['operator'])[1];
-            $this->operator = false;
-            if($dataString != $operatorValue){
+            if($dataString != $flagValue){
+                $this->operator = true;
+            }
+        }
+
+        //strictly not equal to operator
+        elseif(substr_count($flagOperator, "!==") === 1)
+        {
+            $dataString = $this->param[$flag['variable']];
+            if($dataString !== $flagValue){
                 $this->operator = true;
             }
         }
 
         //greater than operator
-        elseif(count(explode(">", $flag['operator'])) === 2)
+        elseif(substr_count($flagOperator, ">") === 1)
         {
             $dataString = $this->param[$flag['variable']];
-            $operatorValue = explode(">", $flag['operator'])[1];
-            $this->operator = false;
-
-            //string
+            //string data type
             if((float) $dataString == 0){
-                if(strlen($dataString)  > $operatorValue){
+                if(strlen($dataString)  > $flagValue){
                     $this->operator = true;
                 }
             }else{
-                if((float) $dataString  > $operatorValue){
+                if((float) $dataString  > $flagValue){
                     $this->operator = true;
                 }
             }
         }
 
         //less than operator
-        elseif(count(explode("<", $flag['operator'])) === 2)
+        elseif(substr_count($flagOperator, "<") === 1)
         {
             $dataString = $this->param[$flag['variable']];
-            $operatorValue = explode("<", $flag['operator'])[1];
-            $this->operator = false;
+            //for string data type
             if((float) $dataString == 0){
-                if(strlen($dataString)  < $operatorValue){
+                if(strlen($dataString)  < $flagValue){
                     $this->operator = true;
                 }
             }else{
-                if((float) $dataString  < $operatorValue){
+                if((float) $dataString  < $flagValue){
                     $this->operator = true;
                 }
             }
         }
-        
+
         return $this->operator;
     }
     
@@ -344,21 +366,26 @@ class UltimateValidator{
         //explode indicator
         $find_occur = substr_count($key, ':'); 
 
-        if(count($flags) > 3 || $find_occur > 2 || !isset($flags[1])){
+        if(count($flags) > 4 || $find_occur > 3 || !isset($flags[1])){
             return "exception";
         }
 
-        $flags['filter'] = $flags[0];
+        $flags['data_type'] = $flags[0];
         $flags['variable'] = $flags[1];
 
         //create operator
         if(isset($flags[2])){
             $flags['operator'] = $flags[2];
         }
+        if(isset($flags[3])){
+            $flags['value'] = $flags[3];
+        }
 
         unset($flags[0]);
         unset($flags[1]);
         unset($flags[2]);
+        unset($flags[3]);
+
         return $flags;
     }
 
