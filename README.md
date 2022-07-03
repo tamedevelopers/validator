@@ -100,9 +100,10 @@ $form = new \UltimateValidator\UltimateValidator($_POST, 'POST');
 -> beforeIssetFunc |callable --  before form is set
 -> afterIssetFunc |callable --  after form is set
 
-** FLAGS :  **
+** FLAGS|DATA TYPE :  **
 ** HTML_INPUT_NAME : **
-** OPERATOR **
+** COMPARISON OPERATOR : **
+** VALUE TO COMPARE TO **
 ```
 
 - data - Data validation handling
@@ -111,10 +112,10 @@ $form = new \UltimateValidator\UltimateValidator($_POST, 'POST');
 
     $form->submit([
         "string:name" => 'Please enter a name',
-        "string:name:<5" => 'Name should be more than five(5) characters',
+        "string:name:<:5" => 'Name should be more than five(5) characters',
         "email:email" => 'Please enter a valid email address',
         "int:age" => 'Age is required',
-        "i:age:<16" => 'Sorry! you must be 16yrs or above to use this site'
+        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site'
     ], false)
 ```
 
@@ -153,10 +154,12 @@ $form = new \UltimateValidator\UltimateValidator($_POST, 'POST');
 
 ## OPERATOR STATEMENT
 
-- Supports 4 operational statement
+- Supports 6 operational statement
 ```
     ==
+    ===
     !=
+    !==
     >
     <
 ```
@@ -175,10 +178,10 @@ $form = new \UltimateValidator\UltimateValidator($_POST, 'POST');
 ```
      $form->submit([
         "s:name" => 'Please enter a name',
-        "s:name:<5" => 'Name should be more than five(5) characters',
+        "s:name:<:5" => 'Name should be more than five(5) characters',
         "e:email" => 'Please enter a valid email address',
         "i:age" => 'Age is required',
-        "i:age:<16" => 'Sorry! you must be 16yrs or above to use this site',
+        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site',
     ])->error(function($response){
 
         $response->param; //param property
@@ -200,10 +203,10 @@ $form = new \UltimateValidator\UltimateValidator($_POST, 'POST');
 ```
      $form->submit([
         "s:name" => 'Please enter a name',
-        "s:name:<5" => 'Name should be more than five(5) characters',
+        "s:name:<:5" => 'Name should be more than five(5) characters',
         "e:email" => 'Please enter a valid email address',
         "i:age" => 'Age is required',
-        "i:age:<16" => 'Sorry! you must be 16yrs or above to use this site',
+        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site',
     ])->error(function($response){
 
         $response->param; //param property
