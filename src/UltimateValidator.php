@@ -136,7 +136,9 @@ class UltimateValidator{
                             $this->error        = false;
                         }
                         else{
-                            $this->error = true;
+                            if(count($this->message) === 0){
+                                $this->error = true;
+                            }
                         }
                     }
                 }
