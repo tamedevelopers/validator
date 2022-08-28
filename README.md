@@ -13,6 +13,7 @@ PHP Ultimate Form Validation Library
   * [OPERATOR STATEMENT](#operator-statement)
   * [ERROR HANDLING](#error-handling)
   * [SUCCESS HANDLING](#success-handling)
+* [Laravel Support](#laravel-support)
 * [Useful links](#useful-links)
 
 ## Requirements
@@ -87,6 +88,24 @@ $form = new UltimateValidator\UltimateValidator();
 
 ```
 $form = new \UltimateValidator\UltimateValidator($_POST, 'POST');
+```
+
+### Laravel Support
+
+```
+-> Now supports Laravel and with same Functionalities no different
+
+use UltimateValidator\UltimateValidator;
+
+
+public function save(Request $request){
+
+    $form = new UltimateValidator($request->all());
+    or
+    $form = new UltimateValidator($_POST);
+    or
+    $form = new UltimateValidator($_GET);
+}
 ```
 
 
