@@ -225,7 +225,7 @@ class UltimateValidator{
         $type = true;
         if($this->checkParamIsset($flag['variable'])){
             switch($flag['data_type']){
-                case (in_array($flag['data_type'], ['email', 'e', ''])):
+                case (in_array($flag['data_type'], ['email', 'e'])):
                     $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_EMAIL);
                     break;
                     
