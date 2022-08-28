@@ -46,7 +46,7 @@ class UltimateValidator{
     */
     public function __construct(?array $param, ?string $type = null) 
     {
-        $this->message  = "";
+        $this->message  = [];
         $this->param    = $param;
         $this->type     = $this->getType($type);
         return $this;
@@ -82,6 +82,8 @@ class UltimateValidator{
             */
             if($allowedType){
                 $this->message  = [];
+            }else{
+                $this->message  = "";
             }
 
 
@@ -92,7 +94,7 @@ class UltimateValidator{
                 /**
                 * configuration error
                 */
-                if($keyPair == "exception"){
+                if($keyPair === "exception"){
                     $this->message = ("Configuration error:: Indicator `:` type passed not valid");
                     break;
                 }
@@ -219,37 +221,43 @@ class UltimateValidator{
     */
     private function createFlags(array $flag)
     {
-        switch($flag['data_type']){
-            case ($flag['data_type'] === 'email' || $flag['data_type'] === 'e'):
-                $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_EMAIL);
-                break;
-                
-            case ($flag['data_type'] === 'int' || $flag['data_type'] === 'i'):
-                $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_INT);
-                break;
-                
-            case ($flag['data_type'] === 'float' || $flag['data_type'] === 'f'):
-                $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_FLOAT);
-                break;
-                
-            case ($flag['data_type'] === 'url' || $flag['data_type'] === 'u'):
-                $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_URL);
-                break;
-                
-            case ($flag['data_type'] === 'array' || $flag['data_type'] === 'a'):
-                $type = isset($this->param[$flag['variable']]) && is_array($this->param[$flag['variable']]) ? true : false;
-                break;
-                
-            case ($flag['data_type'] === 'bool' || $flag['data_type'] === 'b'):
-                $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_BOOLEAN);
-                break;
-
-            default:
-                $type = filter_input($this->type, $flag['variable'], FILTER_SANITIZE_STRING);
-                if(empty($type))
-                    $type = false;
-                break;
+        //if input parameter is isset -- proceed to error validating
+        $type = true;
+        if($this->checkParamIsset($flag['variable'])){
+            switch($flag['data_type']){
+                case (in_array($flag['data_type'], ['email', 'e', ''])):
+                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_EMAIL);
+                    break;
+                    
+                case (in_array($flag['data_type'], ['int', 'i'])):
+                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_INT);
+                    break;
+                    
+                case (in_array($flag['data_type'], ['float', 'f'])):
+                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_FLOAT);
+                    break;
+                    
+                case (in_array($flag['data_type'], ['url', 'u'])):
+                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_URL);
+                    break;
+                    
+                case (in_array($flag['data_type'], ['array', 'a'])):
+                    $array = json_decode($this->param[$flag['variable']], TRUE);
+                    $type = isset($this->param[$flag['variable']]) && is_array($array) && count($array) > 0 ? true : false;
+                    break;
+                    
+                case (in_array($flag['data_type'], ['bool', 'b'])):
+                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_BOOLEAN);
+                    break;
+    
+                default:
+                    $type = htmlspecialchars(filter_input($this->type, $flag['variable']), ENT_HTML5);
+                    if(empty($type))
+                        $type = false;
+                    break;
+            }
         }
+        
         return $type;
     }
 
@@ -282,70 +290,72 @@ class UltimateValidator{
         $flagOperator = $flag['operator'];
         $flagValue = $flag['value'];
 
-        //equal to operator
-        if(substr_count($flagOperator, "=") === 2)
-        {
-            $dataString = $this->param[$flag['variable']];
-            if($dataString == $flagValue){
-                $this->operator = true;
-            }
-        }
-
-        //strictly equal to operator
-        elseif(substr_count($flagOperator, "=") === 3)
-        {
-            $dataString = $this->param[$flag['variable']];
-            if($dataString === $flagValue){
-                $this->operator = true;
-            }
-        }
-
-        //not equal to operator
-        elseif(substr_count($flagOperator, "!=") === 1)
-        {
-            $dataString = $this->param[$flag['variable']];
-            if($dataString != $flagValue){
-                $this->operator = true;
-            }
-        }
-
-        //strictly not equal to operator
-        elseif(substr_count($flagOperator, "!==") === 1)
-        {
-            $dataString = $this->param[$flag['variable']];
-            if($dataString !== $flagValue){
-                $this->operator = true;
-            }
-        }
-
-        //greater than operator
-        elseif(substr_count($flagOperator, ">") === 1)
-        {
-            $dataString = $this->param[$flag['variable']];
-            //string data type
-            if((float) $dataString == 0){
-                if(strlen($dataString)  > $flagValue){
-                    $this->operator = true;
-                }
-            }else{
-                if((float) $dataString  > $flagValue){
+        if($this->checkParamIsset($flag['variable'])){
+            //equal to operator
+            if(substr_count($flagOperator, "=") === 2)
+            {
+                $dataString = $this->param[$flag['variable']];
+                if($dataString == $flagValue){
                     $this->operator = true;
                 }
             }
-        }
 
-        //less than operator
-        elseif(substr_count($flagOperator, "<") === 1)
-        {
-            $dataString = $this->param[$flag['variable']];
-            //for string data type
-            if((float) $dataString == 0){
-                if(strlen($dataString)  < $flagValue){
+            //strictly equal to operator
+            elseif(substr_count($flagOperator, "=") === 3)
+            {
+                $dataString = $this->param[$flag['variable']];
+                if($dataString === $flagValue){
                     $this->operator = true;
                 }
-            }else{
-                if((float) $dataString  < $flagValue){
+            }
+
+            //not equal to operator
+            elseif(substr_count($flagOperator, "!=") === 1)
+            {
+                $dataString = $this->param[$flag['variable']];
+                if($dataString != $flagValue){
                     $this->operator = true;
+                }
+            }
+
+            //strictly not equal to operator
+            elseif(substr_count($flagOperator, "!==") === 1)
+            {
+                $dataString = $this->param[$flag['variable']];
+                if($dataString !== $flagValue){
+                    $this->operator = true;
+                }
+            }
+
+            //greater than operator
+            elseif(substr_count($flagOperator, ">") === 1)
+            {
+                $dataString = $this->param[$flag['variable']];
+                //string data type
+                if((float) $dataString == 0){
+                    if(strlen($dataString)  > $flagValue){
+                        $this->operator = true;
+                    }
+                }else{
+                    if((float) $dataString  > $flagValue){
+                        $this->operator = true;
+                    }
+                }
+            }
+
+            //less than operator
+            elseif(substr_count($flagOperator, "<") === 1)
+            {
+                $dataString = $this->param[$flag['variable']];
+                //for string data type
+                if((float) $dataString == 0){
+                    if(strlen($dataString)  < $flagValue){
+                        $this->operator = true;
+                    }
+                }else{
+                    if((float) $dataString  < $flagValue){
+                        $this->operator = true;
+                    }
                 }
             }
         }
@@ -407,6 +417,19 @@ class UltimateValidator{
                 break;
         }
         return $this->type;
+    }
+
+    /**
+    * @param  string $param  form input name.
+    * @return bool on request true|false
+    */
+    private function checkParamIsset($param = null)
+    {
+        if($this->type == INPUT_POST){
+            return isset($_POST[$param]);
+        }else{
+            return isset($_GET[$param]);
+        }
     }
 
 }
