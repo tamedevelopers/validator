@@ -9,17 +9,36 @@ namespace UltimateValidator;
 class UltimateValidator{
 
     /**
-    * params
+    * param
     */ 
     public  $param; 
 
     /**
+    * params object replica of $param
+    */ 
+    public  $params; 
+
+    /**
+    * attribute 
+    * @var string|array|object
+    */
+    public $attribute;
+
+    /**
+    * public param to set and get data
+    * @var string|array|object
+    */
+    public  $flash; 
+
+    /**
     * public message notice
+    * @var string|array|object
     */
     public  $message; 
 
     /**
     * data type
+    * @var boolean|null
     */
     private  $type; 
 
@@ -30,11 +49,13 @@ class UltimateValidator{
 
     /**
     * proceed
+    * @var boolean
     */
     private $proceed;
 
     /**
     * error 
+    * @var boolean
     */
     private $error    = false;
 
@@ -42,30 +63,30 @@ class UltimateValidator{
     /**
     * @param  array    $param form array like $_POST or $_GET.
     * @param  string   $type string like POST or GET - case-insensitive
+    * @param  string|int|array|object|resource   $attribute any outside param you would want to use within the form
     * @return object   returns an object for chaining
     */
-    public function __construct(?array $param, ?string $type = null) 
+    public function __construct(?array $param = null, ?string $type = null, $attribute = null) 
     {
-        $this->message  = [];
-        $this->param    = $param;
-        $this->type     = $this->getType($type);
+        $this->message      = [];
+        $this->type         = $this->getType($type);
+        $this->attribute    = $attribute;
+        $this->setParams($param);
+
         return $this;
     }
 
     /**
-    * @param  array $data    Constant like INPUT_XXX.
-    * @param boolean  $allowedType --  if to display all error once or one after another
-    * @param callable $beforeIssetFunc  before isset function if form is not set
-    * @param callable $afterIssetFunc after isset function if form is set
-    * @return object      entire object data
+    * @param  array     $data Constant like INPUT_XXX.
+    * @param  boolean   $allowedType --  if to display all error once or one after another
+    * @param  callable  $beforeIssetFunc  before isset function if form is not set
+    * @param  callable  $afterIssetFunc after isset function if form is set
+    * @return object|response class object return.
     */
     public function submit(array $data, ?bool $allowedType = false, callable $beforeIssetFunc = null, callable $afterIssetFunc = null) 
     {
-        //get params from input type
-        $this->param = filter_input_array($this->type);
-
         //only begin validation when submitted
-        if(isset($this->param))
+        if(isset($this->param) && count($this->param) > 0)
         {
             //set to false
             $this->proceed = false;
@@ -79,6 +100,7 @@ class UltimateValidator{
 
             /**
             * if allowed error type is true
+            * Error type converted to arrays
             */
             if($allowedType){
                 $this->message  = [];
@@ -101,38 +123,44 @@ class UltimateValidator{
 
                 //check response error from input flags
                 $flags = $this->createFlags($keyPair);
-
                 //allowed error handling type
                 if($allowedType == false){
-                    if($flags ===  false){
+                    if(in_array($flags, [false, '!isset'])){
                         $this->message  = $message;
-                        $this->error    = false;
+                        $this->error    = true;
                         break;
                     }else{
-                        $this->error = true;
+                        $this->error = false; // set to false
     
                         //operator function checker
                         $this->operator     = $this->operatorMethod($keyPair);
-                        if(!is_null($this->operator) && $this->operator){
-                            $this->message  = $message;
-                            $this->error    = false;
+
+                        if($this->operator === 'error'){
+                            $this->error      = true;
+                            $this->message    = sprintf("Comparison Operator error for this variable `%s`", $keyPair['variable']);
                             break;
+                        }
+                        else{
+                            if(!is_null($this->operator) && $this->operator){
+                                $this->message  = $message;
+                                $this->error    = true;
+                                break;
+                            }
                         }
                     }
                 }
-                else
-                {
-                    if($flags ===  false){
+                else{
+                    if(in_array($flags, [false, '!isset'])){
                         if(!in_array($keyPair['variable'], array_keys($this->message))){
                             $this->message[$keyPair['variable']]    = $message;
                         }
-                        $this->error        = false;
+                        $this->error        = true;
                     }else{
                         //operator function checker
                         $this->operator = $this->operatorMethod($keyPair);
 
                         if($this->operator === 'error'){
-                            $this->error        = false;
+                            $this->error        = true;
                             $this->message[$keyPair['variable']]    = sprintf("Comparison Operator error for this variable `%s`", $keyPair['variable']);
                             break;
                         }
@@ -141,11 +169,13 @@ class UltimateValidator{
                             if(!in_array($keyPair['variable'], array_keys($this->message))){
                                 $this->message[$keyPair['variable']]    = $message;
                             }
-                            $this->error        = false;
+                            $this->error        = true;
                         }
                         else{
-                            if(count($this->message) === 0){
-                                $this->error = true;
+                            // if no message error exist 
+                            // meaning array count is 0
+                            if(!count($this->message)){
+                                $this->error = false; // set to false
                             }
                         }
                     }
@@ -153,9 +183,10 @@ class UltimateValidator{
             }
 
             /**
-            * if validation succeeds without error | proceed to success
+            * if validation succeeds without error | 
+            * set proceed value to | true
             */
-            if($this->error){
+            if(!$this->error){
                 $this->proceed = true;
             }
             return $this;
@@ -172,10 +203,11 @@ class UltimateValidator{
         return $this;
     }
 
-
     /**
-    * @param  function     var $response into function to get access to the params.
-    * @return response     $response data on success call.
+    * @param  callable  $function.
+    * @param  null|void  pass a $var into the funtion to access the returned object
+    * usage   ->error(  function($response){}  );
+    * @return object|response class object on error.
     */
     public function error($function)
     {
@@ -186,11 +218,12 @@ class UltimateValidator{
         }
         return $this;
     }
-
     
     /**
-    * @param  function     var $response into function to get access to the params.
-    * @return response     $response data on success call.
+    * @param  callable  $function.
+    * @param  null|void  pass a $var into the funtion to access the returned object
+    * usage   ->success(  function($response){}  );
+    * @return object|response class object on success.
     */
     public function success($function)
     {
@@ -201,18 +234,143 @@ class UltimateValidator{
         }
         return $this;
     }
+    
+    /**
+    * @param  array  $keys of needed parameters
+    * @return array of all needed params
+    */
+    public function only(?array $keys = null)
+    {
+        $data = [];
+        if(is_array($keys)){
+            foreach($keys as $key){
+                if(in_array($key, array_keys($this->param))){
+                    $data[$key] = $this->param[$key];
+                }
+            }
+            return $data;
+        }
+    }
 
+    /**
+    * @param  array  $keys of to remove from parameters
+    * @return array of all needed params except the removed onces
+    */
+    public function except(?array $keys = null)
+    {
+        $data = $this->param;
+        if(is_array($keys)){
+            foreach($keys as $key){
+                if(in_array($key, array_keys($data))){
+                    unset($data[$key]);
+                }
+            }
+            return $data;
+        }
+    }
+
+    /**
+    * @param  string|key  $key param to check for
+    * @return boolean if param is set or not
+    */
+    public function has(?string $key = null)
+    {
+        if(in_array($key, array_keys($this->param))){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+    * @param  array $keys data to merge
+    * @param  array $data this will be the main data to merge the key with
+    * @return array of all needed params
+    */
+    public function merge(?array $keys = null, ?array $data = null)
+    {
+        if(is_array($keys) && is_array($data)){
+            return array_merge($keys,  $data);
+        }
+    }
+    
+    /**
+    * @param  array|keys  $keys of needed parameters
+    * @param  array|data  data param to check from
+    * @return array of all needed params
+    */
+    public function onlyData(?array $keys = null, ?array $all_data = null)
+    {
+        $data = [];
+        if(is_array($keys)){
+            foreach($keys as $key){
+                if(in_array($key, array_keys($all_data))){
+                    $data[$key] = $all_data[$key];
+                }
+            }
+            return $data;
+        }
+    }
+
+    /**
+    * @param  array|keys  $keys of to remove from parameters
+    * @param  array|data  data param to check from
+    * @return array of all needed params except the removed onces
+    */
+    public function exceptData(?array $keys = null, ?array $data = null)
+    {
+        if(is_array($keys)){
+            foreach($keys as $key){
+                if(in_array($key, array_keys($data))){
+                    unset($data[$key]);
+                }
+            }
+            return $data;
+        }
+    } 
+
+    /**
+    * @param string $type type of data needed
+    * .ie form (array) of param | attributes (object) of param 
+    * @return array|object of form if isset
+    */
+    public function getForm($type = null)
+    {
+        // create form structure
+        $data = [
+            'form' => $this->param,
+            'attributes' => (object) $this->param
+        ];
+
+        // in array keys
+        if(in_array($type, array_keys($data))){
+            return $data[$type];
+        }
+        return $data;
+    }
+
+    /**
+    * @param string $key of param name
+    * @return array|object|string|null
+    */
+    public function old($key = null)
+    {
+        // in array keys
+        $formData = $this->getForm()['form'];
+        if(in_array($key, array_keys($formData))){
+            return $formData[$key];
+        }
+        return;
+    }
 
     /**
     * @param  int|float  $response interger or float passer.
     * @param  string|array|object     $message can be any data type for display.
-    * @return json       Returns encoded JSON object of response and message
+    * @return echo|json       Returns encoded JSON object of response and message
     */
-    public function echoJson(int $response, $message = null)
+    public function echoJson(?int $response = 0, $message = null)
     {
         echo json_encode(['response' => $response, 'message' => $message]);
     }
-
 
     /**
     * @param  array $key    string like :string::name .
@@ -256,11 +414,12 @@ class UltimateValidator{
                         $type = false;
                     break;
             }
+        }else{
+            $type = '!isset';
         }
-        
+
         return $type;
     }
-
 
     /**
     * @param  array $flag  array.
@@ -279,7 +438,6 @@ class UltimateValidator{
         return $this->operator;
     }
 
-
     /**
     * @param  array $flag  array.
     * @return boolean or false.
@@ -292,7 +450,7 @@ class UltimateValidator{
 
         if($this->checkParamIsset($flag['variable'])){
             //equal to operator
-            if(substr_count($flagOperator, "=") === 2)
+            if($flagOperator == '=')
             {
                 $dataString = $this->param[$flag['variable']];
                 if($dataString == $flagValue){
@@ -301,7 +459,7 @@ class UltimateValidator{
             }
 
             //strictly equal to operator
-            elseif(substr_count($flagOperator, "=") === 3)
+            elseif($flagOperator == '==')
             {
                 $dataString = $this->param[$flag['variable']];
                 if($dataString === $flagValue){
@@ -310,7 +468,7 @@ class UltimateValidator{
             }
 
             //not equal to operator
-            elseif(substr_count($flagOperator, "!=") === 1)
+            elseif($flagOperator == '!=')
             {
                 $dataString = $this->param[$flag['variable']];
                 if($dataString != $flagValue){
@@ -319,16 +477,16 @@ class UltimateValidator{
             }
 
             //strictly not equal to operator
-            elseif(substr_count($flagOperator, "!==") === 1)
+            elseif($flagOperator == '!==')
             {
                 $dataString = $this->param[$flag['variable']];
-                if($dataString !== $flagValue){
+                if($dataString !== $flagValue){ 
                     $this->operator = true;
                 }
             }
 
             //greater than operator
-            elseif(substr_count($flagOperator, ">") === 1)
+            elseif($flagOperator == '>')
             {
                 $dataString = $this->param[$flag['variable']];
                 //string data type
@@ -343,8 +501,24 @@ class UltimateValidator{
                 }
             }
 
+            //greater than or equal to operator
+            elseif($flagOperator == '>=')
+            {
+                $dataString = $this->param[$flag['variable']];
+                //string data type
+                if((float) $dataString == 0){
+                    if(strlen($dataString)  >= $flagValue){
+                        $this->operator = true;
+                    }
+                }else{
+                    if((float) $dataString  >= $flagValue){
+                        $this->operator = true;
+                    }
+                }
+            }
+
             //less than operator
-            elseif(substr_count($flagOperator, "<") === 1)
+            elseif($flagOperator == '<')
             {
                 $dataString = $this->param[$flag['variable']];
                 //for string data type
@@ -358,11 +532,27 @@ class UltimateValidator{
                     }
                 }
             }
+
+            //less than or equal to operator
+            elseif($flagOperator == '<=')
+            {
+                $dataString = $this->param[$flag['variable']];
+                //for string data type
+                if((float) $dataString == 0){
+                    if(strlen($dataString)  <= $flagValue){
+                        $this->operator = true;
+                    }
+                }else{
+                    if((float) $dataString  <= $flagValue){
+                        $this->operator = true;
+                    }
+                }
+            }
+
         }
 
         return $this->operator;
     }
-    
 
     /**
     * @param  string $key    string like :string::name .
@@ -399,6 +589,26 @@ class UltimateValidator{
         return $flags;
     }
 
+    /**
+    * Set default params on load
+    * Determine if there's a parampassed to __contructor or not
+    * @param array|object $param form param or constructed params data
+    * @return object
+    */
+    private function setParams($param)
+    {
+        // if the param is not set then we use request method to 
+        // determine data received data from forms
+        if(is_null($param)){
+            // POST | GET | COOKIE
+            $this->param    = $_REQUEST;
+            $this->params   = (object) $this->param;
+        }else{
+            $this->param    = filter_input_array($this->type);
+            $this->params   = (object) $this->param;
+        }
+        return $this;
+    }
 
     /**
     * @param  string $type    string like POST or GET.
@@ -406,8 +616,12 @@ class UltimateValidator{
     */
     private function getType($type = null)
     {
-        $type = strtolower($type);
-        switch($type){
+        // if type is not passed then we detect the method type
+        if(empty($type) || !in_array($type, ['get', 'GET', 'post', 'POST'])){
+            $type = $_SERVER['REQUEST_METHOD'];
+        }
+
+        switch(strtolower($type)){
             case 'get':
                 $this->type = INPUT_GET;
                 break;
