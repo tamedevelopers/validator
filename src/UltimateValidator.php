@@ -353,7 +353,7 @@ class UltimateValidator{
     * @return array|object|string|null
     */
     public function old($key = null)
-    {
+    { 
         // in array keys
         $formData = $this->getForm()['form'];
         if(is_array($formData)){
