@@ -356,8 +356,10 @@ class UltimateValidator{
     {
         // in array keys
         $formData = $this->getForm()['form'];
-        if(in_array($key, array_keys($formData))){
-            return $formData[$key];
+        if(is_array($formData)){
+            if(in_array($key, array_keys($formData))){
+                return $formData[$key];
+            }
         }
         return;
     }
