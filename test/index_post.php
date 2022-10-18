@@ -2,23 +2,20 @@
 
     include_once "../src/UltimateValidator.php";
 
-    //error handler storage
-    $ERROR_HANDLER = ['msg' => '', 'class' => ''];
-
     //supports POST and GET | caseinsensitive
     $form = new \UltimateValidator\UltimateValidator($_POST);
+    $form->flash = ['class' => '', 'msg' => ''];
 
     $form->submit([
         "string:name" => 'Please enter a name',
-        "s:name:<5" => 'Name should be more than five(5) characters',
+        "s:name:<:5" => 'Name should be more than five(5) characters',
         "email:email" => 'Please enter a valid email address',
         "int:age" => 'Age is required',
-        "i:age:<16" => 'Sorry! you must be 16yrs or above to use this site',
+        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site',
     ], false)->error(function($response){
 
         //for normal error response only just attach message in var used outside
-        $GLOBALS['ERROR_HANDLER']['msg'] = $response->message;
-        $GLOBALS['ERROR_HANDLER']['class'] = 'd-block danger';
+        $response->flash = ['class' => 'd-block danger', 'msg' => $response->message];
 
         //for ajax error return | decode on frontend before usage
         $response->echoJson(0, $response->message);
@@ -27,9 +24,7 @@
         //your have access to | $response->param
         $param = $response->param;
 
-
-        $GLOBALS['ERROR_HANDLER']['msg'] = 'Success';
-        $GLOBALS['ERROR_HANDLER']['class'] = 'd-block success';
+        $response->flash = ['class' => 'd-block success', 'msg' => "Success"];
 
         //
         var_dump($param);
@@ -50,12 +45,12 @@
 
         <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
-            <div class="errorMSg mb-5 <?= $ERROR_HANDLER['class'] ?>">
+            <div class="errorMSg mb-5 <?= $form->flash['class'] ?>">
                 <?php 
-                    if(is_array($ERROR_HANDLER['msg'])){
-                        foreach($ERROR_HANDLER['msg'] as $value){ echo "{$value} <br>"; }
+                    if(is_array($form->flash['msg'])){
+                        foreach($form->flash['msg'] as $value){ echo "{$value} <br>"; }
                     }
-                    else{ echo $ERROR_HANDLER['msg'];}
+                    else{ echo $form->flash['msg'];}
                 ?>
             </div>
 

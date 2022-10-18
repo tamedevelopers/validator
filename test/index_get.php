@@ -14,7 +14,7 @@
         "email:email" => 'Please enter a valid email address',
         "int:age" => 'Age is required',
         "i:age:<16" => 'Sorry! you must be 16yrs or above to use this site',
-    ], true)->error(function($response){
+    ], true)->error(function($response){ 
 
         //for normal error response only just attach message in var used outside
         $GLOBALS['ERROR_HANDLER']['msg'] = $response->message;
