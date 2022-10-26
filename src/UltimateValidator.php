@@ -123,15 +123,16 @@ class UltimateValidator{
 
                 //check response error from input flags
                 $flags = $this->createFlags($keyPair);
+
                 //allowed error handling type
                 if($allowedType == false){
-                    if(in_array($flags, [false, '!isset'])){
+                    if($flags === false || $flags === '!isset'){
                         $this->message  = $message;
                         $this->error    = true;
                         break;
                     }else{
                         $this->error = false; // set to false
-    
+
                         //operator function checker
                         $this->operator     = $this->operatorMethod($keyPair);
 
@@ -150,7 +151,7 @@ class UltimateValidator{
                     }
                 }
                 else{
-                    if(in_array($flags, [false, '!isset'])){
+                    if($flags === false || $flags === '!isset'){
                         if(!in_array($keyPair['variable'], array_keys($this->message))){
                             $this->message[$keyPair['variable']]    = $message;
                         }
@@ -353,13 +354,11 @@ class UltimateValidator{
     * @return array|object|string|null
     */
     public function old($key = null)
-    { 
+    {
         // in array keys
         $formData = $this->getForm()['form'];
-        if(is_array($formData)){
-            if(in_array($key, array_keys($formData))){
-                return $formData[$key];
-            }
+        if(in_array($key, array_keys($formData))){
+            return $formData[$key];
         }
         return;
     }
@@ -412,8 +411,10 @@ class UltimateValidator{
     
                 default:
                     $type = htmlspecialchars(filter_input($this->type, $flag['variable']), ENT_HTML5);
-                    if(empty($type))
+                    // mostly for value of 0
+                    if(empty($type) && $type != '0') {
                         $type = false;
+                    }
                     break;
             }
         }else{
@@ -430,6 +431,7 @@ class UltimateValidator{
     private function operatorMethod(?array $flag = null)
     {
         $this->operator = null;
+
         //comparison operator command
         if(isset($flag['operator']) && !empty($flag['operator'])){
             $this->operator = 'error';
@@ -437,6 +439,7 @@ class UltimateValidator{
             if(isset($flag['value']))
                 $this->operator = $this->createOperator($flag);
         }
+
         return $this->operator;
     }
 
@@ -552,7 +555,7 @@ class UltimateValidator{
             }
 
         }
-
+        
         return $this->operator;
     }
 
