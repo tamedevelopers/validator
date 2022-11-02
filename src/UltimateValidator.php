@@ -25,12 +25,6 @@ class UltimateValidator{
     public $attribute;
 
     /**
-    * public param to set and get data
-    * @var string|array|object
-    */
-    public  $flash; 
-
-    /**
     * public message notice
     * @var string|array|object
     */
@@ -79,11 +73,9 @@ class UltimateValidator{
     /**
     * @param  array     $data Constant like INPUT_XXX.
     * @param  boolean   $allowedType --  if to display all error once or one after another
-    * @param  callable  $beforeIssetFunc  before isset function if form is not set
-    * @param  callable  $afterIssetFunc after isset function if form is set
     * @return object|response class object return.
     */
-    public function submit(array $data, ?bool $allowedType = false, callable $beforeIssetFunc = null, callable $afterIssetFunc = null) 
+    public function submit(array $data, ?bool $allowedType = false) 
     {
         //only begin validation when submitted
         if(isset($this->param) && count($this->param) > 0)
@@ -94,9 +86,7 @@ class UltimateValidator{
             /**
             * after isset function call
             */
-            if(is_callable($afterIssetFunc)){
-                $afterIssetFunc($this);
-            }
+            $this->afterSubmit($this);
 
             /**
             * if allowed error type is true
@@ -197,9 +187,7 @@ class UltimateValidator{
         * before isset function call
         */
         else{
-            if(is_callable($beforeIssetFunc)){
-                $beforeIssetFunc($this);
-            }
+            $this->beforeSubmit($this);
         }
         return $this;
     }
@@ -229,6 +217,38 @@ class UltimateValidator{
     public function success($function)
     {
         if(!is_null($this->proceed)  && $this->proceed){
+            if(is_callable($function)){
+                $function($this);
+            }
+        }
+        return $this;
+    }
+    
+    /**
+    * @param  callable  $function.
+    * Before form is set
+    * usage   ->beforeSubmit(  function($response){}  );
+    * @return void\Response class object on success
+    */
+    public function beforeSubmit($function)
+    {
+        if(!isset($this->param)){
+            if(is_callable($function)){
+                $function($this);
+            }
+        }
+        return $this;
+    }
+
+    /**
+    * @param  callable  $function.
+    * After form is set
+    * usage   ->afterSubmit(  function($response){}  );
+    * @return void\Response class object on success
+    */
+    public function afterSubmit($function)
+    {
+        if(isset($this->param) && count($this->param) > 0){
             if(is_callable($function)){
                 $function($this);
             }
@@ -338,7 +358,7 @@ class UltimateValidator{
     {
         // create form structure
         $data = [
-            'form' => $this->param,
+            'attribute' => $this->param,
             'attributes' => (object) $this->param
         ];
 
@@ -356,8 +376,8 @@ class UltimateValidator{
     public function old($key = null)
     {
         // in array keys
-        $formData = $this->getForm()['form'];
-        if(in_array($key, array_keys($formData))){
+        $formData = $this->getForm()['attribute'];
+        if(is_array($formData) && in_array($key, array_keys($formData))){
             return $formData[$key];
         }
         return;

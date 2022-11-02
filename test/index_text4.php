@@ -15,22 +15,48 @@
         "string:new_password" => 'Enter a new password',
         "string:retype_password" => 'Retype new password',
         "string:retype_password:!==:{$form->old('new_password')}" => 'Password mis-match... Try again.' 
-    ], true)->error(function($response){ 
+    ], true)->beforeSubmit(function(){
+        var_dump( 'beforeSubmit'  );
+    })->afterSubmit(function(){
+        var_dump( 'afterSubmit'  );
+    })
+    ->error(function($response){ 
 
+        // define extra property to use
         $response->flash = "d-block danger";
 
         $response->echoJson(0, $response->message);
-    })->success(function($response){
+    })->success(function($response) use ($outsideParam){
         //your have access to | $response->param
         $param = $response->param;
+
+        // param in object format
+        $params = $response->params;
+
+        // define extra property to use
         $response->flash = "d-block success";
 
         // now you can use the outside param anywhere inside the method scope
-        // ->attribute
-        $outsideParam = $response->attribute;
+        $attributeParam = $response->attribute;
 
-        var_dump($param);
-        var_dump($outsideParam );
+        // the use param name
+        $use = $outsideParam;
+
+        $data['user_id'] = rand(10000, 99999);
+        $data['retype_password'] = md5($param['retype_password']);
+
+        // merge example
+        $merge = $response->merge($response->param, $data);
+
+        // get form
+        $form = $response->getForm();
+
+        // message
+        $response->message = "Successful";
+
+        var_dump( $form );
+        // var_dump($param);
+        // var_dump($attributeParam );
     });
 
 
