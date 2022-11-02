@@ -356,7 +356,7 @@ returns array|null
         $data['user_id'] = rand(10000, 99999);
         $data['password'] = md5($param['password']);
 
-        $param = $response->merge($data, $response->param);
+        $param = $response->merge($response->param, $data);
 
     });
 ```
