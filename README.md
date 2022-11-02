@@ -366,13 +366,14 @@ returns array|null
 
 ```
 Used to get only the data you need from array element
-Params needs index array of form element keys
+@param array\ $keys\ Keys are array
+@param array\ $data\ Main data to select from
 ```
 ```
     ->success(function($response){
        
         $array = ['email' => 'mailer@mail.com', '_token' => md5('token'), 'password' => 'test'];
-        $data = $response->OnlyData(['email', 'password']);
+        $data = $response->OnlyData(['email', 'password'], $array);
 
         var_dump( $data );
     });
@@ -383,13 +384,14 @@ Params needs index array of form element keys
 
 ```
 Used to exclude the data you don't need from array element
-Params needs index array of form element keys
+@param array\ $keys\ Keys are array
+@param array\ $data\ Main data to select from
 ```
 ```
     ->success(function($response){
        
         $array = ['email' => 'mailer@mail.com', '_token' => md5('token'), 'password' => 'test'];
-        $data = $response->exceptData(['_token']);
+        $data = $response->exceptData(['_token'], $array);
 
         var_dump( $data );
     });
