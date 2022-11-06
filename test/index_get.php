@@ -10,10 +10,10 @@
 
     $form->submit([
         "string:name" => 'Please enter a name',
-        "s:name:<5" => 'Name should be more than five(5) characters',
+        "str_len:name:<5" => 'Name should be more than five(5) characters',
         "email:email" => 'Please enter a valid email address',
         "int:age" => 'Age is required',
-        "i:age:<16" => 'Sorry! you must be 16yrs or above to use this site',
+        "int:age:<16" => 'Sorry! you must be 16yrs or above to use this site',
     ], true)->error(function($response){ 
 
         //for normal error response only just attach message in var used outside

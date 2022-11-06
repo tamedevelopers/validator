@@ -513,36 +513,72 @@ class UltimateValidator{
             //greater than operator
             elseif($flagOperator == '>')
             {
-                $dataString = (float) $this->param[$flag['variable']];
-                if($dataString  > (float) $flagValue){
-                    $this->operator = true;
+                $dataString = $this->param[$flag['variable']];
+                // if str_len | sl
+                if(in_array($flag['data_type'], ['str_len', 'sl'])){
+                    $dataString = strlen($dataString);
+                    if($dataString > (float) $flagValue){
+                        $this->operator = true;
+                    }
+                }else{
+                    $dataString = (float) $dataString;
+                    if($dataString > (float) $flagValue){
+                        $this->operator = true;
+                    }
                 }
             }
 
             //greater than or equal to operator
             elseif($flagOperator == '>=')
             {
-                $dataString = (float) $this->param[$flag['variable']];
-                if($dataString  >= (float) $flagValue){
-                    $this->operator = true;
+                $dataString = $this->param[$flag['variable']];
+                // if str_len | sl
+                if(in_array($flag['data_type'], ['str_len', 'sl'])){
+                    $dataString = strlen($dataString);
+                    if($dataString >= (float) $flagValue){
+                        $this->operator = true;
+                    }
+                }else{
+                    $dataString = (float) $dataString;
+                    if($dataString >= (float) $flagValue){
+                        $this->operator = true;
+                    }
                 }
             }
 
             //less than operator
             elseif($flagOperator == '<')
             {
-                $dataString = (float) $this->param[$flag['variable']];
-                if($dataString  < (float) $flagValue){
-                    $this->operator = true;
+                $dataString = $this->param[$flag['variable']];
+                // if str_len | sl
+                if(in_array($flag['data_type'], ['str_len', 'sl'])){
+                    $dataString = strlen($dataString);
+                    if($dataString  < (float) $flagValue){
+                        $this->operator = true;
+                    }
+                }else{
+                    $dataString = (float) $dataString;
+                    if($dataString  < (float) $flagValue){
+                        $this->operator = true;
+                    }
                 }
             }
 
             //less than or equal to operator
             elseif($flagOperator == '<=')
             {
-                $dataString = (float) $this->param[$flag['variable']];
-                if($dataString  <= (float) $flagValue){
-                    $this->operator = true;
+                $dataString = $this->param[$flag['variable']];
+                // if str_len | sl
+                if(in_array($flag['data_type'], ['str_len', 'sl'])){
+                    $dataString = strlen($dataString);
+                    if($dataString  <= (float) $flagValue){
+                        $this->operator = true;
+                    }
+                }else{
+                    $dataString = (float) $dataString;
+                    if($dataString  <= (float) $flagValue){
+                        $this->operator = true;
+                    }
                 }
             }
 

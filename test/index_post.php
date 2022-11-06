@@ -7,10 +7,10 @@
     $form->flash = ['class' => '', 'msg' => ''];
 
     $form->submit([
-        "string:name" => 'Please enter a name',
-        "s:name:<:5" => 'Name should be more than five(5) characters',
-        "email:email" => 'Please enter a valid email address',
-        "int:age" => 'Age is required',
+        "s:name" => 'Please enter a name',
+        "sl:name:<:5" => 'Name should be more than five(5) characters',
+        "e:email" => 'Please enter a valid email address',
+        "i:age" => 'Age is required',
         "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site',
     ], false)->error(function($response){
 
