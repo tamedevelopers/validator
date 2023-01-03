@@ -39,8 +39,9 @@ class CheckOperator {
         $flagValue          = $dataType['value'];
 
         if(UltimateMethods::checkIfParamIsset($dataType['variable'])){
-            // equal to operator
-            if($flagOperator == '=')
+
+            //equal to operator
+            if($flagOperator == '==')
             {
                 $dataString = $object->param[$dataType['variable']];
                 if($dataString == $flagValue){
@@ -48,8 +49,8 @@ class CheckOperator {
                 }
             }
 
-            // strictly equal to operator
-            elseif($flagOperator == '==')
+            //strictly equal to operator
+            elseif($flagOperator == '===')
             {
                 $dataString = $object->param[$dataType['variable']];
                 if($dataString === $flagValue){
@@ -57,7 +58,7 @@ class CheckOperator {
                 }
             }
 
-            // not equal to operator
+            //not equal to operator
             elseif($flagOperator == '!=')
             {
                 $dataString = $object->param[$dataType['variable']];
@@ -66,7 +67,7 @@ class CheckOperator {
                 }
             }
 
-            // strictly not equal to operator
+            //strictly not equal to operator
             elseif($flagOperator == '!==')
             {
                 $dataString = $object->param[$dataType['variable']];
@@ -75,7 +76,7 @@ class CheckOperator {
                 }
             }
 
-            // greater than operator
+            //greater than operator
             elseif($flagOperator == '>')
             {
                 $dataString = $object->param[$dataType['variable']];
@@ -93,7 +94,7 @@ class CheckOperator {
                 }
             }
 
-            // greater than or equal to operator
+            //greater than or equal to operator
             elseif($flagOperator == '>=')
             {
                 $dataString = $object->param[$dataType['variable']];
@@ -111,7 +112,7 @@ class CheckOperator {
                 }
             }
 
-            // less than operator
+            //less than operator
             elseif($flagOperator == '<')
             {
                 $dataString = $object->param[$dataType['variable']];
@@ -129,7 +130,7 @@ class CheckOperator {
                 }
             }
 
-            // less than or equal to operator
+            //less than or equal to operator
             elseif($flagOperator == '<=')
             {
                 $dataString = $object->param[$dataType['variable']];
@@ -147,6 +148,42 @@ class CheckOperator {
                 }
             }
 
+            //less than or greather than to operator
+            elseif($flagOperator == '<||>')
+            {
+                $dataString = $object->param[$dataType['variable']];
+                // if str_len | sl
+                if(in_array($dataType['data_type'], ['str_len', 'sl'])){
+                    $dataString = strlen($dataString);
+                    if($dataString  < (float) $flagValue || $dataString  > (float) $flagValue){
+                        $object->operator = true;
+                    }
+                }else{
+                    $dataString = (float) $dataString;
+                    if($dataString  < (float) $flagValue || $dataString  > (float) $flagValue){
+                        $object->operator = true;
+                    }
+                }
+            }
+
+            //less than and greather than to operator
+            elseif($flagOperator == '<&&>')
+            {
+                $dataString = $object->param[$dataType['variable']];
+                // if str_len | sl
+                if(in_array($dataType['data_type'], ['str_len', 'sl'])){
+                    $dataString = strlen($dataString);
+                    if($dataString  < (float) $flagValue && $dataString  > (float) $flagValue){
+                        $object->operator = true;
+                    }
+                }else{
+                    $dataString = (float) $dataString;
+                    if($dataString  < (float) $flagValue && $dataString  > (float) $flagValue){
+                        $object->operator = true;
+                    }
+                }
+            }
+            
         }
 
         return $object->operator;
