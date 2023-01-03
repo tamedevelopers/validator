@@ -351,13 +351,13 @@ class UltimateValidator implements UltimateInterface
     /**
      * Get needed data from array 
      * @param  array\keys  $keys of needed data
-     * @param  array\data  $data param to check from
+     * @param  array  $allData param to check from
      * 
      * @return array
      */
-    public function onlyData(?array $keys = null, ?array $data = null)
+    public function onlyData(?array $keys = null, ?array $allData = null)
     {
-        return UltimateMethods::onlyData($keys, $data);
+        return UltimateMethods::onlyData($keys, $allData);
     }
 
     /**

@@ -152,17 +152,17 @@ class UltimateMethods {
     /**
      * Get needed data from array 
      * @param  array\keys  $keys of needed data
-     * @param  array\data  $data param to check from
+     * @param  array  $allData param to check from
      * 
      * @return array
      */
-    public static function onlyData(?array $keys = null, ?array $data = null)
+    public static function onlyData(?array $keys = null, ?array $allData = null)
     {
         $data = [];
         if(is_array($keys) && is_array($data)){
             foreach($keys as $key){
-                if(in_array($key, array_keys($data))){
-                    $data[$key] = $data[$key];
+                if(in_array($key, array_keys($allData))){
+                    $data[$key] = $allData[$key];
                 }
             }
             return $data;
