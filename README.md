@@ -173,16 +173,18 @@ public function save(Request $request){
 
 ## Operator Statement
 
-- Supports 8 operational statement
+- Supports 10 operational statement
 ```
-    =
     ==
+    ===
     !=
     !==
     >
     >=
     <
     <=
+    <||>
+    <&&>
 ```
 
 ## Before Submit
