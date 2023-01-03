@@ -1,17 +1,17 @@
 <?php
 
-    include_once "../src/UltimateValidator.php";
+include_once __DIR__ . "/path_to/autoload.php";
 
     //supports POST and GET | caseinsensitive
     $form = new \UltimateValidator\UltimateValidator($_POST);
     $form->flash = ['class' => '', 'msg' => ''];
 
     $form->submit([
-        "s:name" => 'Please enter a name',
-        "sl:name:<:5" => 'Name should be more than five(5) characters',
-        "e:email" => 'Please enter a valid email address',
-        "i:age" => 'Age is required',
-        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site',
+        "s:name"        => 'Please enter a name',
+        "sl:name:<:5"   => 'Name should be more than five(5) characters',
+        "e:email"       => 'Please enter a valid email address',
+        "i:age"         => 'Age is required',
+        "i:age:<:16"    => 'Sorry! you must be 16yrs or above to use this site',
     ], false)->error(function($response){
 
         //for normal error response only just attach message in var used outside

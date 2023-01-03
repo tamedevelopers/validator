@@ -1,12 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of ultimate-validator.
+ *
+ * (c) Tame Developers Inc.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace UltimateValidator;
 
-/***********************************************************
-* #### PHP - Ultimate Form Validator Class ####
-***********************************************************/
 
-class UltimateValidator{
+/**
+ * Validator
+ *
+ * @package   Ultimate\Validator
+ * @author    Tame Developers <tamedevelopers@gmail.co>
+ * @author    Fredrick Peterson <fredi.peterson2000@gmail.com>
+ * @copyright 2021-2023 Tame Developers
+ * @license   http://www.opensource.org/licenses/MIT The MIT License
+ */
+class UltimateValidator implements UltimateInterface
+{
 
     /**
     * param
@@ -34,12 +52,18 @@ class UltimateValidator{
     * data type
     * @var boolean|null
     */
-    private  $type; 
+    public  $type; 
 
     /**
     * operator check
     */
-    private  $operator; 
+    public  $operator; 
+
+    /**
+    * flash
+    * @var boolean
+    */
+    public $flash;
 
     /**
     * proceed
@@ -65,7 +89,12 @@ class UltimateValidator{
         $this->message      = [];
         $this->type         = $this->getType($type);
         $this->attribute    = $attribute;
-        $this->setParams($param);
+        
+        // initialize methods
+        UltimateMethods::initialize($this);
+        
+        // set params
+        UltimateMethods::setParams($param);
 
         return $this;
     }
@@ -99,36 +128,45 @@ class UltimateValidator{
             }
 
 
-            //start loop process
+            // start loop process
             foreach($data as $key => $message){
-                $keyPair = $this->getKeyPairs($key);
+
+
+                // create data types
+                $dataType = CreateDatatype::create($key);
 
                 /**
-                * configuration error
+                * Configuration error
                 */
-                if($keyPair === "exception"){
-                    $this->message = ("Configuration error:: Indicator `:` type passed not valid");
+                if($dataType === "indicator"){
+                    $this->error    = true;
+                    $this->message  = ExceptionMessage::indicator();
                     break;
                 }
 
                 //check response error from input flags
-                $flags = $this->createFlags($keyPair);
+                $checkDataType = CheckDatatype::check($dataType);
 
-                //allowed error handling type
+                // allowed error handling type
                 if($allowedType == false){
-                    if($flags === false || $flags === '!isset'){
+                    if($checkDataType === false || $checkDataType === '!isset'){
                         $this->message  = $message;
                         $this->error    = true;
                         break;
-                    }else{
+                    }
+                    elseif($checkDataType === false || $checkDataType === '!found'){
+                        $this->message  = ExceptionMessage::notFound($dataType);
+                        $this->error    = true;
+                        break;
+                    } else{
                         $this->error = false; // set to false
 
                         //operator function checker
-                        $this->operator     = $this->operatorMethod($keyPair);
+                        $this->operator     = $this->operatorMethod($dataType);
 
                         if($this->operator === 'error'){
                             $this->error      = true;
-                            $this->message    = sprintf("Comparison Operator error for this variable `%s`", $keyPair['variable']);
+                            $this->message    = ExceptionMessage::comparison($dataType);
                             break;
                         }
                         else{
@@ -141,24 +179,30 @@ class UltimateValidator{
                     }
                 }
                 else{
-                    if($flags === false || $flags === '!isset'){
-                        if(!in_array($keyPair['variable'], array_keys($this->message))){
-                            $this->message[$keyPair['variable']]    = $message;
+                    if($checkDataType === false || $checkDataType === '!isset'){
+                        if(!in_array($dataType['variable'], array_keys($this->message))){
+                            $this->message[$dataType['variable']]    = $message;
                         }
                         $this->error        = true;
-                    }else{
+                    }
+                    elseif($checkDataType === false || $checkDataType === '!found'){
+                        if(!in_array($dataType['variable'], array_keys($this->message))){
+                            $this->message[$dataType['variable']]    = ExceptionMessage::notFound($dataType);
+                        }
+                        $this->error    = true;
+                    } else{
                         //operator function checker
-                        $this->operator = $this->operatorMethod($keyPair);
+                        $this->operator = $this->operatorMethod($dataType);
 
                         if($this->operator === 'error'){
                             $this->error        = true;
-                            $this->message[$keyPair['variable']]    = sprintf("Comparison Operator error for this variable `%s`", $keyPair['variable']);
+                            $this->message[$dataType['variable']]    = ExceptionMessage::comparison($dataType);
                             break;
                         }
 
                         elseif(!is_null($this->operator) && $this->operator){
-                            if(!in_array($keyPair['variable'], array_keys($this->message))){
-                                $this->message[$keyPair['variable']]    = $message;
+                            if(!in_array($dataType['variable'], array_keys($this->message))){
+                                $this->message[$dataType['variable']]    = $message;
                             }
                             $this->error        = true;
                         }
@@ -172,6 +216,8 @@ class UltimateValidator{
                     }
                 }
             }
+
+            
 
             /**
             * if validation succeeds without error | 
@@ -193,11 +239,11 @@ class UltimateValidator{
     }
 
     /**
-    * @param  callable  $function.
-    * @param  null|void  pass a $var into the funtion to access the returned object
-    * usage   ->error(  function($response){}  );
-    * @return object|response class object on error.
-    */
+     * @param  callable  $function.
+     * @param  null|void  pass a $var into the funtion to access the returned object
+     * usage   ->error(  function($response){}  );
+     * @return object|response class object on error.
+     */
     public function error($function)
     {
         if(!is_null($this->proceed)  && $this->proceed === false){
@@ -209,11 +255,11 @@ class UltimateValidator{
     }
     
     /**
-    * @param  callable  $function.
-    * @param  null|void  pass a $var into the funtion to access the returned object
-    * usage   ->success(  function($response){}  );
-    * @return object|response class object on success.
-    */
+     * @param  callable  $function.
+     * @param  null|void  pass a $var into the funtion to access the returned object
+     * usage   ->success(  function($response){}  );
+     * @return object|response class object on success.
+     */
     public function success($function)
     {
         if(!is_null($this->proceed)  && $this->proceed){
@@ -225,11 +271,11 @@ class UltimateValidator{
     }
     
     /**
-    * @param  callable  $function.
-    * Before form is set
-    * usage   ->beforeSubmit(  function($response){}  );
-    * @return void\Response class object on success
-    */
+     * @param  callable  $function.
+     * Before form is set
+     * usage   ->beforeSubmit(  function($response){}  );
+     * @return void\Response class object on success
+     */
     public function beforeSubmit($function)
     {
         if(!isset($this->param)){
@@ -241,11 +287,11 @@ class UltimateValidator{
     }
 
     /**
-    * @param  callable  $function.
-    * After form is set
-    * usage   ->afterSubmit(  function($response){}  );
-    * @return void\Response class object on success
-    */
+     * @param  callable  $function.
+     * After form is set
+     * usage   ->afterSubmit(  function($response){}  );
+     * @return void\Response class object on success
+     */
     public function afterSubmit($function)
     {
         if(isset($this->param) && count($this->param) > 0){
@@ -257,389 +303,130 @@ class UltimateValidator{
     }
     
     /**
-    * @param  array  $keys of needed parameters
-    * @return array of all needed params
-    */
-    public function only(?array $keys = null)
+     * Needed input values from submited form object
+     * @param  array|null  $keys of input
+     * 
+     * @return array
+     */
+    public function only($keys = null)
     {
-        $data = [];
-        if(is_array($keys)){
-            foreach($keys as $key){
-                if(in_array($key, array_keys($this->param))){
-                    $data[$key] = $this->param[$key];
-                }
-            }
-            return $data;
-        }
+        return UltimateMethods::only($keys);
     }
 
     /**
-    * @param  array  $keys of to remove from parameters
-    * @return array of all needed params except the removed onces
-    */
-    public function except(?array $keys = null)
+     * Remove input values from submited form object
+     * @param  array|null  $keys of input
+     * 
+     * @return array
+     */
+    public function except($keys = null)
     {
-        $data = $this->param;
-        if(is_array($keys)){
-            foreach($keys as $key){
-                if(in_array($key, array_keys($data))){
-                    unset($data[$key]);
-                }
-            }
-            return $data;
-        }
+        return UltimateMethods::except($keys);
     }
 
     /**
-    * @param  string|key  $key param to check for
-    * @return boolean if param is set or not
-    */
+     * Check if param is set in parent param
+     *
+     * @param string\key $key
+     *
+     * @return boolean
+     */
     public function has(?string $key = null)
     {
-        if(in_array($key, array_keys($this->param))){
-            return true;
-        }
-        return false;
+        return UltimateMethods::has($key);
     }
 
     /**
-    * @param  array $keys data to merge
-    * @param  array $data this will be the main data to merge the key with
-    * @return array of all needed params
-    */
+     * Remove value of parameters form objects
+     *
+     * @param array\keys $keys
+     *
+     * @return array
+     */
     public function merge(?array $keys = null, ?array $data = null)
     {
-        if(is_array($keys) && is_array($data)){
-            return array_merge($keys,  $data);
-        }
+        return UltimateMethods::merge($keys, $data);
     }
     
     /**
-    * @param  array|keys  $keys of needed parameters
-    * @param  array|data  data param to check from
-    * @return array of all needed params
-    */
-    public function onlyData(?array $keys = null, ?array $all_data = null)
+     * Get needed data from array 
+     * @param  array\keys  $keys of needed data
+     * @param  array\data  $data param to check from
+     * 
+     * @return array
+     */
+    public function onlyData(?array $keys = null, ?array $data = null)
     {
-        $data = [];
-        if(is_array($keys)){
-            foreach($keys as $key){
-                if(in_array($key, array_keys($all_data))){
-                    $data[$key] = $all_data[$key];
-                }
-            }
-            return $data;
-        }
+        return UltimateMethods::onlyData($keys, $data);
     }
 
     /**
-    * @param  array|keys  $keys of to remove from parameters
-    * @param  array|data  data param to check from
-    * @return array of all needed params except the removed onces
-    */
+     * Get all needed params except the removed onces
+     * @param  array|keys  $keys of to remove from parameters
+     * @param  array|data  $data param to check from
+     * 
+     * @return array 
+     */
     public function exceptData(?array $keys = null, ?array $data = null)
     {
-        if(is_array($keys)){
-            foreach($keys as $key){
-                if(in_array($key, array_keys($data))){
-                    unset($data[$key]);
-                }
-            }
-            return $data;
-        }
+        return UltimateMethods::exceptData($keys, $data);
     } 
 
     /**
-    * @param string $type type of data needed
-    * .ie form (array) of param | attributes (object) of param 
-    * @return array|object of form if isset
-    */
+     * Get Form Data
+     * Return form data if isset
+     * 
+     * @param string $type |attribute|attributes
+     * .ie form (array) of param | attributes (object) of param 
+     * 
+     * @return array|object 
+     */
     public function getForm($type = null)
     {
-        // create form structure
-        $data = [
-            'attribute' => $this->param,
-            'attributes' => (object) $this->param
-        ];
-
-        // in array keys
-        if(in_array($type, array_keys($data))){
-            return $data[$type];
-        }
-        return $data;
+        return UltimateMethods::getForm($type);
     }
 
     /**
-    * @param string $key of param name
-    * @return array|object|string|null
-    */
+     * Return previously entered value
+     * 
+     * @param string $key of param name
+     * 
+     * @return array|object|string\old
+     */
     public function old($key = null)
     {
-        // in array keys
-        $formData = $this->getForm()['attribute'];
-        if(is_array($formData) && in_array($key, array_keys($formData))){
-            return $formData[$key];
-        }
-        return;
+        return UltimateMethods::old($key);
     }
 
     /**
-    * @param  int|float  $response interger or float passer.
-    * @param  string|array|object     $message can be any data type for display.
-    * @return echo|json       Returns encoded JSON object of response and message
-    */
+     * Returns encoded JSON object of response and message
+     * 
+     * @param  int|float  $response
+     * @param  string|array|object  $message 
+     * @return string|json\echoJson  
+     */
     public function echoJson(?int $response = 0, $message = null)
     {
-        echo json_encode(['response' => $response, 'message' => $message]);
+        return UltimateMethods::echoJson($response, $message);
     }
 
     /**
-    * @param  array $key    string like :string::name .
-    * @return boolean       on error.
-    * @return data          on success.
-    */
-    private function createFlags(array $flag)
-    {
-        //if input parameter is isset -- proceed to error validating
-        $type = true;
-        if($this->checkParamIsset($flag['variable'])){
-            switch($flag['data_type']){
-                case (in_array($flag['data_type'], ['email', 'e'])):
-                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_EMAIL);
-                    break;
-                    
-                case (in_array($flag['data_type'], ['int', 'i'])):
-                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_INT);
-                    break;
-                    
-                case (in_array($flag['data_type'], ['float', 'f'])):
-                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_FLOAT);
-                    break;
-                    
-                case (in_array($flag['data_type'], ['url', 'u'])):
-                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_URL);
-                    break;
-                    
-                case (in_array($flag['data_type'], ['array', 'a'])):
-                    $array = json_decode($this->param[$flag['variable']], TRUE);
-                    $type = isset($this->param[$flag['variable']]) && is_array($array) && count($array) > 0 ? true : false;
-                    break;
-                    
-                case (in_array($flag['data_type'], ['bool', 'b'])):
-                    $type = filter_input($this->type, $flag['variable'], FILTER_VALIDATE_BOOLEAN);
-                    break;
-    
-                default:
-                    $type = htmlspecialchars(filter_input($this->type, $flag['variable']), ENT_HTML5);
-                    // mostly for value of 0
-                    if(empty($type) && $type != '0') {
-                        $type = false;
-                    }
-                    break;
-            }
-        }else{
-            $type = '!isset';
-        }
-
-        return $type;
-    }
-
-    /**
-    * @param  array $flag  array.
-    * @return boolean or false.
-    */
-    private function operatorMethod(?array $flag = null)
+     * @param  array $dataType  array.
+     * @return boolean or false.
+     */
+    private function operatorMethod(?array $dataType = null)
     {
         $this->operator = null;
 
         //comparison operator command
-        if(isset($flag['operator']) && !empty($flag['operator'])){
+        if(isset($dataType['operator']) && !empty($dataType['operator'])){
             $this->operator = 'error';
             //value check command
-            if(isset($flag['value']))
-                $this->operator = $this->createOperator($flag);
-        }
-
-        return $this->operator;
-    }
-
-    /**
-    * @param  array $flag  array.
-    * @return boolean or false.
-    */
-    private function createOperator($flag)
-    {
-        $this->operator = false;
-        $flagOperator = $flag['operator'];
-        $flagValue = $flag['value'];
-
-        if($this->checkParamIsset($flag['variable'])){
-            //equal to operator
-            if($flagOperator == '=')
-            {
-                $dataString = $this->param[$flag['variable']];
-                if($dataString == $flagValue){
-                    $this->operator = true;
-                }
+            if(isset($dataType['value'])){
+                $this->operator = CheckOperator::check($dataType, $this);
             }
-
-            //strictly equal to operator
-            elseif($flagOperator == '==')
-            {
-                $dataString = $this->param[$flag['variable']];
-                if($dataString === $flagValue){
-                    $this->operator = true;
-                }
-            }
-
-            //not equal to operator
-            elseif($flagOperator == '!=')
-            {
-                $dataString = $this->param[$flag['variable']];
-                if($dataString != $flagValue){
-                    $this->operator = true;
-                }
-            }
-
-            //strictly not equal to operator
-            elseif($flagOperator == '!==')
-            {
-                $dataString = $this->param[$flag['variable']];
-                if($dataString !== $flagValue){ 
-                    $this->operator = true;
-                }
-            }
-
-            //greater than operator
-            elseif($flagOperator == '>')
-            {
-                $dataString = $this->param[$flag['variable']];
-                // if str_len | sl
-                if(in_array($flag['data_type'], ['str_len', 'sl'])){
-                    $dataString = strlen($dataString);
-                    if($dataString > (float) $flagValue){
-                        $this->operator = true;
-                    }
-                }else{
-                    $dataString = (float) $dataString;
-                    if($dataString > (float) $flagValue){
-                        $this->operator = true;
-                    }
-                }
-            }
-
-            //greater than or equal to operator
-            elseif($flagOperator == '>=')
-            {
-                $dataString = $this->param[$flag['variable']];
-                // if str_len | sl
-                if(in_array($flag['data_type'], ['str_len', 'sl'])){
-                    $dataString = strlen($dataString);
-                    if($dataString >= (float) $flagValue){
-                        $this->operator = true;
-                    }
-                }else{
-                    $dataString = (float) $dataString;
-                    if($dataString >= (float) $flagValue){
-                        $this->operator = true;
-                    }
-                }
-            }
-
-            //less than operator
-            elseif($flagOperator == '<')
-            {
-                $dataString = $this->param[$flag['variable']];
-                // if str_len | sl
-                if(in_array($flag['data_type'], ['str_len', 'sl'])){
-                    $dataString = strlen($dataString);
-                    if($dataString  < (float) $flagValue){
-                        $this->operator = true;
-                    }
-                }else{
-                    $dataString = (float) $dataString;
-                    if($dataString  < (float) $flagValue){
-                        $this->operator = true;
-                    }
-                }
-            }
-
-            //less than or equal to operator
-            elseif($flagOperator == '<=')
-            {
-                $dataString = $this->param[$flag['variable']];
-                // if str_len | sl
-                if(in_array($flag['data_type'], ['str_len', 'sl'])){
-                    $dataString = strlen($dataString);
-                    if($dataString  <= (float) $flagValue){
-                        $this->operator = true;
-                    }
-                }else{
-                    $dataString = (float) $dataString;
-                    if($dataString  <= (float) $flagValue){
-                        $this->operator = true;
-                    }
-                }
-            }
-
         }
         return $this->operator;
-    }
-
-    /**
-    * @param  string $key    string like :string::name .
-    * @return array          filter_type and param name.
-    */
-    private function getKeyPairs(string $key)
-    {
-        //explode data
-        $flags = explode(":", $key);
-
-        //explode indicator
-        $find_occur = substr_count($key, ':'); 
-
-        if(count($flags) > 4 || $find_occur > 3 || !isset($flags[1])){
-            return "exception";
-        }
-
-        $flags['data_type'] = $flags[0];
-        $flags['variable'] = $flags[1];
-
-        //create operator
-        if(isset($flags[2])){
-            $flags['operator'] = $flags[2];
-        }
-        if(isset($flags[3])){
-            $flags['value'] = $flags[3];
-        }
-
-        unset($flags[0]);
-        unset($flags[1]);
-        unset($flags[2]);
-        unset($flags[3]);
-
-        return $flags;
-    }
-
-    /**
-    * Set default params on load
-    * Determine if there's a parampassed to __contructor or not
-    * @param array|object $param form param or constructed params data
-    * @return object
-    */
-    private function setParams($param)
-    {
-        // if the param is not set then we use request method to 
-        // determine data received data from forms
-        if(is_null($param)){
-            // POST | GET | COOKIE
-            $this->param    = $_REQUEST;
-            $this->params   = (object) $this->param;
-        }else{
-            $this->param    = filter_input_array($this->type);
-            $this->params   = (object) $this->param;
-        }
-        return $this;
     }
 
     /**
@@ -648,34 +435,10 @@ class UltimateValidator{
     */
     private function getType($type = null)
     {
-        // if type is not passed then we detect the method type
-        if(empty($type) || !in_array($type, ['get', 'GET', 'post', 'POST'])){
-            $type = $_SERVER['REQUEST_METHOD'];
-        }
+        $this->type = GetRequestType::request($type);
 
-        switch(strtolower($type)){
-            case 'get':
-                $this->type = INPUT_GET;
-                break;
-
-            default:
-                $this->type = INPUT_POST;
-                break;
-        }
         return $this->type;
     }
 
-    /**
-    * @param  string $param  form input name.
-    * @return bool on request true|false
-    */
-    private function checkParamIsset($param = null)
-    {
-        if($this->type == INPUT_POST){
-            return isset($_POST[$param]);
-        }else{
-            return isset($_GET[$param]);
-        }
-    }
 
 }

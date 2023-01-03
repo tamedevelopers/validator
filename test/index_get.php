@@ -1,19 +1,19 @@
 <?php
 
-    include_once "../src/UltimateValidator.php";
+    include_once __DIR__ . "/../vendor/autoload.php";
 
     //error handler storage
     $ERROR_HANDLER = ['msg' => '', 'class' => ''];
 
     //supports POST and GET | caseinsensitive
-    $form = new \UltimateValidator\UltimateValidator($_GET, 'GET');
+    $form = new UltimateValidator\UltimateValidator($_GET, 'GET');
 
     $form->submit([
-        "string:name" => 'Please enter a name',
-        "str_len:name:<5" => 'Name should be more than five(5) characters',
-        "email:email" => 'Please enter a valid email address',
-        "int:age" => 'Age is required',
-        "int:age:<16" => 'Sorry! you must be 16yrs or above to use this site',
+        "string:name"       => 'Please enter a name',
+        "str_len:name:<:5"  => 'Name should be more than five(5) characters',
+        "email:email"       => 'Please enter a valid email address',
+        "int:age"           => 'Age is required',
+        "int:age:<:16"      => 'Sorry! you must be 16yrs or above to use this site',
     ], true)->error(function($response){ 
 
         //for normal error response only just attach message in var used outside

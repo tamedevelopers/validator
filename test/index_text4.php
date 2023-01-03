@@ -1,6 +1,6 @@
 <?php
 
-    include_once "../src/UltimateValidator.php";
+    include_once __DIR__ . "/path_to/autoload.php";
 
     $outsideParam = [
         'first_name' => 'Tame',
@@ -11,9 +11,9 @@
     //auto find request method if no param set
     $form = new \UltimateValidator\UltimateValidator($_REQUEST, 'GET', $outsideParam);
     $form->submit([
-        "string:current_password" => 'Enter your old password',
-        "string:new_password" => 'Enter a new password',
-        "string:retype_password" => 'Retype new password',
+        "string:current_password"   => 'Enter your old password',
+        "string:new_password"       => 'Enter a new password',
+        "string:retype_password"    => 'Retype new password',
         "string:retype_password:!==:{$form->old('new_password')}" => 'Password mis-match... Try again.' 
     ], true)->beforeSubmit(function(){
         var_dump( 'beforeSubmit'  );
