@@ -71,7 +71,7 @@ include_once __DIR__ . "/path_to/autoload.php";
                 </div>
                 
                 <div class="">
-                    <label for="html">New password</label>
+                    <label for="html">New password</label> 
                     <input type="text" name="new_password" value="<?= $form->old('new_password'); ?>">
                 </div>
                 
