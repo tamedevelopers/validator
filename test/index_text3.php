@@ -1,6 +1,6 @@
 <?php
 
-include_once __DIR__ . "/path_to/autoload.php";
+    include_once __DIR__ . "/../vendor/autoload.php";
 
     //auto find request method if no param set
     $form = new \UltimateValidator\UltimateValidator();
@@ -10,8 +10,7 @@ include_once __DIR__ . "/path_to/autoload.php";
         "string:retype_password"    => 'Retype new password',
         "string:retype_password:!==:{$form->old('new_password')}" => 'Password mis-match... Try again.' 
     ], true)->error(function($response){ 
-
-        $response->flash = "d-block danger";
+        
     })->success(function($response){
         //your have access to | $response->param
         $param = $response->param;
@@ -55,13 +54,9 @@ include_once __DIR__ . "/path_to/autoload.php";
 
         <form method="get" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
-            <div class="errorMSg mb-5 <?= $form->flash ?>">
-                <?php 
-                    if(is_array($form->message)){
-                        foreach($form->message as $value){ echo "{$value} <br>"; }
-                    }
-                    else{ echo $form->message;}
-                ?>
+            
+            <div class="errorMSg mb-5 <?= $form->getErrorMessage('class') ?>">
+                <?= $form->getErrorMessage('message') ?>
             </div>
 
             <div class="row">

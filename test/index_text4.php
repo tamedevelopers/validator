@@ -1,6 +1,6 @@
 <?php
 
-    include_once __DIR__ . "/path_to/autoload.php";
+    include_once __DIR__ . "/../vendor/autoload.php";
 
     $outsideParam = [
         'first_name' => 'Tame',
@@ -16,25 +16,21 @@
         "string:retype_password"    => 'Retype new password',
         "string:retype_password:!==:{$form->old('new_password')}" => 'Password mis-match... Try again.' 
     ], true)->beforeSubmit(function(){
-        var_dump( 'beforeSubmit'  );
+
+        var_dump( 'beforeSubmit example usage'  );
     })->afterSubmit(function(){
-        var_dump( 'afterSubmit'  );
+
+        var_dump( 'afterSubmit usage example'  );
     })
     ->error(function($response){ 
 
-        // define extra property to use
-        $response->flash = "d-block danger";
-
-        $response->echoJson(0, $response->message);
+        // $response->echoJson(0, $response->message);
     })->success(function($response) use ($outsideParam){
         //your have access to | $response->param
         $param = $response->param;
 
         // param in object format
         $params = $response->params;
-
-        // define extra property to use
-        $response->flash = "d-block success";
 
         // now you can use the outside param anywhere inside the method scope
         $attributeParam = $response->attribute;
@@ -52,10 +48,10 @@
         $form = $response->getForm();
 
         // message
-        $response->message = "Successful";
+        $response->message = "Form submitted Successfully";
 
         var_dump( $form );
-        // var_dump($param);
+        var_dump($param);
         // var_dump($attributeParam );
     });
 
@@ -75,13 +71,8 @@
 
         <form method="get" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
-            <div class="errorMSg mb-5 <?= $form->flash ?>">
-                <?php 
-                    if(is_array($form->message)){
-                        foreach($form->message as $value){ echo "{$value} <br>"; }
-                    }
-                    else{ echo $form->message;}
-                ?>
+            <div class="errorMSg mb-5 <?= $form->getErrorMessage('class') ?>">
+                <?= $form->getErrorMessage('message') ?>
             </div>
 
             <div class="row">

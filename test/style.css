@@ -48,7 +48,7 @@ input:focus{
     margin-bottom: 20px;
 }
 .errorMSg{
-    display: none;
+    display: block;
     border-radius: 6px;
     padding: 5px 10px;
     font-weight: 500;
@@ -58,6 +58,14 @@ input:focus{
     color: #ff0000;
 }
 .success{
+    border: 1px solid #043c04;
+    color: #000;
+}
+.ULValidate__error{
+    border: 1px solid #ff0000;
+    color: #ff0000;
+}
+.ULValidate__success{
     border: 1px solid #043c04;
     color: #000;
 }

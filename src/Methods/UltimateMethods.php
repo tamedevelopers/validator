@@ -23,6 +23,16 @@ namespace UltimateValidator;
 class UltimateMethods {
   
     /**
+     * error class
+     * 
+     * @var array
+     */
+    private static $error_class = [
+        'success'   => "ULValidate__success",
+        'error'     => "ULValidate__error",
+    ];
+
+    /**
      * Private instance of parent validator
      * 
      * @var object\object
@@ -36,7 +46,7 @@ class UltimateMethods {
      *
      * @return void\initialize
      */
-    public static function initialize( UltimateValidator $object )
+    public static function initialize(UltimateValidator $object)
     {
         self::$object = $object;
 
@@ -82,7 +92,37 @@ class UltimateMethods {
         return self::$object;
     }
 
-     /**
+    /**
+     * Check if Form has been submitted
+     * @return boolean\isSubmitted
+     */
+    public static function isSubmitted()
+    {
+        if(isset(self::$object->param) && count(self::$object->param) > 0){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check server request method if `GET`
+     * ->beforeSubmit Method will apply when REQUEST is GET
+     * 
+     * @return boolean\isRequestMethod
+     */
+    public static function isRequestMethod()
+    {
+        $type = trim(strtolower((string) $_SERVER['REQUEST_METHOD'])) ?? '';
+        if($type === 'get'){
+            // allow when get TYPE is not submitted
+            if(!self::isSubmitted()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Needed input values from submited form object
      * @param  array|null  $keys of input
      * 
@@ -217,6 +257,66 @@ class UltimateMethods {
     }
 
     /**
+     * Resolve falsh message and save in memeory
+     * @param object/UltimateValidator $object
+     * 
+     * @return array|string\resolveFlash
+     */
+    public static function resolveFlash(UltimateValidator $object)
+    {
+        // if message is an array
+        if(self::isArray($object->message)){
+            foreach($object->message as $message){ 
+                $object->flash['message'][] = $message; 
+            }
+        }else{
+            $object->flash['message'][] = $object->message;
+        }
+
+        // set default class error
+        $object->flash['class'] = self::$error_class['error'];
+
+        // if form validation is successful
+        if($object->flashVerify){
+            $object->flash['class'] = self::$error_class['success'];
+        }
+        
+        return self::$object;
+    }
+
+    /**
+     * Reset flash data to default values
+     * @param object/UltimateValidator $object
+     * 
+     * @return array|string\resetFlash
+     */
+    public static function resetFlash(UltimateValidator $object)
+    {
+        $object->flash = [
+            'message'   => [],
+            'class'     => '',
+        ];
+        
+        return self::$object;
+    }
+
+    /**
+     * Return error message in the form of array
+     * @param string $key/ message|class
+     * 
+     * @return string\getErrorMessage
+     */
+    public static function getErrorMessage(?string $key = 'class')
+    {
+        // convert flash message to string
+        $message = implode('  <br>', self::$object->flash['message']);
+
+        return  strtolower($key) == 'message' 
+                ? $message 
+                : self::$object->flash['class'];
+    }
+
+    /**
      * Get Form Data
      * Return form data if isset
      * 
@@ -240,5 +340,31 @@ class UltimateMethods {
         return $data;
     }
 
+    /**
+     * Check if a string is a valid JSON format.
+     *
+     * @param string $string The string to check
+     * @return bool True if the string is a valid JSON, false otherwise
+     */
+    private static function isJson(?string $string = null)
+    {
+        // Try decoding the string
+        $decoded = json_decode($string);
+
+        // Check if there are no JSON syntax errors and the result is not null
+        return (json_last_error() === JSON_ERROR_NONE) && ($decoded !== null);
+    }
+
+    /**
+     * Check if a data is a valid Array format.
+     *
+     * @param object|array|string $data The data to check
+     * @return bool True if the data is a valid array, false otherwise
+     */
+    private static function isArray($data = null)
+    {
+        // Check if data is an array or not
+        return is_array($data) ? true : false;
+    }
 
 }

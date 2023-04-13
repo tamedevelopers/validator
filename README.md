@@ -6,16 +6,20 @@ PHP Ultimate Form Validation Library
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Instantiate](#instantiate)
+* [Laravel Support](#laravel-support)
 * [Usage](#usage)
   * [Instantiate Class Param](#instantiate-class-param)
   * [Submit Method](#submit-method)
+  * [Submit Data Type Param](#submit-data-type-param)
+  * [Submit Allowed Type Param](#submit-allowed-type-param)
+  * [Submit Data Flags](#submit-data-flags)
   * [Data Flags](#data-flags)
   * [Operator Statement](#operator-statement)
   * [Before Submit](#before-submit)
   * [After Submit](#after-submit)
   * [Error Handling](#error-handling)
   * [Success Handling](#success-handling)
-* [Laravel Support](#laravel-support)
+* [Get Error Message](#get-error-message)
 * [Only Method](#only-method)
 * [Except Method](#except-method)
 * [Has Method](#has-method)
@@ -71,38 +75,8 @@ use \UltimateValidator\UltimateValidator;
 $form = new UltimateValidator();
 ```
 
-**Step 2** — PHP Direct  `Instantiate class using`:
 
-```
-include_once "pat_to/UltimateValidator.php";
-
-$form = new UltimateValidator\UltimateValidator();
-```
-
-
-```
-**You can download and entire repo and copy the src file alone to directory of your project.**
-- src/UltimateValidator.php
-
-```
-
-## Instantiate Class Param
-
-**We have two (3) parameter when calling the instantiate the class**
-
-```
--> param |array -- form data. $_GET | $_POST 
--> type |string --  post | get\not required
--> attribute |string|int|array|object|resource\not reuired
-** By default if type not passed, then it's set to 'post' method **
-```
-
-```
-$form = new \UltimateValidator\UltimateValidator($_POST, 'POST');
-$form = new \UltimateValidator\UltimateValidator($_POST);
-```
-
-### Laravel Support
+## Laravel Support
 
 ```
 -> Now supports Laravel and with same Functionalities no different
@@ -117,142 +91,212 @@ public function save(Request $request){
     $form = new UltimateValidator($_POST);
     or
     $form = new UltimateValidator($_GET);
+    or
+    $form = new UltimateValidator();
 }
 ```
 
-## Submit Method
-
-**->submit() method**
+## USAGE
 
 ```
--> data |array -- input error configuration
--> allowedType |boolean --  true | false (default is set to false)
+    $form->submit([
+        "string:name" => 'Please enter a name',
+    ], true)
 
-** FLAGS|DATA TYPE :  **
-** HTML_INPUT_NAME : **
-** COMPARISON OPERATOR : **
-** VALUE TO COMPARE TO **
-```
-
-- data - Data validation handling
-```
-    FLAGS : HTML_INPUT_NAME : OPERATOR
+    or
 
     $form->submit([
         "string:name" => 'Please enter a name',
-        "str_len:name:<:5" => 'Name should be more than five(5) characters',
-        "email:email" => 'Please enter a valid email address',
-        "int:age" => 'Age is required',
-        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site'
     ], false)
+
+    Since it already has a default value, the no need to provide one if you don't intend to discplay all errors at once.
+    i.e
+
+    $form->submit([
+        "string:name" => 'Please enter a name',
+    ])
 ```
 
-- allowedType - how to display error
+### Instantiate Class Param
+
+**We have two (3) parameter when calling the instantiate the class**
+
 ```
-    true | false
-
-    True    - will display error message at once, as an array.
-    False   - will display error message one by one
-```
-
-
-## Data Flags
-
-- Data Flags type
-```
-    email   |e
-    bool    |b
-    string  |s
-    str_len |sl
-    array   |a
-    float   |f
-    int     |i
-    url     |u
+-> param |array -- form data. $_GET | $_POST 
+-> type |string --  post | get\not required
+-> attribute |string|int|array|object|resource\not required
 ```
 
-
-## Operator Statement
-
-- Supports 10 operational statement
+** By default if type not passed, then it uses the `$_SERVER['REQUEST_METHOD']` method **
 ```
-    ==
-    ===
-    !=
-    !==
-    >
-    >=
-    <
-    <=
-    <||>
-    <&&>
+$form = new \UltimateValidator\UltimateValidator($_POST, 'POST');
+$form = new \UltimateValidator\UltimateValidator($_POST);
+$form = new \UltimateValidator\UltimateValidator();
 ```
 
-## Before Submit
+### Submit Method 
+`->submit()`
 
-**->beforeSubmit() method**
+```
+-> data | array -- input error configuration
+-> allowedType |boolean --  true | false (default is set to false)
+```
+
+### Submit Data Type Param
+
+- An index Array
+```
+    the key is a unique modifier.
+    the value = Takes a custom message you want user to see as an error
+    
+    $form->submit([
+        "string:name" => 'Please enter a name',
+    ])
+
+    Visit (below section to understand key type)
+    ## Submit Data Flags
+```
+
+
+### Submit Allowed Type Param
+
+- This method specify how `errors` are to be displayed
+
+| Error |        Description            |
+|-------|-------------------------------|
+| false |  `Default` This allow errors to be displayed on by one  |
+| true  |  This allow all errors to be displayed once, as an array. So you can loop through the array message to show the error|
+
+
+### Submit Data Flags
+
+`By default only Flags and HTML input name is required`
+`Refer to the below Data Flags`
+
+| FLAGS |  HTML_INPUT_NAME | COMPARISON OPERATOR | VALUE TO COMPARE |
+|-------|------------------|---------------------|------------------|
+| string| : country        | :  ==               | :0               |
+| email | : email          | :                   |                  |
+
+### Better example
+```
+    FLAGS : HTML_INPUT_NAME : OPERATOR : VALUE TO COMPARE
+    always seperate each with a `colon` :
+
+    $form->submit([
+        "string:country:==:0"   => 'Please Select a Country',
+        "email:email"           => 'Please enter a valid email address',
+    ])
+
+
+    HTML FORM Example
+    <form>
+        <select name="country">
+            <option value="0">Select Country</option>
+            <option value="NGA">Nigeria</option>
+            <option value="USA">United States of America</option>
+        </select>
+
+        <input type="email" name="email" placeholder="Email Address">
+    </form> 
+```
+
+
+### Data Flags 
+- `Supports 9 Data Flags type`
+
+| flag_name  | abbr |          Description          |
+|------------|------|-------------------------------|
+| email      |  e   |  `Email` data validation      |
+| bool       |  b   |  `Boolean` data validation    |
+| string     |  s   |  `String` data validation     |
+| str_len    |  sl  |  `String Length` validation   |
+| enum       |  en  |  `Enum` Forms checkbox, radio or any form data that normally has no value when not checked |
+| array      |  a   |  `Array` data validation      |
+| float      |  f   |  `Float` data validation      |
+| int        |  i   |  `Int` data validation        |
+| url        |  u   |  `Url` data validation        |
+
+
+### Operator Statement 
+- `Supports 10 operational statement`
+
+| sign |          Description          |
+|------|-------------------------------|
+| ==   |  Equal to                     |
+| ===  |  Strictly Equal to            |
+| !=   |  Not Equal To                 |
+| !==  |  Not Strictly Equal To        |
+| >    |  Greater than                 |
+| >=   |  Greater than or Equal to     |
+| <    |  Less than                    |
+| <=   |  Less than or Equal to        |
+| <||> |  Less than or Greater than    |
+| <&&> |  Less than and Greater than   |
+
+
+### Before Submit 
+- `->beforeSubmit()`
 
 ```
 ** Chainable methods **
 
--> espects a callable function as the param
+-> Expects a callable function as the param
 -> pass any variable name of choice to the function, to have access to the class properties
 ```
 
 ```
-     $form->submit([
+    $form->submit([
         "s:name" => 'Please enter a name',
-        "sl:name:<:5" => 'Name should be more than five(5) characters',
-        "e:email" => 'Please enter a valid email address',
-        "i:age" => 'Age is required',
-        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site',
-    ])->beforeSubmit(function(){
+    ])->beforeSubmit(function($response){
 
         // execute code
     });
+
+    it can be called anywhere and possition doens't matter
+
+    i.e 2
+
+    $form->beforeSubmit(function($response){
+
+        // execute code
+    })->submit([
+        "s:name" => 'Please enter a name',
+    ]);
 ```
 
-## After Submit
-
-**->afterSubmit() method**
+### After Submit 
+`->afterSubmit()`
 
 ```
 ** Chainable methods **
 
--> espects a callable function as the param
+-> Expects a callable function as the param
 -> pass any variable name of choice to the function, to have access to the class properties
 ```
 
 ```
-     $form->submit([
+    $form->submit([
         "s:name" => 'Please enter a name',
-        "sl:name:<:5" => 'Name should be more than five(5) characters',
-        "e:email" => 'Please enter a valid email address',
-        "i:age" => 'Age is required',
-        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site',
     ])->afterSubmit(function(){
 
         // execute code
     });
 ```
 
-## Error Handling
-
-**->error() method**
+### Error Handling 
+`->error()`
 
 ```
 ** Chainable methods **
 
--> espects a callable function as the param
+-> Expects a callable function as the param
 -> pass any variable name of choice to the function, to have access to the class properties
 ```
 
 ```
-     $form->submit([
+    $form->submit([
         "s:name" => 'Please enter a name',
-        "sl:name:<:5" => 'Name should be more than five(5) characters',
-        "e:email" => 'Please enter a valid email address',
-        "i:age" => 'Age is required',
-        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site',
     ])->error(function($response){
 
         $response->param; //param property
@@ -260,34 +304,56 @@ public function save(Request $request){
     });
 ```
 
-## Success Handling
-
-**->success() method**
+### Success Handling 
+`->success()`
 
 ```
 ** Chainable methods **
 
--> espects a callable function as the param
+-> Expects a callable function as the param
 -> pass any variable name of choice to the function, to have access to the class properties
 ```
 
 ```
-     $form->submit([
+    $form->submit([
         "s:name" => 'Please enter a name',
-        "sl:name:<:5" => 'Name should be more than five(5) characters',
-        "e:email" => 'Please enter a valid email address',
-        "i:age" => 'Age is required',
-        "i:age:<:16" => 'Sorry! you must be 16yrs or above to use this site',
-    ])->error(function($response){
-
-        $response->param; //param property
-        $response->message; //message property
-    })->success(function(){
+    ])->success(function(){
         //on success
 
-        $response->param; //param property
-        $response->message; //message property
+        $response->param; //empty param property
     });
+
+    <!-- message property will be empty string on success  -->
+    <!-- So you can define and return the message -->
+    $response->message; 
+
+    $response->message = "Form has been submitted successfully";
+    <!-- If you're not using JSON to return an error, this will be attached to form memory -->
+    <!-- you can then use the ->getErrorMessage() method where u need message to be displayed -->
+    <!-- Check the `->getErrorMessage()` example section s-->
+```
+
+## Get Error Message
+`->getErrorMessage()`
+
+```
+-> Method that returns the Error Message and Class
+-> This can be accesible with the variable that instantiate the UltimateValidator()
+
+-> $form = new UltimateValidator();
+```
+
+| key     |      Description           |
+|--------------------------------------|
+| message | `Message` This convert all error messages and return as a string with `<br>` |
+| class   | `Class name` \| on form success  `ULValidate__success` \| on form error  `ULValidate__error` |
+
+```
+    $form->getErrorMessage('message');
+    $form->getErrorMessage('class');
+
+    If not param is passed to ->getErrorMessage()
+    it returns th class by default
 ```
 
 ## Only Method
@@ -300,6 +366,7 @@ Params needs index array of form element keys
     ->success(function($response){
        
         $data = $response->only(['password', 'username']);
+        <!-- This will return only the password and username data -->
 
         var_dump( $data );
     });
@@ -317,6 +384,7 @@ Params needs index array of form element keys
     ->success(function($response){
        
         $data = $response->except(['_token']);
+        <!-- This will return all values except `_token` data -->
 
         var_dump( $data );
     });
@@ -326,9 +394,8 @@ Params needs index array of form element keys
 ## Has Method
 
 ```
-used to check if param is in form array params
-Just like if isset()
-This check if the key string is in array keys
+Used to check if key came along with form
+Work just like if isset()
 returns boolean\ true|false
 ```
 ```
@@ -336,6 +403,7 @@ returns boolean\ true|false
        
         if($response->has('remeber_me')){
 
+            <!-- execute code -->
         }
     });
 ```
@@ -439,3 +507,4 @@ Refer to test/index_text4.php to see sample
 
 - If you love this PHP Library, you can [Buy Tame Developers a coffee](https://www.buymeacoffee.com/tamedevelopers)
 - Link to Youtube Video Tutorial on usage will be available soon
+

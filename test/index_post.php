@@ -1,21 +1,18 @@
 <?php
 
-include_once __DIR__ . "/path_to/autoload.php";
+    include_once __DIR__ . "/../vendor/autoload.php";
 
-    //supports POST and GET | caseinsensitive
-    $form = new \UltimateValidator\UltimateValidator($_POST);
-    $form->flash = ['class' => '', 'msg' => ''];
+    // it use $_SERVER['REQUEST_METHOD'] as default if not passed to the handler
+    $form = new \UltimateValidator\UltimateValidator();
 
     $form->submit([
         "s:name"        => 'Please enter a name',
         "sl:name:<:5"   => 'Name should be more than five(5) characters',
         "e:email"       => 'Please enter a valid email address',
         "i:age"         => 'Age is required',
-        "i:age:<:16"    => 'Sorry! you must be 16yrs or above to use this site',
-    ], false)->error(function($response){
-
-        //for normal error response only just attach message in var used outside
-        $response->flash = ['class' => 'd-block danger', 'msg' => $response->message];
+        "i:age:<:16"    => 'Sorry! you must be 16yrs and above to use this site',
+        "i:age:>:36"    => 'Sorry! Age limit is 36 in other to use this site',
+    ])->error(function($response){
 
         //for ajax error return | decode on frontend before usage
         $response->echoJson(0, $response->message);
@@ -24,9 +21,9 @@ include_once __DIR__ . "/path_to/autoload.php";
         //your have access to | $response->param
         $param = $response->param;
 
-        $response->flash = ['class' => 'd-block success', 'msg' => "Success"];
+        // message
+        $response->message = "Submitted Successfully";
 
-        //
         var_dump($param);
     });
 
@@ -45,29 +42,25 @@ include_once __DIR__ . "/path_to/autoload.php";
 
         <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
-            <div class="errorMSg mb-5 <?= $form->flash['class'] ?>">
-                <?php 
-                    if(is_array($form->flash['msg'])){
-                        foreach($form->flash['msg'] as $value){ echo "{$value} <br>"; }
-                    }
-                    else{ echo $form->flash['msg'];}
-                ?>
+
+            <div class="errorMSg mb-5 <?= $form->getErrorMessage('class') ?>">
+                <?= $form->getErrorMessage('message') ?>
             </div>
 
             <div class="row">
                 <div class="">
                     <label for="html">Name</label>
-                    <input type="text" name="name" value="<?= @$_POST['name']?>">
+                    <input type="text" name="name" value="<?= $form->old('name'); ?>">
                 </div>
                 
                 <div class="">
                     <label for="html">Email</label>
-                    <input type="text" name="email" value="<?= @$_POST['email']?>">
+                    <input type="text" name="email" value="<?= $form->old('email'); ?>">
                 </div>
                 
                 <div class="">
                     <label for="html">Age</label>
-                    <input type="text" name="age" value="<?= @$_POST['age']?>">
+                    <input type="text" name="age" value="<?= $form->old('age'); ?>">
                 </div>
 
                 <button type="submit" class="btn mt-2">Submit</button>

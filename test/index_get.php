@@ -2,9 +2,6 @@
 
     include_once __DIR__ . "/../vendor/autoload.php";
 
-    //error handler storage
-    $ERROR_HANDLER = ['msg' => '', 'class' => ''];
-
     //supports POST and GET | caseinsensitive
     $form = new UltimateValidator\UltimateValidator($_GET, 'GET');
 
@@ -13,12 +10,8 @@
         "str_len:name:<:5"  => 'Name should be more than five(5) characters',
         "email:email"       => 'Please enter a valid email address',
         "int:age"           => 'Age is required',
-        "int:age:<:16"      => 'Sorry! you must be 16yrs or above to use this site',
+        "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
     ], true)->error(function($response){ 
-
-        //for normal error response only just attach message in var used outside
-        $GLOBALS['ERROR_HANDLER']['msg'] = $response->message;
-        $GLOBALS['ERROR_HANDLER']['class'] = 'd-block danger';
 
         //for ajax error return | decode on frontend before usage
         $response->echoJson(0, $response->message);
@@ -27,11 +20,9 @@
         //your have access to | $response->param
         $param = $response->param;
 
+        // message
+        $response->message = "Submitted Successfully";
 
-        $GLOBALS['ERROR_HANDLER']['msg'] = 'Success';
-        $GLOBALS['ERROR_HANDLER']['class'] = 'd-block success';
-
-        //
         var_dump($param);
     });
 
@@ -50,29 +41,25 @@
 
         <form method="get" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
-            <div class="errorMSg mb-5 <?= $ERROR_HANDLER['class'] ?>">
-                <?php 
-                    if(is_array($ERROR_HANDLER['msg'])){
-                        foreach($ERROR_HANDLER['msg'] as $value){ echo "{$value} <br>"; }
-                    }
-                    else{ echo $ERROR_HANDLER['msg'];}
-                ?>
+            
+            <div class="errorMSg mb-5 <?= $form->getErrorMessage('class') ?>">
+                <?= $form->getErrorMessage('message') ?>
             </div>
 
             <div class="row">
                 <div class="">
                     <label for="html">Name</label>
-                    <input type="text" name="name" value="<?= @$_GET['name']?>">
+                    <input type="text" name="name" value="<?= $form->old('name'); ?>">
                 </div>
                 
                 <div class="">
                     <label for="html">Email</label>
-                    <input type="text" name="email" value="<?= @$_GET['email']?>">
+                    <input type="text" name="email" value="<?= $form->old('email'); ?>">
                 </div>
                 
                 <div class="">
                     <label for="html">Age</label>
-                    <input type="text" name="age" value="<?= @$_GET['age']?>">
+                    <input type="text" name="age" value="<?= $form->old('age'); ?>">
                 </div>
 
                 <button type="submit" class="btn mt-2">Submit</button>

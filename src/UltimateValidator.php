@@ -61,9 +61,18 @@ class UltimateValidator implements UltimateInterface
 
     /**
     * flash
+    * @var array
+    */
+    public $flash = [
+        'message'   => [],
+        'class'     => '',
+    ];
+
+    /**
+    * proceed
     * @var boolean
     */
-    public $flash;
+    public $flashVerify;
 
     /**
     * proceed
@@ -106,11 +115,17 @@ class UltimateValidator implements UltimateInterface
     */
     public function submit(array $data, ?bool $allowedType = false) 
     {
-        //only begin validation when submitted
-        if(isset($this->param) && count($this->param) > 0)
+
+        /**
+        * before isset function call
+        */
+        $this->beforeSubmit($this);
+
+        // only begin validation when submitted
+        if(UltimateMethods::isSubmitted())
         {
             //set to false
-            $this->proceed = false;
+            $this->proceed = $this->flashVerify = false;
 
             /**
             * after isset function call
@@ -118,15 +133,9 @@ class UltimateValidator implements UltimateInterface
             $this->afterSubmit($this);
 
             /**
-            * if allowed error type is true
-            * Error type converted to arrays
+            * Convert message type
             */
-            if($allowedType){
-                $this->message  = [];
-            }else{
-                $this->message  = "";
-            }
-
+            $this->allowedType($allowedType);
 
             // start loop process
             foreach($data as $key => $message){
@@ -147,8 +156,9 @@ class UltimateValidator implements UltimateInterface
                 //check response error from input flags
                 $checkDataType = CheckDatatype::check($dataType);
 
-                // allowed error handling type
-                if($allowedType == false){
+                // allowed errors handling type
+                // if error is to be handled one by one
+                if($allowedType === false){
                     if($checkDataType === false || $checkDataType === '!isset'){
                         $this->message  = $message;
                         $this->error    = true;
@@ -178,33 +188,34 @@ class UltimateValidator implements UltimateInterface
                         }
                     }
                 }
+
+                // if errors is to be handled as an array
                 else{
                     if($checkDataType === false || $checkDataType === '!isset'){
                         if(!in_array($dataType['variable'], array_keys($this->message))){
                             $this->message[$dataType['variable']]    = $message;
                         }
-                        $this->error        = true;
+                        $this->error = true;
                     }
                     elseif($checkDataType === false || $checkDataType === '!found'){
                         if(!in_array($dataType['variable'], array_keys($this->message))){
                             $this->message[$dataType['variable']]    = ExceptionMessage::notFound($dataType);
                         }
-                        $this->error    = true;
+                        $this->error = true;
                     } else{
                         //operator function checker
                         $this->operator = $this->operatorMethod($dataType);
 
                         if($this->operator === 'error'){
-                            $this->error        = true;
+                            $this->error = true;
                             $this->message[$dataType['variable']]    = ExceptionMessage::comparison($dataType);
                             break;
                         }
-
                         elseif(!is_null($this->operator) && $this->operator){
                             if(!in_array($dataType['variable'], array_keys($this->message))){
                                 $this->message[$dataType['variable']]    = $message;
                             }
-                            $this->error        = true;
+                            $this->error = true;
                         }
                         else{
                             // if no message error exist 
@@ -217,24 +228,17 @@ class UltimateValidator implements UltimateInterface
                 }
             }
 
-            
-
             /**
             * if validation succeeds without error | 
             * set proceed value to | true
             */
             if(!$this->error){
-                $this->proceed = true;
+                $this->proceed = $this->flashVerify = true;
             }
+
             return $this;
         }
-        
-        /**
-        * before isset function call
-        */
-        else{
-            $this->beforeSubmit($this);
-        }
+
         return $this;
     }
 
@@ -244,11 +248,14 @@ class UltimateValidator implements UltimateInterface
      * usage   ->error(  function($response){}  );
      * @return object|response class object on error.
      */
-    public function error($function)
+    public function error(?callable $function)
     {
-        if(!is_null($this->proceed)  && $this->proceed === false){
+        if(!is_null($this->proceed) && $this->proceed === false){
             if(is_callable($function)){
                 $function($this);
+
+                // save into a remembering variable
+                UltimateMethods::resolveFlash($this);
             }
         }
         return $this;
@@ -260,11 +267,14 @@ class UltimateValidator implements UltimateInterface
      * usage   ->success(  function($response){}  );
      * @return object|response class object on success.
      */
-    public function success($function)
+    public function success(?callable $function)
     {
-        if(!is_null($this->proceed)  && $this->proceed){
+        if(!is_null($this->proceed) && $this->proceed){
             if(is_callable($function)){
                 $function($this);
+
+                // save into a remembering variable
+                UltimateMethods::resolveFlash($this);
             }
         }
         return $this;
@@ -278,7 +288,10 @@ class UltimateValidator implements UltimateInterface
      */
     public function beforeSubmit($function)
     {
-        if(!isset($this->param)){
+        // reset data
+        UltimateMethods::resetFlash($this);
+
+        if(UltimateMethods::isRequestMethod()){
             if(is_callable($function)){
                 $function($this);
             }
@@ -294,14 +307,17 @@ class UltimateValidator implements UltimateInterface
      */
     public function afterSubmit($function)
     {
-        if(isset($this->param) && count($this->param) > 0){
+        // reset data
+        UltimateMethods::resetFlash($this);
+        
+        if(UltimateMethods::isSubmitted()){
             if(is_callable($function)){
                 $function($this);
             }
         }
         return $this;
     }
-    
+
     /**
      * Needed input values from submited form object
      * @param  array|null  $keys of input
@@ -399,6 +415,17 @@ class UltimateValidator implements UltimateInterface
     }
 
     /**
+     * Return error message in the form of array
+     * @param string $key/ message|class
+     * 
+     * @return string\getErrorMessage
+     */
+    public function getErrorMessage($key = 'message')
+    {
+        return UltimateMethods::getErrorMessage($key);
+    }
+
+    /**
      * Returns encoded JSON object of response and message
      * 
      * @param  int|float  $response
@@ -440,5 +467,25 @@ class UltimateValidator implements UltimateInterface
         return $this->type;
     }
 
+    /**
+     * Convert message error type
+     * @param  bool $allowedType.
+     * 
+     * @return object\allowedType 
+     */
+    private function allowedType($allowedType)
+    {
+        /**
+        * if allowed error type is true
+        * Error message type converted to arrays
+        */
+        if($allowedType){
+            $this->message  = [];
+        }else{
+            $this->message  = "";
+        }
+
+        return $this;
+    }
 
 }

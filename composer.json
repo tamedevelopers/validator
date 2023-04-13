@@ -3,14 +3,14 @@
     "type": "library",
     "description": "PHP Form Validator is a small no-depencies library for php form validation.",
     "keywords": ["php-form-validator", "form-validator", "form", "php-form", "php", "forms", "easy validation", "easy-form"],
-    "homepage": "https://www.tamedevelopers/ultimate-validator",
+    "homepage": "https://github.com/tamedevelopers/UltimateValidator",
     "license": "MIT",
     "authors": [
         {"name": "Fredrick Peterson", "email": "fredi.peterson2000@gmail.com"},
         {"name": "Tame Developers", "email": "tamedevelopers@gmail.com"}
     ],
     "require": {
-        "php": ">=5.5"
+        "php": ">=7.0"
     },
     "autoload": {
         "psr-4": {
