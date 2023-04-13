@@ -97,24 +97,14 @@ public function save(Request $request){
 ```
 
 ## USAGE
-
 ```
     $form->submit([
         "string:name" => 'Please enter a name',
-    ], true)
+    ])->error(function($response){
 
-    or
+    })->success(function($response){
 
-    $form->submit([
-        "string:name" => 'Please enter a name',
-    ], false)
-
-    Since it already has a default value, the no need to provide one if you don't intend to discplay all errors at once.
-    i.e
-
-    $form->submit([
-        "string:name" => 'Please enter a name',
-    ])
+    });
 ```
 
 ### Instantiate Class Param
@@ -140,6 +130,25 @@ $form = new \UltimateValidator\UltimateValidator();
 ```
 -> data | array -- input error configuration
 -> allowedType |boolean --  true | false (default is set to false)
+```
+
+```
+    $form->submit([
+        "string:name" => 'Please enter a name',
+    ], true)
+
+    or
+
+    $form->submit([
+        "string:name" => 'Please enter a name',
+    ], false)
+
+    Since it already has a default value, the no need to provide one if you don't intend to discplay all errors at once.
+    i.e
+
+    $form->submit([
+        "string:name" => 'Please enter a name',
+    ])
 ```
 
 ### Submit Data Type Param
