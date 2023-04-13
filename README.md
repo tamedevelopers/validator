@@ -102,8 +102,10 @@ public function save(Request $request){
         "string:name" => 'Please enter a name',
     ])->error(function($response){
 
+        // exec code
     })->success(function($response){
-
+       
+        // exec code
     });
 ```
 
