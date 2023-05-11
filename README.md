@@ -82,7 +82,7 @@ $form = new UltimateValidator\UltimateValidator($data);
 
 - **Example 3** `Helpers Function`
 ```
-opForm();
+$form = opForm();
 ```
 
 ## Laravel Support
@@ -94,7 +94,7 @@ public function save(Request $request){
 
     $form = new UltimateValidator();
     or
-    opForm();
+    $form = opForm();
 }
 ```
 
