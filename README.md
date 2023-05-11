@@ -1,10 +1,10 @@
 # PHP Form Validator  - PFV
 
-[![Total Downloads](https://poser.pugx.org/peterson/php-orm-database/downloads)](https://packagist.org/packages/peterson/php-form-database)
-[![Latest Stable Version](https://poser.pugx.org/peterson/php-orm-database/version.png)](https://packagist.org/packages/peterson/php-orm-validator)
-[![License](https://poser.pugx.org/peterson/php-orm-database/license)](https://packagist.org/packages/peterson/php-orm-database)
+[![Total Downloads](https://poser.pugx.org/peterson/php-form-database/downloads)](https://packagist.org/packages/peterson/php-form-database)
+[![Latest Stable Version](https://poser.pugx.org/peterson/php-form-database/version.png)](https://packagist.org/packages/peterson/php-form-validator)
+[![License](https://poser.pugx.org/peterson/php-form-database/license)](https://packagist.org/packages/peterson/php-form-database)
 [![Build Status](https://github.com/tamedevelopers/phpFormValidator/actions/workflows/php.yml/badge.svg)](https://github.com/tamedevelopers/phpFormValidator/actions)
-[![Code Coverage](https://codecov.io/gh/peterson/php-orm-database/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/peterson/php-orm-database/branch/2.2.x)
+[![Code Coverage](https://codecov.io/gh/peterson/php-form-database/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/peterson/php-form-database/branch/2.2.x)
 
 ## Documentation
 
@@ -47,7 +47,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/php-orm-validator": "^3.2.2" 
+    "peterson/php-form-validator": "^3.2.2" 
 }
 ```
 
