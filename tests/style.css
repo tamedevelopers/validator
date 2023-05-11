@@ -61,11 +61,11 @@ input:focus{
     border: 1px solid #043c04;
     color: #000;
 }
-.ULValidate__error{
+.opForm__error{
     border: 1px solid #ff0000;
     color: #ff0000;
 }
-.ULValidate__success{
+.opForm__success{
     border: 1px solid #043c04;
     color: #000;
 }

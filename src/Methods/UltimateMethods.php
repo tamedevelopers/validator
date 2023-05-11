@@ -2,24 +2,10 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of ultimate-validator.
- *
- * (c) Tame Developers Inc.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace UltimateValidator;
 
-/**
- * UltimateMethods
- *
- * @package   Ultimate\Validator
- * @author    Tame Developers <tamedevelopers@gmail.co>
- * @copyright 2021-2023 Tame Developers
- */
+use UltimateValidator\Collections\Collection;
+
 class UltimateMethods {
   
     /**
@@ -28,8 +14,8 @@ class UltimateMethods {
      * @var array
      */
     private static $error_class = [
-        'success'   => "ULValidate__success",
-        'error'     => "ULValidate__error",
+        'success'   => "opForm__success",
+        'error'     => "opForm__error",
     ];
 
     /**
@@ -58,7 +44,7 @@ class UltimateMethods {
      *
      * @param  string $param  form input name.
      *
-     * @return boolean\checkIfParamIsset true|false
+     * @return bool\checkIfParamIsset true|false
      */
     public static function checkIfParamIsset(?string $param = null)
     {
@@ -70,35 +56,38 @@ class UltimateMethods {
 
     /**
      * Set default params on load 
-     * Check if there's a param passed to __contructor or not
-     * 
-     * @param array|object\param $param 
-     * form param or constructed params data 
+     * @param $type\ Default type is INPUT_GET as value 1
      * 
      * @return object\setParams
      */
-    public static function setParams($param)
+    public static function setParams(?int $type = 1)
     {
         // if the param is not set then we use request method to 
         // determine data received data from forms
-        if(is_null($param)){
-            // POST | GET | COOKIE
-            self::$object->param    = $_REQUEST;
-            self::$object->params   = (object) self::$object->param;
-        }else{
-            self::$object->param    = filter_input_array(self::$object->type);
-            self::$object->params   = (object) self::$object->param;
+
+        // get Data using POST method
+        if($type === INPUT_POST){
+            self::$object->param = $_POST;
+        } elseif($type === INPUT_GET){
+            self::$object->param = $_GET;
+        } else{
+            self::$object->param = filter_input_array(self::$object->type);
         }
+
+        // convert into a collection of data
+        self::$object->param  = new Collection(self::$object->param);
+        
         return self::$object;
     }
 
     /**
      * Check if Form has been submitted
-     * @return boolean\isSubmitted
+     * @return bool\isSubmitted
      */
     public static function isSubmitted()
     {
-        if(isset(self::$object->param) && count(self::$object->param) > 0){
+        $items = self::$object->param;
+        if($items && $items->count() > 0){
             return true;
         }
         return false;
@@ -108,7 +97,7 @@ class UltimateMethods {
      * Check server request method if `GET`
      * ->beforeSubmit Method will apply when REQUEST is GET
      * 
-     * @return boolean\isRequestMethod
+     * @return bool\isRequestMethod
      */
     public static function isRequestMethod()
     {
@@ -133,7 +122,7 @@ class UltimateMethods {
         $data = [];
         if(is_array($keys)){
             foreach($keys as $key){
-                if(in_array($key, array_keys(self::$object->param))){
+                if(in_array($key, array_keys(self::$object->param->toArray()))){
                     $data[$key] = self::$object->param[$key];
                 }
             }
@@ -149,7 +138,7 @@ class UltimateMethods {
      */
     public static function except($keys = null)
     {
-        $data = self::$object->param;
+        $data = self::$object->param->toArray();
         if(is_array($keys)){
             foreach($keys as $key){
                 if(in_array($key, array_keys($data))){
@@ -165,11 +154,11 @@ class UltimateMethods {
      *
      * @param string\key $key
      *
-     * @return boolean
+     * @return bool
      */
     public static function has(?string $key = null)
     {
-        if(in_array($key, array_keys(self::$object->param))){
+        if(in_array($key, array_keys(self::$object->param->toArray()))){
             return true;
         }
         return false;
@@ -250,7 +239,7 @@ class UltimateMethods {
     public static function old($key = null)
     {
         // in array keys
-        $formData = self::getForm()['attribute'];
+        $formData = self::getForm();
         if(is_array($formData) && in_array($key, array_keys($formData))){
             return $formData[$key];
         }
@@ -309,7 +298,7 @@ class UltimateMethods {
     public static function getErrorMessage(?string $key = 'class')
     {
         // convert flash message to string
-        $message = implode('  <br>', self::$object->flash['message']);
+        $message = implode(' <br>', self::$object->flash['message']);
 
         return  strtolower($key) == 'message' 
                 ? $message 
@@ -323,21 +312,11 @@ class UltimateMethods {
      * @param string $type |attribute|attributes
      * .ie form (array) of param | attributes (object) of param 
      * 
-     * @return array|object 
+     * @return object 
      */
-    public static function getForm($type = null)
+    public static function getForm()
     {
-        // create form structure
-        $data = [
-            'attribute'     => self::$object->param,
-            'attributes'    => (object) self::$object->param
-        ];
-
-        // in array keys
-        if(in_array($type, array_keys($data))){
-            return $data[$type];
-        }
-        return $data;
+        return self::$object->param->toArray() ?? null;
     }
 
     /**

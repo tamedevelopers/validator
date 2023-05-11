@@ -3,56 +3,51 @@
     include_once __DIR__ . "/../vendor/autoload.php";
 
     $outsideParam = [
-        'first_name' => 'Tame',
-        'last_name' => 'Developers',
-        'age' => 0,
+        'first_name'    => 'Tame',
+        'last_name'     => 'Developers',
+        'age'           => 0,
     ];
 
     //auto find request method if no param set
-    $form = new \UltimateValidator\UltimateValidator($_REQUEST, 'GET', $outsideParam);
+    $form = new \UltimateValidator\UltimateValidator($outsideParam);
+    $form->et(true);
     $form->submit([
         "string:current_password"   => 'Enter your old password',
         "string:new_password"       => 'Enter a new password',
         "string:retype_password"    => 'Retype new password',
         "string:retype_password:!==:{$form->old('new_password')}" => 'Password mis-match... Try again.' 
-    ], true)->beforeSubmit(function(){
+    ])->beforeSubmit(function(){
 
-        var_dump( 'beforeSubmit example usage'  );
+        print_r( 'beforeSubmit example usage'  );
     })->afterSubmit(function(){
 
-        var_dump( 'afterSubmit usage example'  );
-    })
-    ->error(function($response){ 
+        print_r("**afterSubmit usage example** <br>");
+    })->error(function($response){ 
 
         // $response->echoJson(0, $response->message);
     })->success(function($response) use ($outsideParam){
-        //your have access to | $response->param
+        // access the form data
         $param = $response->param;
+        
+        // access parent scope data\ $data
+        $attribute = $response->attribute;
 
-        // param in object format
-        $params = $response->params;
-
-        // now you can use the outside param anywhere inside the method scope
-        $attributeParam = $response->attribute;
-
-        // the use param name
+        // the use keyword scope parameter
         $use = $outsideParam;
 
-        $data['user_id'] = rand(10000, 99999);
-        $data['retype_password'] = md5($param['retype_password']);
+        $data['user_id']            = rand(10000, 99999);
+        $data['retype_password']    = md5($param['retype_password']);
 
         // merge example
-        $merge = $response->merge($response->param, $data);
-
-        // get form
-        $form = $response->getForm();
+        $merge = $response->merge($response->param->toArray(), $data);
 
         // message
         $response->message = "Form submitted Successfully";
 
-        var_dump( $form );
-        var_dump($param);
-        // var_dump($attributeParam );
+        print_r($param->retype_password);
+        print_r($merge);
+        // print_r($response->getForm());
+        // print_r($attributeParam );
     });
 
 

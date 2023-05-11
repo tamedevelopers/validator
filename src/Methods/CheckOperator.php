@@ -2,24 +2,8 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of ultimate-validator.
- *
- * (c) Tame Developers Inc.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace UltimateValidator;
 
-/**
- * CheckOperator
- *
- * @package   Ultimate\Validator
- * @author    Tame Developers <tamedevelopers@gmail.co>
- * @copyright 2021-2023 Tame Developers
- */
 class CheckOperator {
   
     
@@ -30,7 +14,7 @@ class CheckOperator {
      * @param  array\flag $flag Keypairs.
      * @param  object\object $object of parent class ($this).
      * 
-     * @return boolean\ false|true
+     * @return bool\ false|true
     */
     public static function check($dataType = [], UltimateValidator $object)
     {
@@ -188,6 +172,5 @@ class CheckOperator {
 
         return $object->operator;
     }
-
-
+    
 }

@@ -2,24 +2,8 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of ultimate-validator.
- *
- * (c) Tame Developers Inc.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace UltimateValidator;
 
-/**
- * ExceptionMessage
- *
- * @package   Ultimate\Validator
- * @author    Tame Developers <tamedevelopers@gmail.co>
- * @copyright 2021-2023 Tame Developers
- */
 class ExceptionMessage {
   
    /**

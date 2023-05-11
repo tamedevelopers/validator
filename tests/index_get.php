@@ -2,28 +2,38 @@
 
     include_once __DIR__ . "/../vendor/autoload.php";
 
-    //supports POST and GET | caseinsensitive
-    $form = new UltimateValidator\UltimateValidator($_GET, 'GET');
+    $data = [
+        'user'              => 'F. Pete', 
+        'marital_status'    => 'Single', 
+        'occupation'        => 'Web Artisans'
+    ];
 
-    $form->submit([
+    $form = opForm($data);
+    $form->et(true)->submit([
         "string:name"       => 'Please enter a name',
         "str_len:name:<:5"  => 'Name should be more than five(5) characters',
         "email:email"       => 'Please enter a valid email address',
         "int:age"           => 'Age is required',
         "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
-    ], true)->error(function($response){ 
+    ])->error(function($response){ 
 
         //for ajax error return | decode on frontend before usage
         $response->echoJson(0, $response->message);
-        
+
     })->success(function($response){
-        //your have access to | $response->param
+        // access the form data
         $param = $response->param;
+        
+        // access parent scope data\ $data
+        $attribute = $response->attribute;
 
         // message
         $response->message = "Submitted Successfully";
 
-        var_dump($param);
+        var_dump($param->email);
+        var_dump($param['name']);
+        var_dump($attribute->occupation);
+        // var_dump( $response->getForm() );
     });
 
 ?>

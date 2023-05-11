@@ -18,13 +18,14 @@
         $response->echoJson(0, $response->message);
         
     })->success(function($response){
-        //your have access to | $response->param
+        // access the form data
         $param = $response->param;
 
         // message
         $response->message = "Submitted Successfully";
 
         var_dump($param);
+        // var_dump($param->toArray());
     });
 
 ?>

@@ -1,23 +1,9 @@
 <?php
 
-/*
- * This file is part of ultimate-validator.
- *
- * (c) Tame Developers Inc.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+declare(strict_types=1);
 
- namespace UltimateValidator;
+namespace UltimateValidator\Interface;
 
-/**
- * UltimateInterface
- *
- * @package   Ultimate\Validator
- * @author    Tame Developers <tamedevelopers@gmail.co>
- * @copyright 2021-2023 Tame Developers
- */
 interface UltimateInterface 
 {
     
@@ -44,7 +30,7 @@ interface UltimateInterface
      *
      * @param string\key $key
      *
-     * @return boolean
+     * @return bool
      */
     public function has(?string $key = null);
 

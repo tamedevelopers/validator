@@ -1,33 +1,39 @@
-# Ultimate Form Validation  - UFV
+# PHP Form Validator  - PFV
 
-### @author Fredrick Peterson (Tame Developers)
-PHP Ultimate Form Validation Library 
+[![Total Downloads](https://poser.pugx.org/peterson/php-orm-database/downloads)](https://packagist.org/packages/peterson/php-form-database)
+[![Latest Stable Version](https://poser.pugx.org/peterson/php-orm-database/version.png)](https://packagist.org/packages/peterson/php-orm-validator)
+[![License](https://poser.pugx.org/peterson/php-orm-database/license)](https://packagist.org/packages/peterson/php-orm-database)
+[![Build Status](https://github.com/tamedevelopers/phpFormValidator/actions/workflows/php.yml/badge.svg)](https://github.com/tamedevelopers/phpFormValidator/actions)
+[![Code Coverage](https://codecov.io/gh/peterson/php-orm-database/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/peterson/php-orm-database/branch/2.2.x)
+
+## Documentation
 
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Instantiate](#instantiate)
 * [Laravel Support](#laravel-support)
 * [Usage](#usage)
-  * [Instantiate Class Param](#instantiate-class-param)
-  * [Submit Method](#submit-method)
-  * [Submit Data Type Param](#submit-data-type-param)
-  * [Submit Allowed Type Param](#submit-allowed-type-param)
-  * [Submit Data Flags](#submit-data-flags)
+  * [Form Error Type](#form-error-type)
+  * [Submit](#submit)
+  * [Error](#error)
+  * [Success](#success)
   * [Data Flags](#data-flags)
   * [Operator Statement](#operator-statement)
   * [Before Submit](#before-submit)
   * [After Submit](#after-submit)
-  * [Error Handling](#error-handling)
-  * [Success Handling](#success-handling)
+* [Only](#only)
+* [Except](#except)
+* [Has](#has)
+* [Old](#old)
+* [Merge](#merge)
+* [onlyData](#onlydata-method)
+* [ExceptData](#exceptdata-method)
+* [GetForm](#getForm)
+* [Collection](#collection)
 * [Get Error Message](#get-error-message)
-* [Only Method](#only-method)
-* [Except Method](#except-method)
-* [Has Method](#has-method)
-* [Merge Method](#merge-method)
-* [onlyData Method](#onlydata-method)
-* [ExceptData Method](#exceptdata-method)
-* [GetForm Method](#getForm-method)
-* [old Method](#old-method)
+* [Collection Methods](#collection-methods)
+* [Request](#request)
+* [Helpers](#helpers)
 * [Useful links](#useful-links)
 
 ## Requirements
@@ -39,35 +45,24 @@ PHP Ultimate Form Validation Library
 Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.org) dependency manager for PHP because it'll simplify installation.
 
 **Step 1** — update your `composer.json`:
-
 ```composer.json
 "require": {
-    "peterson/ultimate-validator": "^2.3.0" 
+    "peterson/php-orm-validator": "^3.2.2" 
 }
 ```
 
-**Or composer install**:
-```
-composer require peterson/ultimate-validator
-```
-
 **Step 2** — run [Composer](https://getcomposer.org):
-
 ```update
 composer update
 ```
 
-
 ## Instantiate
+- Optional `attribute` param. Whatever data outside class you need to use inside.
+    - Will automatically be converted to `Collection Data`
 
 **Step 1** — Composer  `Instantiate class using`:
 
 ```
-require_once __DIR__ . '/vendor/autoload.php';
-
-$form = new UltimateValidator\UltimateValidator();
-
-or
 require_once __DIR__ . '/vendor/autoload.php';
 
 use \UltimateValidator\UltimateValidator;
@@ -75,143 +70,115 @@ use \UltimateValidator\UltimateValidator;
 $form = new UltimateValidator();
 ```
 
+- **Example 2**
+```
+$data = [
+    'user' => 'F. Pete', 
+    'marital' => 'Single',
+];
+
+$form = new UltimateValidator\UltimateValidator($data);
+```
+
+- **Example 3** `Helpers Function`
+```
+opForm();
+```
 
 ## Laravel Support
+- Now supports Laravel and with same Functionalities no different
+    - `use UltimateValidator\UltimateValidator;`
 
 ```
--> Now supports Laravel and with same Functionalities no different
-
-use UltimateValidator\UltimateValidator;
-
-
 public function save(Request $request){
 
-    $form = new UltimateValidator($request->all());
-    or
-    $form = new UltimateValidator($_POST);
-    or
-    $form = new UltimateValidator($_GET);
-    or
     $form = new UltimateValidator();
+    or
+    opForm();
 }
 ```
 
 ## USAGE
-```
-    $form->submit([
-        "string:name" => 'Please enter a name',
-    ])->error(function($response){
-
-        // exec code
-    })->success(function($response){
-       
-        // exec code
-    });
-```
-
-### Instantiate Class Param
-
-**We have two (3) parameter when calling the instantiate the class**
-
-```
--> param |array -- form data. $_GET | $_POST 
--> type |string --  post | get\not required
--> attribute |string|int|array|object|resource\not required
-```
-
-** By default if type not passed, then it uses the `$_SERVER['REQUEST_METHOD']` method **
-```
-$form = new \UltimateValidator\UltimateValidator($_POST, 'POST');
-$form = new \UltimateValidator\UltimateValidator($_POST);
-$form = new \UltimateValidator\UltimateValidator();
-```
-
-### Submit Method 
-`->submit()`
-
-```
--> data | array -- input error configuration
--> allowedType |boolean --  true | false (default is set to false)
-```
-
-```
-    $form->submit([
-        "string:name" => 'Please enter a name',
-    ], true)
-
-    or
-
-    $form->submit([
-        "string:name" => 'Please enter a name',
-    ], false)
-
-    Since it already has a default value, the no need to provide one if you don't intend to discplay all errors at once.
-    i.e
-
-    $form->submit([
-        "string:name" => 'Please enter a name',
-    ])
-```
-
-### Submit Data Type Param
-
-- An index Array
-```
-    the key is a unique modifier.
-    the value = Takes a custom message you want user to see as an error
-    
-    $form->submit([
-        "string:name" => 'Please enter a name',
-    ])
-
-    Visit (below section to understand key type)
-    ## Submit Data Flags
-```
+- All Methods of usage 
 
 
-### Submit Allowed Type Param
-
-- This method specify how `errors` are to be displayed
+### Form Error Type
+- Takes a param as `bool` Default is `false`
+    - You can call separately or Call Before any other method, if intend to use.
 
 | Error |        Description            |
 |-------|-------------------------------|
-| false |  `Default` This allow errors to be displayed on by one  |
-| true  |  This allow all errors to be displayed once, as an array. So you can loop through the array message to show the error|
+| false |  `Default` Errors displayed one after another  |
+| true  |  This allow all errors to be displayed once, `as an array` |
 
-
-### Submit Data Flags
-
-`By default only Flags and HTML input name is required`
-`Refer to the below Data Flags`
-
-| FLAGS |  HTML_INPUT_NAME | COMPARISON OPERATOR | VALUE TO COMPARE |
-|-------|------------------|---------------------|------------------|
-| string| : country        | :  ==               | :0               |
-| email | : email          | :                   |                  |
-
-### Better example
 ```
-    FLAGS : HTML_INPUT_NAME : OPERATOR : VALUE TO COMPARE
-    always seperate each with a `colon` :
-
-    $form->submit([
-        "string:country:==:0"   => 'Please Select a Country',
-        "email:email"           => 'Please enter a valid email address',
-    ])
-
-
-    HTML FORM Example
-    <form>
-        <select name="country">
-            <option value="0">Select Country</option>
-            <option value="NGA">Nigeria</option>
-            <option value="USA">United States of America</option>
-        </select>
-
-        <input type="email" name="email" placeholder="Email Address">
-    </form> 
+$form->et(false);
 ```
 
+- or
+
+```
+$form->et(true)->submit([
+    "string:country:==:0"   => 'Please Select a Country',
+    "email:email"           => 'Please enter a valid email address',
+])
+```
+
+### Submit
+- By default only Flags and HTML input name is required
+    - Always seperate each indicator with a `colon` `:`
+
+| FLAGS  |  HTML_INPUT_NAME | COMPARISON OPERATOR | VALUE TO COMPARE |
+|--------|------------------|---------------------|------------------|
+| string | : country        | :  ==               | : 0              |
+| email  | : email          | :                   |                  |
+
+```
+$form->submit([
+    "string:country:==:0"   => 'Please Select a Country',
+    "email:email"           => 'Please enter a valid email address',
+])
+```
+
+- HTML FORM Structure Sample
+```
+<form>
+    <select name="country">
+        <option value="0">Select Country</option>
+        <option value="NGA">Nigeria</option>
+        <option value="USA">United States of America</option>
+    </select>
+
+    <input type="email" name="email" placeholder="Email Address">
+</form>
+```
+
+### Error 
+- Expects a `callable` function as the param
+
+```
+$form->submit([
+    "s:name" => 'Please enter a name',
+])->error(function($response){
+
+    $response->param; //Collection of form data
+    $response->message; //message property
+});
+```
+
+### Success 
+- Expects a `callable` function as the param
+    - Message property will be empty string on success `$response->message`
+
+```
+$form->submit([
+    "s:name" => 'Please enter a name',
+])->success(function(){
+    //on success
+
+    $response->param; //Collection of form data
+});
+```
 
 ### Data Flags 
 - `Supports 9 Data Flags type`
@@ -247,275 +214,247 @@ $form = new \UltimateValidator\UltimateValidator();
 
 
 ### Before Submit 
-- `->beforeSubmit()`
+- Expects a `callable` function as the param
+    - Pass any variable name of choice to the function, to have access instance of class
 
 ```
-** Chainable methods **
+$form->submit([
+    "s:name" => 'Please enter a name',
+])->beforeSubmit(function($response){
 
--> Expects a callable function as the param
--> pass any variable name of choice to the function, to have access to the class properties
+    // execute code
+});
 ```
+- Positioning doen't matter, as they're `Chainable methods`
 
 ```
-    $form->submit([
-        "s:name" => 'Please enter a name',
-    ])->beforeSubmit(function($response){
+$form->beforeSubmit(function($response){
 
-        // execute code
-    });
-
-    it can be called anywhere and possition doens't matter
-
-    i.e 2
-
-    $form->beforeSubmit(function($response){
-
-        // execute code
-    })->submit([
-        "s:name" => 'Please enter a name',
-    ]);
+    // execute code
+})->submit([
+    "s:name" => 'Please enter a name',
+]);
 ```
 
 ### After Submit 
-`->afterSubmit()`
+- Same as `beforeSubmit()`
 
 ```
-** Chainable methods **
+$form->submit([
+    "s:name" => 'Please enter a name',
+])->afterSubmit(function(){
 
--> Expects a callable function as the param
--> pass any variable name of choice to the function, to have access to the class properties
+    // execute code
+});
 ```
 
+## Only
+- Takes a param as an `array` 
+    - `keys` of data only needed
+
 ```
-    $form->submit([
-        "s:name" => 'Please enter a name',
-    ])->afterSubmit(function(){
+->success(function($response){
+
+    $data = $response->only(['password', 'username']);
+
+    ---
+    Will return only the password and username
+});
+```
+
+## Except
+- Takes a param as an `array` 
+    - `keys` of data only needed
+
+```
+->success(function($response){
+    
+    $data = $response->except(['_token']);
+
+    ---
+    Will return all values except `_token`
+});
+```
+
+## Has
+- Takes a param as `string` 
+    - Return `bool` true|false
+
+```
+->success(function($response){
+    
+    if($response->has('remeber_me')){
 
         // execute code
-    });
+    }
+
+    --
+    If the remeber_me exist along with submitted form data
+});
 ```
 
-### Error Handling 
-`->error()`
+## Old
+- Takes a param as `string` 
+    - Return old inserted data
 
 ```
-** Chainable methods **
-
--> Expects a callable function as the param
--> pass any variable name of choice to the function, to have access to the class properties
+$form->submit([
+    "s:password" => 'Please enter a name',
+    "s:retype_pass:!==:{$form->old('password')}" => 'Password mismatch, Please enter same password',
+]);
 ```
+![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/phpFormValidator/main/old.png)
 
-```
-    $form->submit([
-        "s:name" => 'Please enter a name',
-    ])->error(function($response){
 
-        $response->param; //param property
-        $response->message; //message property
-    });
-```
-
-### Success Handling 
-`->success()`
+## GetForm
+- Return all submitted form data as an `array`
 
 ```
-** Chainable methods **
+->success(function($response){
 
--> Expects a callable function as the param
--> pass any variable name of choice to the function, to have access to the class properties
+    $data = $response->getForm();
+});
 ```
 
+## Merge
+- Same as PHP function `array_merge`
+    - Merge two array data together
+        - Second data will always repalace any matched key data in the first array
+
 ```
-    $form->submit([
-        "s:name" => 'Please enter a name',
-    ])->success(function(){
-        //on success
+->success(function($response){
+    
+    $data = [
+        'name' => 'Lorem Name',
+        'user_id' => rand(10000, 99999),
+    ];
 
-        $response->param; //empty param property
-    });
-
-    <!-- message property will be empty string on success  -->
-    <!-- So you can define and return the message -->
-    $response->message; 
-
-    $response->message = "Form has been submitted successfully";
-    <!-- If you're not using JSON to return an error, this will be attached to form memory -->
-    <!-- you can then use the ->getErrorMessage() method where u need message to be displayed -->
-    <!-- Check the `->getErrorMessage()` example section s-->
+    $param = $response->merge($data, [
+        'password' => md5($param['password'])
+    ]);
+});
 ```
+
+## OnlyData
+- Used to get only the data you need from array element
+
+| Keys            |  Data                       |
+|-----------------|-----------------------------|
+| Keys are array  |  Main data to select from   |
+
+```
+->success(function($response){
+    $array = [
+        'email'     => 'mailer@mail.com', 
+        '_token'    => md5('token'), 
+        'password'  => 'test'
+    ];
+
+    $data = $response->OnlyData(['email', 'password'], $array);
+
+    ---
+    This will select only the `email` and `password` from $array
+});
+```
+
+## ExceptData
+- Used to exempt data you dont need from array element
+
+| Keys            |  Data                       |
+|-----------------|-----------------------------|
+| Keys are array  |  Main data to select from   |
+
+```
+->success(function($response){
+    
+    $array = [
+        'email'     => 'mailer@mail.com', 
+        '_token'    => md5('token'), 
+        'password'  => 'test'
+    ];
+
+    $data = $response->exceptData(['_token'], $array);
+
+    ---
+    Will return all values except `_token`
+});
+```
+
+
+
 
 ## Get Error Message
-`->getErrorMessage()`
-
-```
--> Method that returns the Error Message and Class
--> This can be accesible with the variable that instantiate the UltimateValidator()
-
--> $form = new UltimateValidator();
-```
-
 | key     |      Description           |
-|--------------------------------------|
+|---------|----------------------------|
 | message | `Message` This convert all error messages and return as a string with `<br>` |
-| class   | `Class name` \| on form success  `ULValidate__success` \| on form error  `ULValidate__error` |
+| class   | `Class name` \| on form success  `opForm__success` \| on form error  `opForm__error` |
+
+- Takes a param as `string` message|class
+    - If no param is passed, it returns `class name`
 
 ```
-    $form->getErrorMessage('message');
-    $form->getErrorMessage('class');
-
-    If not param is passed to ->getErrorMessage()
-    it returns th class by default
+$form->getErrorMessage('message');
+$form->getErrorMessage('class');
 ```
-
-## Only Method
-
-```
-Used to get only the data you need from form elements
-Params needs index array of form element keys
-```
-```
-    ->success(function($response){
-       
-        $data = $response->only(['password', 'username']);
-        <!-- This will return only the password and username data -->
-
-        var_dump( $data );
-    });
-```
+![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/phpFormValidator/main/getErrorMessage.png)
 
 
-## Except Method
+## Collection
+- Forms `param` returns a Collection Class
+    - This enable us access property as an `object` or `array index`
 
 ```
-Used to remove form elements you don't need
-Very useful for laravel projects
-Params needs index array of form element keys
-```
-```
-    ->success(function($response){
-       
-        $data = $response->except(['_token']);
-        <!-- This will return all values except `_token` data -->
+$form->submit([
+    "string:country:==:0"   => 'Please Select a Country',
+    "email:email"           => 'Please enter a valid email address',
+])->success(function($response){
 
-        var_dump( $data );
-    });
-```
+    $param = $response->param;
 
 
-## Has Method
+    $param->country;
+    $param['country']
 
-```
-Used to check if key came along with form
-Work just like if isset()
-returns boolean\ true|false
-```
-```
-    ->success(function($response){
-       
-        if($response->has('remeber_me')){
-
-            <!-- execute code -->
-        }
-    });
+    ---
+    As you can see, we're able to access data in both ways without errors
+})
 ```
 
+## Collection Methods
 
-## Merge Method
-
-```
-merge array data\Accepts two params of arrays
-@param array\ $keys\ Keys are array to be merge
-@param array\ $data\ Main data to merge the key with
-
-If the data array has same key_name with the key array. 
-Data array value will replace the key array values.
-
-returns array|null
-```
-```
-    ->success(function($response){
-       
-        $data['user_id'] = rand(10000, 99999);
-        $data['password'] = md5($param['password']);
-
-        $param = $response->merge($response->param, $data);
-
-    });
-```
+|    Methods        |          Description                |
+|-------------------|-------------------------------------|
+|  toArray()        |  `array` Convert items to array     |
+|  toObject()       |  `object` Convert items to object   |
+|  toJson()         |  `string` Convert items to json     |
 
 
-## OnlyData Method
+## Request
+- Optional\ Takes a param as `string` on each method to get needed data
+    - Returns `data` or `null`
 
-```
-Used to get only the data you need from array element
-@param array\ $keys\ Keys are array
-@param array\ $data\ Main data to select from
-```
-```
-    ->success(function($response){
-       
-        $array = ['email' => 'mailer@mail.com', '_token' => md5('token'), 'password' => 'test'];
-        $data = $response->OnlyData(['email', 'password'], $array);
-
-        var_dump( $data );
-    });
-```
+| function              | Description                   |
+|-----------------------|-------------------------------|
+| request()->all()      | Return All requests data      |
+| request()->get()      | Return GET data               |
+| request()->post()     | Return POST data              |
+| request()->cookie()   | Return Cookies data           |
+| request()->session()  | Return Session data           |
+| request()->env()      | Return ENV data               |
 
 
-## ExceptData Method
+## Helpers
 
-```
-Used to exclude the data you don't need from array element
-@param array\ $keys\ Keys are array
-@param array\ $data\ Main data to select from
-```
-```
-    ->success(function($response){
-       
-        $array = ['email' => 'mailer@mail.com', '_token' => md5('token'), 'password' => 'test'];
-        $data = $response->exceptData(['_token'], $array);
+| function      | Description                       |
+|---------------|-----------------------------------|
+| opForm()      | Return instance of `(new UltimateValidator)` class  |
+| request()     | Return instance of `(new RequestMethod)` class      |
 
-        var_dump( $data );
-    });
-```
-
-
-## GetForm Method
-
-```
-Can be used anywhere
-return all submitted form data in array & object format
-
-```
-```
-    ->success(function($response){
-
-        $data = $response->getForm();
-
-        var_dump( $data );
-
-        [
-            'attribute' => (array) form,
-            'attributes' => (object) form
-        ];
-    });
-```
-
-## Old Method
-
-```
-Used to output old data entered on form elem
-Refer to test/index_text4.php to see sample
-```
-```
-    ->success(function($response){
-
-        var_dump( $response->old('retype_password') );
-    });
-```
 
 ## Useful links
 
+- @author Fredrick Peterson (Tame Developers)
+- [Lightweight - PHP Form Validator](https://github.com/tamedevelopers/phpFormValidator)
 - If you love this PHP Library, you can [Buy Tame Developers a coffee](https://www.buymeacoffee.com/tamedevelopers)
 - Link to Youtube Video Tutorial on usage will be available soon
 

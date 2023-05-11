@@ -2,24 +2,8 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of ultimate-validator.
- *
- * (c) Tame Developers Inc.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace UltimateValidator;
 
-/**
- * CheckDatatype
- *
- * @package   Ultimate\Validator
- * @author    Tame Developers <tamedevelopers@gmail.co>
- * @copyright 2021-2023 Tame Developers
- */
 class CheckDatatype {
   
     /**
@@ -40,7 +24,7 @@ class CheckDatatype {
      * false if expected data type is not correct
      * true|data on success
      * 
-     * @return array|string|boolean\check
+     * @return array|string|bool\check
      */
     public static function check(?array $data_flags)
     {
@@ -82,7 +66,7 @@ class CheckDatatype {
      * 
      * @param  array $data_flags\[data_type|variable|operator|value]
      * 
-     * @return boolean\checkEmun
+     * @return bool\checkEmun
      */
     protected static function checkEmun(?array $data_flags)
     {
@@ -100,7 +84,7 @@ class CheckDatatype {
      * 
      * @param  array $data_flags\[data_type|variable|operator|value]
      * 
-     * @return array|string|boolean\validateForminput
+     * @return array|string|bool\validateForminput
      */
     protected static function validateForminput(?array $data_flags)
     {
@@ -132,16 +116,16 @@ class CheckDatatype {
             // array validation
             case (in_array($data_flags['data_type'], ['array', 'a'])):
                 if(is_string(self::$object->param[$data_flags['variable']])){
-                    $array = json_decode(self::$object->param[$data_flags['variable']], TRUE);
+                    $array = json_decode(self::$object->param[$data_flags['variable']], true);
                 }else{
                     $array = self::$object->param[$data_flags['variable']];
                 }
                 $type = isset(self::$object->param[$data_flags['variable']]) && is_array($array) && count($array) > 0 ? true : false;
                 break;
                
-            // bool|boolean validation
+            // bool|bool validation
             case (in_array($data_flags['data_type'], ['bool', 'b'])):
-                $type = filter_input(self::$object->type, $data_flags['variable'], FILTER_VALIDATE_BOOLEAN);
+                $type = filter_input(self::$object->type, $data_flags['variable'], FILTER_VALIDATE_bool);
                 break;
 
             // enum validation
@@ -161,7 +145,7 @@ class CheckDatatype {
 
             // string validation
             default:
-                $type = htmlspecialchars(filter_input(self::$object->type, $data_flags['variable']), ENT_HTML5);
+                $type = self::filter_string(filter_input(self::$object->type, $data_flags['variable']));
                 // mostly for value of 0
                 if(empty($type) && $type != '0') {
                     $type = false;
@@ -170,6 +154,19 @@ class CheckDatatype {
         }
 
         return $type;
+    }
+
+    /**
+     * Filter sanitize string
+     *
+     * @param string $string
+     * 
+     * @return string
+    */
+    private static function filter_string(?string $string = null)
+    {
+        // htmlspecialchars('data', ENT_HTML5);
+        return htmlspecialchars((string) $string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
     
 }

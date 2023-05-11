@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace UltimateValidator;
 
+use UltimateValidator\Collections\Collection;
+use UltimateValidator\Interface\UltimateInterface;
+
 
 /**
  * Validator
@@ -26,227 +29,48 @@ namespace UltimateValidator;
 class UltimateValidator implements UltimateInterface
 {
 
+    use ValidatorTrait, 
+        PropertyTrait,
+        SubmitSuccessTrait;
+    
+    
     /**
-    * param
-    */ 
-    public  $param; 
-
-    /**
-    * params object replica of $param
-    */ 
-    public  $params; 
-
-    /**
-    * attribute 
-    * @var string|array|object
-    */
-    public $attribute;
-
-    /**
-    * public message notice
-    * @var string|array|object
-    */
-    public  $message; 
-
-    /**
-    * data type
-    * @var boolean|null
-    */
-    public  $type; 
-
-    /**
-    * operator check
-    */
-    public  $operator; 
-
-    /**
-    * flash
-    * @var array
-    */
-    public $flash = [
-        'message'   => [],
-        'class'     => '',
-    ];
-
-    /**
-    * proceed
-    * @var boolean
-    */
-    public $flashVerify;
-
-    /**
-    * proceed
-    * @var boolean
-    */
-    private $proceed;
-
-    /**
-    * error 
-    * @var boolean
-    */
-    private $error    = false;
-
-
-    /**
-    * @param  array    $param form array like $_POST or $_GET.
-    * @param  string   $type string like POST or GET - case-insensitive
-    * @param  string|int|array|object|resource   $attribute any outside param you would want to use within the form
-    * @return object   returns an object for chaining
-    */
-    public function __construct(?array $param = null, ?string $type = null, $attribute = null) 
+     * @param  mixed $attribute
+     * - Any outside parameter you would want to use within the form instance
+     * 
+     * @return void
+     */
+    public function __construct(mixed $attribute = null) 
     {
         $this->message      = [];
-        $this->type         = $this->getType($type);
-        $this->attribute    = $attribute;
+        $this->type         = $this->getType();
+        $this->attribute    = new Collection($attribute);
         
         // initialize methods
         UltimateMethods::initialize($this);
         
         // set params
-        UltimateMethods::setParams($param);
-
-        return $this;
+        UltimateMethods::setParams($this->type);
     }
 
     /**
-    * @param  array     $data Constant like INPUT_XXX.
-    * @param  boolean   $allowedType --  if to display all error once or one after another
-    * @return object|response class object return.
-    */
-    public function submit(array $data, ?bool $allowedType = false) 
+     * Create Form Validation Data
+     * 
+     * @param  array $data
+     * 
+     * @return object
+     */
+    public function submit(?array $data = []) 
     {
-
-        /**
-        * before isset function call
-        */
-        $this->beforeSubmit($this);
-
-        // only begin validation when submitted
-        if(UltimateMethods::isSubmitted())
-        {
-            //set to false
-            $this->proceed = $this->flashVerify = false;
-
-            /**
-            * after isset function call
-            */
-            $this->afterSubmit($this);
-
-            /**
-            * Convert message type
-            */
-            $this->allowedType($allowedType);
-
-            // start loop process
-            foreach($data as $key => $message){
-
-
-                // create data types
-                $dataType = CreateDatatype::create($key);
-
-                /**
-                * Configuration error
-                */
-                if($dataType === "indicator"){
-                    $this->error    = true;
-                    $this->message  = ExceptionMessage::indicator();
-                    break;
-                }
-
-                //check response error from input flags
-                $checkDataType = CheckDatatype::check($dataType);
-
-                // allowed errors handling type
-                // if error is to be handled one by one
-                if($allowedType === false){
-                    if($checkDataType === false || $checkDataType === '!isset'){
-                        $this->message  = $message;
-                        $this->error    = true;
-                        break;
-                    }
-                    elseif($checkDataType === false || $checkDataType === '!found'){
-                        $this->message  = ExceptionMessage::notFound($dataType);
-                        $this->error    = true;
-                        break;
-                    } else{
-                        $this->error = false; // set to false
-
-                        //operator function checker
-                        $this->operator     = $this->operatorMethod($dataType);
-
-                        if($this->operator === 'error'){
-                            $this->error      = true;
-                            $this->message    = ExceptionMessage::comparison($dataType);
-                            break;
-                        }
-                        else{
-                            if(!is_null($this->operator) && $this->operator){
-                                $this->message  = $message;
-                                $this->error    = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // if errors is to be handled as an array
-                else{
-                    if($checkDataType === false || $checkDataType === '!isset'){
-                        if(!in_array($dataType['variable'], array_keys($this->message))){
-                            $this->message[$dataType['variable']]    = $message;
-                        }
-                        $this->error = true;
-                    }
-                    elseif($checkDataType === false || $checkDataType === '!found'){
-                        if(!in_array($dataType['variable'], array_keys($this->message))){
-                            $this->message[$dataType['variable']]    = ExceptionMessage::notFound($dataType);
-                        }
-                        $this->error = true;
-                    } else{
-                        //operator function checker
-                        $this->operator = $this->operatorMethod($dataType);
-
-                        if($this->operator === 'error'){
-                            $this->error = true;
-                            $this->message[$dataType['variable']]    = ExceptionMessage::comparison($dataType);
-                            break;
-                        }
-                        elseif(!is_null($this->operator) && $this->operator){
-                            if(!in_array($dataType['variable'], array_keys($this->message))){
-                                $this->message[$dataType['variable']]    = $message;
-                            }
-                            $this->error = true;
-                        }
-                        else{
-                            // if no message error exist 
-                            // meaning array count is 0
-                            if(!count($this->message)){
-                                $this->error = false; // set to false
-                            }
-                        }
-                    }
-                }
-            }
-
-            /**
-            * if validation succeeds without error | 
-            * set proceed value to | true
-            */
-            if(!$this->error){
-                $this->proceed = $this->flashVerify = true;
-            }
-
-            return $this;
-        }
-
-        return $this;
+        return $this->submitInitialization($data);
     }
 
     /**
      * @param  callable  $function.
      * @param  null|void  pass a $var into the funtion to access the returned object
      * usage   ->error(  function($response){}  );
-     * @return object|response class object on error.
+     * 
+     * @return object
      */
     public function error(?callable $function)
     {
@@ -265,7 +89,8 @@ class UltimateValidator implements UltimateInterface
      * @param  callable  $function.
      * @param  null|void  pass a $var into the funtion to access the returned object
      * usage   ->success(  function($response){}  );
-     * @return object|response class object on success.
+     * 
+     * @return object
      */
     public function success(?callable $function)
     {
@@ -284,7 +109,8 @@ class UltimateValidator implements UltimateInterface
      * @param  callable  $function.
      * Before form is set
      * usage   ->beforeSubmit(  function($response){}  );
-     * @return void\Response class object on success
+     * 
+     * @return void
      */
     public function beforeSubmit($function)
     {
@@ -303,7 +129,8 @@ class UltimateValidator implements UltimateInterface
      * @param  callable  $function.
      * After form is set
      * usage   ->afterSubmit(  function($response){}  );
-     * @return void\Response class object on success
+     * 
+     * @return void
      */
     public function afterSubmit($function)
     {
@@ -345,7 +172,7 @@ class UltimateValidator implements UltimateInterface
      *
      * @param string\key $key
      *
-     * @return boolean
+     * @return bool
      */
     public function has(?string $key = null)
     {
@@ -363,129 +190,17 @@ class UltimateValidator implements UltimateInterface
     {
         return UltimateMethods::merge($keys, $data);
     }
-    
-    /**
-     * Get needed data from array 
-     * @param  array\keys  $keys of needed data
-     * @param  array  $allData param to check from
-     * 
-     * @return array
-     */
-    public function onlyData(?array $keys = null, ?array $allData = null)
-    {
-        return UltimateMethods::onlyData($keys, $allData);
-    }
-
-    /**
-     * Get all needed params except the removed onces
-     * @param  array|keys  $keys of to remove from parameters
-     * @param  array|data  $data param to check from
-     * 
-     * @return array 
-     */
-    public function exceptData(?array $keys = null, ?array $data = null)
-    {
-        return UltimateMethods::exceptData($keys, $data);
-    } 
-
-    /**
-     * Get Form Data
-     * Return form data if isset
-     * 
-     * @param string $type |attribute|attributes
-     * .ie form (array) of param | attributes (object) of param 
-     * 
-     * @return array|object 
-     */
-    public function getForm($type = null)
-    {
-        return UltimateMethods::getForm($type);
-    }
 
     /**
      * Return previously entered value
      * 
      * @param string $key of param name
      * 
-     * @return array|object|string\old
+     * @return mixed
      */
     public function old($key = null)
     {
         return UltimateMethods::old($key);
-    }
-
-    /**
-     * Return error message in the form of array
-     * @param string $key/ message|class
-     * 
-     * @return string\getErrorMessage
-     */
-    public function getErrorMessage($key = 'message')
-    {
-        return UltimateMethods::getErrorMessage($key);
-    }
-
-    /**
-     * Returns encoded JSON object of response and message
-     * 
-     * @param  int|float  $response
-     * @param  string|array|object  $message 
-     * @return string|json\echoJson  
-     */
-    public function echoJson(?int $response = 0, $message = null)
-    {
-        return UltimateMethods::echoJson($response, $message);
-    }
-
-    /**
-     * @param  array $dataType  array.
-     * @return boolean or false.
-     */
-    private function operatorMethod(?array $dataType = null)
-    {
-        $this->operator = null;
-
-        //comparison operator command
-        if(isset($dataType['operator']) && !empty($dataType['operator'])){
-            $this->operator = 'error';
-            //value check command
-            if(isset($dataType['value'])){
-                $this->operator = CheckOperator::check($dataType, $this);
-            }
-        }
-        return $this->operator;
-    }
-
-    /**
-    * @param  string $type    string like POST or GET.
-    * @return int            The value of request type.
-    */
-    private function getType($type = null)
-    {
-        $this->type = GetRequestType::request($type);
-
-        return $this->type;
-    }
-
-    /**
-     * Convert message error type
-     * @param  bool $allowedType.
-     * 
-     * @return object\allowedType 
-     */
-    private function allowedType($allowedType)
-    {
-        /**
-        * if allowed error type is true
-        * Error message type converted to arrays
-        */
-        if($allowedType){
-            $this->message  = [];
-        }else{
-            $this->message  = "";
-        }
-
-        return $this;
     }
 
 }
