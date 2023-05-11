@@ -125,7 +125,7 @@ class CheckDatatype {
                
             // bool|bool validation
             case (in_array($data_flags['data_type'], ['bool', 'b'])):
-                $type = filter_input(self::$object->type, $data_flags['variable'], FILTER_VALIDATE_bool);
+                $type = filter_input(self::$object->type, $data_flags['variable'], FILTER_VALIDATE_BOOL);
                 break;
 
             // enum validation

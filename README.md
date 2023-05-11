@@ -19,6 +19,7 @@
   * [Success](#success)
   * [Data Flags](#data-flags)
   * [Operator Statement](#operator-statement)
+  * [noInterface](#nointerface)
   * [Before Submit](#before-submit)
   * [After Submit](#after-submit)
 * [Only](#only)
@@ -33,6 +34,9 @@
 * [Get Error Message](#get-error-message)
 * [Collection Methods](#collection-methods)
 * [Request](#request)
+* [toObject](#toobject)
+* [toArray](#toarray)
+* [toJson](#tojson)
 * [Helpers](#helpers)
 * [Useful links](#useful-links)
 
@@ -213,6 +217,21 @@ $form->submit([
 | <&&> |  Less than and Greater than   |
 
 
+### noInterface
+- Expects a `callable` function as the param
+    - Since `Submit` method must be passed for you to access most properties
+        - Wrapping Non-Submitable code inside the `noInterface` makes code more neat
+
+```
+$form->noInterface(function($response){
+
+    if($response->has('amount')){
+        // exec code
+    }
+});
+```
+
+
 ### Before Submit 
 - Expects a `callable` function as the param
     - Pass any variable name of choice to the function, to have access instance of class
@@ -380,9 +399,6 @@ $form->submit([
 });
 ```
 
-
-
-
 ## Get Error Message
 | key     |      Description           |
 |---------|----------------------------|
@@ -447,6 +463,35 @@ request()->get('password')
 request()->env('APP_DEBUG')
 ```
 
+## toObject
+- Takes a param as `mixed` data
+    - Converts to an `Object` data
+
+```
+$form->toObject([
+    'food' => 'Basmati Rice'
+]);
+```
+
+## toArray
+- Takes a param as `mixed` data
+    - Converts to an `Array` data
+
+```
+$form->toArray([
+    'food' => 'Basmati Rice'
+]);
+```
+
+## toJson
+- Takes a param as `mixed` data
+    - Converts to an `Json` data
+
+```
+$form->toJson([
+    'food' => 'Basmati Rice'
+]);
+```
 
 ## Helpers
 
