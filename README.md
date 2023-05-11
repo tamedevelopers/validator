@@ -60,11 +60,16 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 composer update
 ```
 
+**Or composer require**:
+```
+composer require peterson/php-form-validator
+```
+
 ## Instantiate
 - Optional `attribute` param. Whatever data outside class you need to use inside.
     - Will automatically be converted to `Collection Data`
 
-**Step 1** — Composer  `Instantiate class using`:
+**Step 1** — `Instantiate class using`:
 
 ```
 require_once __DIR__ . '/vendor/autoload.php';
