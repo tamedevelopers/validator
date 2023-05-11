@@ -1,10 +1,10 @@
 # PHP Form Validator  - PFV
 
-[![Total Downloads](https://poser.pugx.org/peterson/php-form-database/downloads)](https://packagist.org/packages/peterson/php-form-database)
-[![Latest Stable Version](https://poser.pugx.org/peterson/php-form-database/version.png)](https://packagist.org/packages/peterson/php-form-validator)
-[![License](https://poser.pugx.org/peterson/php-form-database/license)](https://packagist.org/packages/peterson/php-form-database)
+[![Total Downloads](https://poser.pugx.org/peterson/php-form-validator/downloads)](https://packagist.org/packages/peterson/php-form-validator)
+[![Latest Stable Version](https://poser.pugx.org/peterson/php-form-validator/version.png)](https://packagist.org/packages/peterson/php-form-validator)
+[![License](https://poser.pugx.org/peterson/php-form-validator/license)](https://packagist.org/packages/peterson/php-form-validator)
 [![Build Status](https://github.com/tamedevelopers/phpFormValidator/actions/workflows/php.yml/badge.svg)](https://github.com/tamedevelopers/phpFormValidator/actions)
-[![Code Coverage](https://codecov.io/gh/peterson/php-form-database/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/peterson/php-form-database/branch/3.2.2.x)
+[![Code Coverage](https://codecov.io/gh/peterson/php-form-validator/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/peterson/php-form-validator/branch/3.2.2.x)
 
 ## Documentation
 
