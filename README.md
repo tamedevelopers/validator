@@ -231,7 +231,6 @@ $form->noInterface(function($response){
 });
 ```
 
-
 ### Before Submit 
 - Expects a `callable` function as the param
     - Pass any variable name of choice to the function, to have access instance of class
