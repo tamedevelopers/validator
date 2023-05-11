@@ -442,6 +442,11 @@ $form->submit([
 | request()->session()  | Return Session data           |
 | request()->env()      | Return ENV data               |
 
+```
+request()->get('password')
+request()->env('APP_DEBUG')
+```
+
 
 ## Helpers
 
