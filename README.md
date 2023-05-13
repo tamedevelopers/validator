@@ -147,7 +147,7 @@ Config_opForm([
     'request'       => 'POST',
     'error_type'    => true,
     'csrf_token'    => true,
-]);
+]); 
 ```
 
 ## Csrf
