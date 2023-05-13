@@ -36,6 +36,7 @@ class UltimateValidator implements UltimateInterface
     
     /**
      * @param  mixed $attribute
+     * @param  mixed $attribute
      * - Any outside parameter you would want to use within the form instance
      * 
      * @return void
@@ -51,6 +52,11 @@ class UltimateValidator implements UltimateInterface
         
         // set params
         UltimateMethods::setParams($this->type);
+
+        // if defined
+        if(defined('GLOBAL_OPFORM_CSRF_TOKEN')){
+            $this->allow_csrf = GLOBAL_OPFORM_CSRF_TOKEN;
+        }
     }
 
     /**

@@ -46,7 +46,7 @@ class CheckDatatype {
             } 
             
             // if data passes is not in form elements
-            elseif(!in_array($data_flags['variable'], array_keys(self::$object->param))){
+            elseif(!in_array($data_flags['variable'], array_keys(self::$object->param->toArray()))){
                 $type = '!found';
             }
 

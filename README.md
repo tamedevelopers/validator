@@ -12,8 +12,16 @@
 * [Installation](#installation)
 * [Instantiate](#instantiate)
 * [Laravel Support](#laravel-support)
+* [Methods That Should Always Come First](#methods-that-should-always-come-first)
+* [Global Configuration](#methods-that-should-always-come-first)
+* [Csrf](#csrf)
+    * [Csrf Form Input](#csrf-form-input)
+    * [Csrf Token](#csrf-token)
 * [Usage](#usage)
-  * [Form Error Type](#form-error-type)
+  * [Error Type](#error-type)
+  * [POST](#post)
+  * [GET](#get)
+  * [ALL](#all)
   * [Submit](#submit)
   * [Error](#error)
   * [Success](#success)
@@ -51,7 +59,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/php-form-validator": "^3.2.2" 
+    "peterson/php-form-validator": "^3.3.0" 
 }
 ```
 
@@ -107,11 +115,68 @@ public function save(Request $request){
 }
 ```
 
+## Methods That Should Always Come First
+- These methods are mandatory and should always come first before any others.
+    - All are Optional `method`
+
+| Methods  |        Description            |
+|----------|-------------------------------|
+| ->et()   |  The method takes a `bool` parameter to decide how errors are displayed: `single or multiple` |
+| ->post() |  No param needed. SET `form` request to `POST` only |
+| ->get()  |  No param needed. SET `form` request to `GET` only |
+
+```
+$form->post()->submit([
+    "string:country:==:0"   => 'Please Select a Country',
+    "email:email"           => 'Please enter a valid email address',
+]);
+```
+
+## Global Configuration
+- Helpers available to assist on easy configuration
+    - `Config_opForm()`
+
+| Array Keys  |        Description                      |
+|-------------|-----------------------------------------|
+| request     |  String `POST/|GET/|ALL` Default `POST` |
+| error_type  |  Boolean `true/|false` Default `false`  |
+| csrf_token  |  Boolean `true/|false` Default `true`   |
+
+```
+Config_opForm([
+    'request'       => 'POST',
+    'error_type'    => true,
+    'csrf_token'    => true,
+]);
+```
+
+## Csrf
+- Implementing `Csrf` (Cross-Site Request Forgery)
+    - By default the form requires all request to have a token attached.
+        - You can disable the usage with the `Config_opForm()` Helper
+
+
+### Csrf Form Input
+- This will create html input element with valid `csrf token`
+    - It's a function and you don't need to `echo`
+        - Use anywhere inside your HTML form
+
+```
+csrf();
+```
+
+### Csrf Token
+- This will return the `csrf token` string
+
+```
+csrf_token();
+```
+
 ## USAGE
 - All Methods of usage 
 
 
-### Form Error Type
+### Error Type
 - Takes a param as `bool` Default is `false`
     - You can call separately or Call Before any other method, if intend to use.
 
@@ -128,6 +193,40 @@ $form->et(false);
 
 ```
 $form->et(true)->submit([
+    "string:country:==:0"   => 'Please Select a Country',
+    "email:email"           => 'Please enter a valid email address',
+])
+```
+
+### POST
+- You can call separately or Call Before any other method, if intend to use.
+    - This will set the Form Request to `POST`
+        - This will always override the `Config_opForm()` settings
+
+```
+$form->post()->submit([
+    "string:country:==:0"   => 'Please Select a Country',
+    "email:email"           => 'Please enter a valid email address',
+])
+```
+
+### GET
+- Same as `POST`
+    - This will set the Form Request to `GET`
+
+```
+$form->get()->submit([
+    "string:country:==:0"   => 'Please Select a Country',
+    "email:email"           => 'Please enter a valid email address',
+])
+```
+
+### All
+- Same as `POST/|GET`
+    - This will set the Form Request using `$_SERVER['REQUEST_METHOD']`
+
+```
+$form->all()->submit([
     "string:country:==:0"   => 'Please Select a Country',
     "email:email"           => 'Please enter a valid email address',
 ])
@@ -158,6 +257,7 @@ $form->submit([
         <option value="USA">United States of America</option>
     </select>
 
+    <input type="hidden" name="csrf_token" value="749c345a1d407f29e777349f5e46a8d6d2cd51454b6719228b5ee28f94c30432">
     <input type="email" name="email" placeholder="Email Address">
 </form>
 ```

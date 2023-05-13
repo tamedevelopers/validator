@@ -1,5 +1,7 @@
 <?php
 
+use UltimateValidator\CsrfToken;
+
     include_once __DIR__ . "/../vendor/autoload.php";
 
     $outsideParam = [
@@ -8,9 +10,17 @@
         'age'           => 0,
     ];
 
+    // This can be on just one file accesible to all forms request
+    Config_opForm([
+        'request'       => 'POST',
+        'error_type'    => true,
+        'csrf_token'    => true,
+    ]);
+
+    $form = new \UltimateValidator\UltimateValidator($outsideParam);
+
     //auto find request method if no param set
     $form = new \UltimateValidator\UltimateValidator($outsideParam);
-    $form->et(true);
     $form->submit([
         "string:current_password"   => 'Enter your old password',
         "string:new_password"       => 'Enter a new password',
@@ -64,11 +74,13 @@
 <html>
     <body>
 
-        <form method="get" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
+        <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
             <div class="errorMSg mb-5 <?= $form->getErrorMessage('class') ?>">
                 <?= $form->getErrorMessage('message') ?>
             </div>
+
+            <?php csrf(); ?>
 
             <div class="row">
                 <div class="">

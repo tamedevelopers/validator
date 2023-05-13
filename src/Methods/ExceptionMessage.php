@@ -27,13 +27,33 @@ class ExceptionMessage {
    }
   
    /**
-    * Return Variable if not found `error` message
+    * Return Variable Not found `error` message
     * 
     * @return string\exception 
     */
    public static function notFound(?array $dataType)
    {
       return sprintf("Variable or Input Form `%s` is not set or name not found along with Form Data", $dataType['variable']);
+   }
+  
+   /**
+    * Csrf Token Mismatch `error` message
+    * 
+    * @return string\exception 
+    */
+   public static function csrfTokenNotFound()
+   {
+      return sprintf("Token Error `%s`, Token not found along with form...", 'ERR-CST-NOT_FOUND');
+   }
+  
+   /**
+    * Csrf Token Mismatch `error` message
+    * 
+    * @return string\exception 
+    */
+   public static function csrfTokenMismatch()
+   {
+      return sprintf("Token Mismatch error `%s`, Please reload page and try again...", 'ERR-CST_MATCH');
    }
     
 }

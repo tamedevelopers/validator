@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UltimateValidator;
 
+use UltimateValidator\CsrfToken;
+
 trait SubmitSuccessTrait {
   
     
@@ -36,6 +38,23 @@ trait SubmitSuccessTrait {
             * Convert message type
             */
             $this->allowedType($this->errorType);
+
+            /**
+             * Check for Csrf Token before allow processing of form data
+             * 
+             * If Csrf Token is allowed to be used, then we Check if found along with form
+             * Or If token not correct for encrypted token in the session
+             */
+            if($this->allow_csrf){
+                $this->error = true;
+                if(!$this->param->has('csrf_token')){
+                    $this->message  = ExceptionMessage::csrfTokenNotFound();
+                    return $this;
+                } elseif(!CsrfToken::validateToken($this->param->csrf_token)){
+                    $this->message  = ExceptionMessage::csrfTokenMismatch();
+                    return $this;
+                }
+            }
             
             // start loop process
             foreach($data as $key => $message){
@@ -51,7 +70,7 @@ trait SubmitSuccessTrait {
                     $this->message  = ExceptionMessage::indicator();
                     break;
                 }
-                
+
                 //check response error from input flags
                 $checkDataType = CheckDatatype::check($dataType);
                 

@@ -66,6 +66,12 @@ trait PropertyTrait {
      * error 
      * @var bool
      */
-    private $error    = false;
+    private $error = false;
+    
+    /**
+     * Use Csrf Token
+     * @var bool
+     */
+    private $allow_csrf = true;
     
 }

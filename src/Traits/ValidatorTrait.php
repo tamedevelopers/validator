@@ -96,6 +96,62 @@ trait ValidatorTrait {
     }
 
     /**
+     * Set Request to POST
+     * 
+     * @return object
+     */
+    public function post()
+    {
+        $this->type = INPUT_POST;
+
+        // initialize methods
+        UltimateMethods::initialize($this);
+
+        // set params
+        UltimateMethods::setParams($this->type);
+
+        return $this;
+    }
+
+    /**
+     * Set Request to GET
+     * 
+     * @return object
+     */
+    public function get()
+    {
+        $this->type = INPUT_GET;
+
+        // initialize methods
+        UltimateMethods::initialize($this);
+
+        // set params
+        UltimateMethods::setParams($this->type);
+
+        return $this;
+    }
+
+    /**
+     * Set Request to REQUEST_METHOD
+     * 
+     * @return object
+     */
+    public function all()
+    {
+        $this->type = $_SERVER['REQUEST_METHOD'] == 'GET' 
+                                ? INPUT_GET 
+                                : INPUT_POST;
+
+        // initialize methods
+        UltimateMethods::initialize($this);
+
+        // set params
+        UltimateMethods::setParams($this->type);
+
+        return $this;
+    }
+
+    /**
      * Convert data to array
      * @param mixed $data
      * 
@@ -148,11 +204,18 @@ trait ValidatorTrait {
     }
 
     /**
-    * @param  string $type    string like POST or GET.
-    * @return int            The value of request type.
-    */
-    private function getType($type = null)
+     * Get Form Request Type
+     * @param string $type
+     * 
+     * @return int
+     */
+    private function getType(?string $type = null)
     {
+        // if defined
+        if(defined('GLOBAL_OPFORM_REQUEST')){
+            $type = GLOBAL_OPFORM_REQUEST;
+        }
+
         return GetRequestType::request($type);
     }
 

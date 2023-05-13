@@ -9,7 +9,7 @@
     ];
 
     $form = opForm($data);
-    $form->et(true)->submit([
+    $form->get()->submit([
         "string:name"       => 'Please enter a name',
         "str_len:name:<:5"  => 'Name should be more than five(5) characters',
         "email:email"       => 'Please enter a valid email address',
