@@ -50,7 +50,7 @@
 
 ## Requirements
 
-- `>= php5.3.3+`
+- `>= php7.2+`
 
 ## Installation
 
@@ -59,7 +59,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/php-form-validator": "^3.3.0" 
+    "peterson/php-form-validator": "^3.3.1" 
 }
 ```
 
@@ -116,12 +116,12 @@ public function save(Request $request){
 ```
 
 ## Methods That Should Always Come First
-- These methods are mandatory and should always come first before any others.
-    - All are Optional `method`
+- All are Optional `method`
+    - These methods are only mandatory on usage and should always come first before others.
 
 | Methods  |        Description            |
 |----------|-------------------------------|
-| ->et()   |  The method takes a `bool` parameter to decide how errors are displayed: `single or multiple` |
+| ->et()   |  Takes param as `bool` to format error's on display: `single or multiple` |
 | ->post() |  No param needed. SET `form` request to `POST` only |
 | ->get()  |  No param needed. SET `form` request to `GET` only |
 
@@ -138,9 +138,9 @@ $form->post()->submit([
 
 | Array Keys  |        Description                      |
 |-------------|-----------------------------------------|
-| request     |  String `POST/|GET/|ALL` Default `POST` |
-| error_type  |  Boolean `true/|false` Default `false`  |
-| csrf_token  |  Boolean `true/|false` Default `true`   |
+| request     |  String `POST\|GET\|ALL` Default `POST` |
+| error_type  |  Boolean `true\|false` Default `false`  |
+| csrf_token  |  Boolean `true\|false` Default `true`   |
 
 ```
 Config_opForm([
@@ -223,7 +223,7 @@ $form->get()->submit([
 ```
 
 ### All
-- Same as `POST/|GET`
+- Same as `POST\|GET`
     - This will set the Form Request using `$_SERVER['REQUEST_METHOD']`
 
 ```

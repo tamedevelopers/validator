@@ -50,10 +50,14 @@ if (! function_exists('Config_opForm')) {
     function Config_opForm(?array $option = [])
     {
         $default = [
-            'error_type'    => $option['error_type'] && is_bool($option['error_type']) ?? false,
-            'csrf_token'    => $option['csrf_token'] && is_bool($option['csrf_token']) ?? true,
-            'request'       => $option['request']       ?? 'POST',
+            'error_type'    => $option['error_type'] ?? false,
+            'csrf_token'    => $option['csrf_token'] ?? true,
+            'request'       => $option['request'] ?? 'POST',
         ];
+
+        // check if is boolean values
+        $default['error_type'] = is_bool($default['error_type']) ? $default['error_type'] : false;
+        $default['csrf_token'] = is_bool($default['csrf_token']) ? $default['csrf_token'] : true;
 
         // Error type
         if(!defined('GLOBAL_OPFORM_ERROR')){
