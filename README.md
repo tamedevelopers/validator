@@ -19,6 +19,7 @@
     * [Csrf Token](#csrf-token)
 * [Usage](#usage)
   * [Error Type](#error-type)
+  * [Token](#token)
   * [POST](#post)
   * [GET](#get)
   * [ALL](#all)
@@ -59,7 +60,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/php-form-validator": "^3.3.1" 
+    "peterson/php-form-validator": "^3.3.2" 
 }
 ```
 
@@ -119,11 +120,12 @@ public function save(Request $request){
 - All are Optional `method`
     - These methods are only mandatory on usage and should always come first before others.
 
-| Methods  |        Description            |
-|----------|-------------------------------|
-| ->et()   |  Takes param as `bool` to format error's on display: `single or multiple` |
-| ->post() |  No param needed. SET `form` request to `POST` only |
-| ->get()  |  No param needed. SET `form` request to `GET` only |
+| Methods   |        Description            |
+|-----------|-------------------------------|
+| ->et()    |  Takes param as `bool` to format error's on display: `single or multiple` |
+| ->token() |  Takes param as `bool` to Enable or Disable `csrf_token` for each request |
+| ->post()  |  No param needed. SET `form` request to `POST` only |
+| ->get()   |  No param needed. SET `form` request to `GET` only |
 
 ```
 $form->post()->submit([
@@ -194,6 +196,28 @@ $form->et(false);
 
 ```
 $form->et(true)->submit([
+    "string:country:==:0"   => 'Please Select a Country',
+    "email:email"           => 'Please enter a valid email address',
+])
+```
+
+### Token
+- Takes a param as `bool` Default is `false`
+    - Allow disability of `csrf_token` on each form request
+
+| Error |        Description            |
+|-------|-------------------------------|
+| false |  `Default` Will disable `csrf_token` usage  |
+| true  |  This allow `csrf_token` per request only   |
+
+```
+$form->token(false);
+```
+
+- or
+
+```
+$form->token(true)->submit([
     "string:country:==:0"   => 'Please Select a Country',
     "email:email"           => 'Please enter a valid email address',
 ])

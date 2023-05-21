@@ -96,6 +96,20 @@ trait ValidatorTrait {
     }
 
     /**
+     * CSRF Token
+     * @param  bool $type\ Token type
+     * - true|false \Default is false
+     * 
+     * @return object
+     */
+    public function token(?bool $type = false)
+    {
+        $this->allow_csrf = $type;
+
+        return $this;
+    }
+
+    /**
      * Set Request to POST
      * 
      * @return object
