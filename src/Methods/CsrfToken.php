@@ -47,7 +47,7 @@ class CsrfToken{
         if(self::$allow_csrf){
             // Start the session if it has not already been started
             if (session_status() == PHP_SESSION_NONE) {
-                session_start();
+                @session_start();
             }
 
             // Generate on new page load

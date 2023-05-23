@@ -246,7 +246,7 @@ class UltimateMethods {
     }
 
     /**
-     * Resolve falsh message and save in memeory
+     * Resolve flash message and save in memeory
      * @param object/UltimateValidator $object
      * 
      * @return array|string\resolveFlash
