@@ -17,7 +17,7 @@ class GetRequestType {
         // set default value for request type to POST
         $requestType = INPUT_POST;
 
-        // always empty|null except `Config_opForm` has been used
+        // always empty|null except `config_form` has been used
         if(!empty($type)){
             $type = strtoupper(trim($type));
             if($type == 'ALL'){

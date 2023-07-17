@@ -1,9 +1,9 @@
 {
-    "name": "peterson/php-form-validator",
+    "name": "peterson/validator",
     "type": "library",
     "description": "PHP Form Validator is a small no-depencies library for PHP codes.",
     "keywords": ["php form validator", "form validator", "form", "php forms", "php", "forms", "easy validation"],
-    "homepage": "https://github.com/tamedevelopers/phpFormValidator",
+    "homepage": "https://github.com/tamedevelopers/validator",
     "license": "MIT",
     "authors": [
         {
@@ -39,7 +39,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "3.3.4-dev"
+            "dev-main": "3.3.5-dev"
         }
     },
     "minimum-stability": "stable",

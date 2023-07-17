@@ -11,7 +11,7 @@ use UltimateValidator\CsrfToken;
     ];
 
     // This can be on just one file accesible to all forms request
-    Config_opForm([
+    config_form([
         'request'       => 'POST',
         'error_type'    => true,
         'csrf_token'    => true,

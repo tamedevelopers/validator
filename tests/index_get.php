@@ -8,7 +8,7 @@
         'occupation'        => 'Web Artisans'
     ];
 
-    $form = opForm($data);
+    $form = form($data);
     $form->get()->submit([
         "string:name"       => 'Please enter a name',
         "str_len:name:<:5"  => 'Name should be more than five(5) characters',

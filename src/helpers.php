@@ -5,7 +5,7 @@ use UltimateValidator\RequestMethod;
 use UltimateValidator\UltimateValidator;
 
 
-if (! function_exists('opForm')) {
+if (! function_exists('form')) {
 
     /**
      * Get Form Instance \ PHP Form Validator
@@ -14,7 +14,7 @@ if (! function_exists('opForm')) {
      * 
      * @return object\data\UltimateValidator
      */
-    function opForm(mixed $attribute = null)
+    function form(mixed $attribute = null)
     {
         return new UltimateValidator($attribute);
     }
@@ -37,7 +37,7 @@ if (! function_exists('request')) {
 }
 
 
-if (! function_exists('Config_opForm')) {
+if (! function_exists('config_form')) {
 
     /**
      * Set Global Configuration of FORM Setting
@@ -47,7 +47,7 @@ if (! function_exists('Config_opForm')) {
      * 
      * @return void
      */
-    function Config_opForm(?array $option = [])
+    function config_form(?array $option = [])
     {
         $default = [
             'error_type'    => $option['error_type'] ?? false,

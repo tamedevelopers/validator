@@ -1,10 +1,10 @@
 # PHP Form Validator  - PFV
 
-[![Total Downloads](https://poser.pugx.org/peterson/php-form-validator/downloads)](https://packagist.org/packages/peterson/php-form-validator)
-[![Latest Stable Version](https://poser.pugx.org/peterson/php-form-validator/version.png)](https://packagist.org/packages/peterson/php-form-validator)
-[![License](https://poser.pugx.org/peterson/php-form-validator/license)](https://packagist.org/packages/peterson/php-form-validator)
+[![Total Downloads](https://poser.pugx.org/peterson/validator/downloads)](https://packagist.org/packages/peterson/validator)
+[![Latest Stable Version](https://poser.pugx.org/peterson/validator/version.png)](https://packagist.org/packages/peterson/validator)
+[![License](https://poser.pugx.org/peterson/validator/license)](https://packagist.org/packages/peterson/validator)
 [![Build Status](https://github.com/tamedevelopers/phpFormValidator/actions/workflows/php.yml/badge.svg)](https://github.com/tamedevelopers/phpFormValidator/actions)
-[![Code Coverage](https://codecov.io/gh/peterson/php-form-validator/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/peterson/php-form-validator/branch/3.2.2.x)
+[![Code Coverage](https://codecov.io/gh/peterson/validator/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/peterson/validator/branch/3.2.2.x)
 
 ## Documentation
 
@@ -60,7 +60,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/php-form-validator": "^3.3.4" 
+    "peterson/validator": "^3.3.5" 
 }
 ```
 
@@ -71,7 +71,7 @@ composer update
 
 **Or composer require**:
 ```
-composer require peterson/php-form-validator
+composer require peterson/validator
 ```
 
 ## Instantiate
@@ -100,7 +100,7 @@ $form = new UltimateValidator\UltimateValidator($data);
 
 - **Example 3** `Helpers Function`
 ```
-$form = opForm();
+$form = form();
 ```
 
 ## Laravel Support
@@ -112,7 +112,7 @@ public function save(Request $request){
 
     $form = new UltimateValidator();
     or
-    $form = opForm();
+    $form = form();
 }
 ```
 
@@ -136,7 +136,7 @@ $form->post()->submit([
 
 ## Global Configuration
 - Helpers available to assist on easy configuration
-    - `Config_opForm()`
+    - `config_form()`
 
 | Array Keys  |        Description                      |
 |-------------|-----------------------------------------|
@@ -145,7 +145,7 @@ $form->post()->submit([
 | csrf_token  |  Boolean `true\|false` Default `true`   |
 
 ```
-Config_opForm([
+config_form([
     'request'       => 'POST',
     'error_type'    => true,
     'csrf_token'    => true,
@@ -155,7 +155,7 @@ Config_opForm([
 ## Csrf
 - Implementing `Csrf` (Cross-Site Request Forgery)
     - By default the form requires all request to have a token attached.
-        - You can disable the usage with the `Config_opForm()` Helper
+        - You can disable the usage with the `config_form()` Helper
 
 
 ### Csrf Form Input
@@ -226,7 +226,7 @@ $form->token(true)->submit([
 ### POST
 - You can call separately or Call Before any other method, if intend to use.
     - This will set the Form Request to `POST`
-        - This will always override the `Config_opForm()` settings
+        - This will always override the `config_form()` settings
 
 ```
 $form->post()->submit([
@@ -626,7 +626,7 @@ $form->toJson([
 
 | function      | Description                       |
 |---------------|-----------------------------------|
-| opForm()      | Return instance of `(new UltimateValidator)` class  |
+| form()      | Return instance of `(new UltimateValidator)` class  |
 | request()     | Return instance of `(new RequestMethod)` class      |
 
 
