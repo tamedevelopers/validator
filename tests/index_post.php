@@ -48,6 +48,8 @@
                 <?= $form->getErrorMessage('message') ?>
             </div>
 
+            <?= csrf(); ?>
+
             <div class="row">
                 <div class="">
                     <label for="html">Name</label>

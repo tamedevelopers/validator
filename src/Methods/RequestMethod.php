@@ -55,10 +55,10 @@ class RequestMethod {
 
     /**
      * GET Request Data From Server
-     * @param string $key \Optional
+     * @param string $key [Optional]
      * - $key => Array data key value if accesible or returns entire data 
      * 
-     * @return mixed\RequestMethod\get
+     * @return mixed
      */
     public function get(?string $key = null)
     {
@@ -69,10 +69,10 @@ class RequestMethod {
 
     /**
      * POST Request Data From Server
-     * @param string $key \Optional
+     * @param string $key [Optional]
      * - $key => Array data key value if accesible or returns entire data 
      * 
-     * @return mixed\RequestMethod\post
+     * @return mixed
      */
     public function post(?string $key = null)
     {
@@ -86,7 +86,7 @@ class RequestMethod {
      * @param string $key \Optional
      * - $key => Array data key value if accesible or returns entire data 
      * 
-     * @return mixed\RequestMethod\cookie
+     * @return mixed
      */
     public function cookie(?string $key = null)
     {
@@ -97,10 +97,10 @@ class RequestMethod {
 
     /**
      * SERVER Request Data From Server
-     * @param string $key \Optional
+     * @param string $key [Optional]
      * - $key => Array data key value if accesible or returns entire data 
      * 
-     * @return mixed\RequestMethod\server
+     * @return mixed
      */
     public function server(?string $key = null)
     {
@@ -114,7 +114,7 @@ class RequestMethod {
      * @param string $key \Optional
      * - $key => Array data key value if accesible or returns entire data 
      * 
-     * @return mixed\RequestMethod\env
+     * @return mixed
      */
     public function env(?string $key = null)
     {
@@ -125,10 +125,10 @@ class RequestMethod {
 
     /**
      * All Request Data From Server
-     * @param string $key \Optional
+     * @param string $key [Optional]
      * - $key => Array data key value if accesible or returns entire data 
      * 
-     * @return mixed\RequestMethod\all
+     * @return mixed
      */
     public function all(?string $key = null)
     {

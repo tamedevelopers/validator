@@ -64,7 +64,7 @@ class UltimateValidator implements UltimateInterface
      * 
      * @param  array $data
      * 
-     * @return object
+     * @return $this
      */
     public function submit(?array $data = []) 
     {
@@ -76,7 +76,7 @@ class UltimateValidator implements UltimateInterface
      * @param  null|void  pass a $var into the funtion to access the returned object
      * usage   ->error(  function($response){}  );
      * 
-     * @return object
+     * @return $this
      */
     public function error(?callable $function)
     {
@@ -96,7 +96,7 @@ class UltimateValidator implements UltimateInterface
      * @param  null|void  pass a $var into the funtion to access the returned object
      * usage   ->success(  function($response){}  );
      * 
-     * @return object
+     * @return $this
      */
     public function success(?callable $function)
     {
@@ -116,7 +116,7 @@ class UltimateValidator implements UltimateInterface
      * Before form is set
      * usage   ->beforeSubmit(  function($response){}  );
      * 
-     * @return void
+     * @return $this
      */
     public function beforeSubmit($function)
     {
@@ -136,7 +136,7 @@ class UltimateValidator implements UltimateInterface
      * After form is set
      * usage   ->afterSubmit(  function($response){}  );
      * 
-     * @return void
+     * @return $this
      */
     public function afterSubmit($function)
     {
@@ -176,7 +176,7 @@ class UltimateValidator implements UltimateInterface
     /**
      * Check if param is set in parent param
      *
-     * @param string\key $key
+     * @param string $key
      *
      * @return bool
      */
@@ -188,7 +188,7 @@ class UltimateValidator implements UltimateInterface
     /**
      * Remove value of parameters form objects
      *
-     * @param array\keys $keys
+     * @param array $keys
      *
      * @return array
      */

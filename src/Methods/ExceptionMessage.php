@@ -9,7 +9,7 @@ class ExceptionMessage {
    /**
     * Return indicator `error` message
     * 
-    * @return string\exception 
+    * @return string 
     */
    public static function indicator()
    {
@@ -19,7 +19,7 @@ class ExceptionMessage {
    /**
     * Return Comparison Operator `error` message
     * 
-    * @return string\exception 
+    * @return string 
     */
    public static function comparison(?array $dataType)
    {
@@ -29,7 +29,7 @@ class ExceptionMessage {
    /**
     * Return Variable Not found `error` message
     * 
-    * @return string\exception 
+    * @return string 
     */
    public static function notFound(?array $dataType)
    {
@@ -39,7 +39,7 @@ class ExceptionMessage {
    /**
     * Csrf Token Mismatch `error` message
     * 
-    * @return string\exception 
+    * @return string 
     */
    public static function csrfTokenNotFound()
    {
@@ -49,7 +49,7 @@ class ExceptionMessage {
    /**
     * Csrf Token Mismatch `error` message
     * 
-    * @return string\exception 
+    * @return string 
     */
    public static function csrfTokenMismatch()
    {

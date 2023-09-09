@@ -12,7 +12,7 @@ trait ValidatorTrait {
      * @param  callable  $function.
      * usage   ->noInterface(  function($response){}  );
      * 
-     * @return void\noInterface
+     * @return void
      */
     public function noInterface(callable $function)
     {
@@ -23,7 +23,7 @@ trait ValidatorTrait {
 
     /**
      * Get needed data from array 
-     * @param  array\keys  $keys of needed data
+     * @param  array  $keys of needed data
      * @param  array  $allData param to check from
      * 
      * @return array
@@ -35,8 +35,8 @@ trait ValidatorTrait {
 
     /**
      * Get all needed params except the removed onces
-     * @param  array|keys  $keys of to remove from parameters
-     * @param  array|data  $data param to check from
+     * @param  array  $keys of data to remove from parameters
+     * @param  array  $data param to check from
      * 
      * @return array 
      */
@@ -63,8 +63,9 @@ trait ValidatorTrait {
      * Returns encoded JSON object of response and message
      * 
      * @param  int|float  $response
-     * @param  string|array|object  $message 
-     * @return string|json\echoJson  
+     * @param  mixed  $message 
+     * @return string
+     * - [json]  
      */
     public function echoJson(?int $response = 0, $message = null)
     {
@@ -75,7 +76,7 @@ trait ValidatorTrait {
      * Return error message in the form of array
      * @param string $key/ message|class
      * 
-     * @return string\getErrorMessage
+     * @return string
      */
     public function getErrorMessage($key = 'message')
     {
@@ -86,7 +87,7 @@ trait ValidatorTrait {
      * Error type handler
      * @param  bool $type\ Error type
      * 
-     * @return object
+     * @return $this
      */
     public function et(?bool $type = false)
     {
@@ -100,7 +101,7 @@ trait ValidatorTrait {
      * @param  bool $type\ Token type
      * - true|false \Default is false
      * 
-     * @return object
+     * @return $this
      */
     public function token(?bool $type = false)
     {
@@ -112,7 +113,7 @@ trait ValidatorTrait {
     /**
      * Set Request to POST
      * 
-     * @return object
+     * @return $this
      */
     public function post()
     {
@@ -130,7 +131,7 @@ trait ValidatorTrait {
     /**
      * Set Request to GET
      * 
-     * @return object
+     * @return $this
      */
     public function get()
     {
@@ -148,7 +149,7 @@ trait ValidatorTrait {
     /**
      * Set Request to REQUEST_METHOD
      * 
-     * @return object
+     * @return $this
      */
     public function all()
     {
@@ -200,7 +201,8 @@ trait ValidatorTrait {
 
     /**
      * @param  array $dataType  array.
-     * @return bool or false.
+     * @return bool 
+     * - [true or false].
      */
     private function operatorMethod(?array $dataType = null)
     {
@@ -237,7 +239,7 @@ trait ValidatorTrait {
      * Convert message error type
      * @param  bool $allowedType.
      * 
-     * @return object\allowedType 
+     * @return $this
      */
     private function allowedType($allowedType)
     {

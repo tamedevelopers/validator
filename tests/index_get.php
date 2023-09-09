@@ -9,7 +9,7 @@
     ];
 
     $form = form($data);
-    $form->get()->submit([
+    $form->token(false)->get()->submit([
         "string:name"       => 'Please enter a name',
         "str_len:name:<:5"  => 'Name should be more than five(5) characters',
         "email:email"       => 'Please enter a valid email address',
@@ -26,6 +26,10 @@
         
         // access parent scope data\ $data
         $attribute = $response->attribute;
+
+        var_dump(
+            form_request()->all()
+        );
 
         // message
         $response->message = "Submitted Successfully";

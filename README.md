@@ -42,7 +42,7 @@
 * [Collection](#collection)
 * [Get Error Message](#get-error-message)
 * [Collection Methods](#collection-methods)
-* [Request](#request)
+* [Form Request](#form-request)
 * [toObject](#toobject)
 * [toArray](#toarray)
 * [toJson](#tojson)
@@ -60,7 +60,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/validator": "^3.3.5" 
+    "peterson/validator": "^3.3.6" 
 }
 ```
 
@@ -574,22 +574,22 @@ $form->submit([
 |  toJson()         |  `string` Convert items to json     |
 
 
-## Request
+## Form Request
 - Optional\ Takes a param as `string` on each method to get needed data
     - Returns `data` or `null`
 
 | function              | Description                   |
 |-----------------------|-------------------------------|
-| request()->all()      | Return All requests data      |
-| request()->get()      | Return GET data               |
-| request()->post()     | Return POST data              |
-| request()->cookie()   | Return Cookies data           |
-| request()->session()  | Return Session data           |
-| request()->env()      | Return ENV data               |
+| form_request()->all()      | Return All requests data      |
+| form_request()->get()      | Return GET data               |
+| form_request()->post()     | Return POST data              |
+| form_request()->cookie()   | Return Cookies data           |
+| form_request()->session()  | Return Session data           |
+| form_request()->env()      | Return ENV data               |
 
 ```
-request()->get('password')
-request()->env('APP_DEBUG')
+form_request()->get('password')
+form_request()->env('APP_DEBUG')
 ```
 
 ## toObject
@@ -626,8 +626,8 @@ $form->toJson([
 
 | function      | Description                       |
 |---------------|-----------------------------------|
-| form()      | Return instance of `(new UltimateValidator)` class  |
-| request()     | Return instance of `(new RequestMethod)` class      |
+| form()        | Return instance of `(new UltimateValidator)` class  |
+| form_request()     | Return instance of `(new RequestMethod)` class      |
 
 
 ## Useful links

@@ -9,7 +9,7 @@ class CheckDatatype {
     /**
      * Private instance of parent validator
      * 
-     * @var object\object
+     * @var object
      */
     private static $object;
 
@@ -24,7 +24,7 @@ class CheckDatatype {
      * false if expected data type is not correct
      * true|data on success
      * 
-     * @return array|string|bool\check
+     * @return mixed
      */
     public static function check(?array $data_flags)
     {
@@ -66,7 +66,7 @@ class CheckDatatype {
      * 
      * @param  array $data_flags\[data_type|variable|operator|value]
      * 
-     * @return bool\checkEmun
+     * @return bool
      */
     protected static function checkEmun(?array $data_flags)
     {
@@ -84,7 +84,7 @@ class CheckDatatype {
      * 
      * @param  array $data_flags\[data_type|variable|operator|value]
      * 
-     * @return array|string|bool\validateForminput
+     * @return mixed
      */
     protected static function validateForminput(?array $data_flags)
     {

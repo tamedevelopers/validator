@@ -14,7 +14,7 @@ trait SubmitSuccessTrait {
      * 
      * @param  array $data
      * 
-     * @return object\data\submitInitialization
+     * @return object
      */
     private function submitInitialization(?array $data = [])
     {
@@ -110,6 +110,7 @@ trait SubmitSuccessTrait {
                 }
                 
                 // if errors is to be handled as an array
+                // multiple error handling 
                 else{
                     // set error to true
                     $this->isErrorTrue();

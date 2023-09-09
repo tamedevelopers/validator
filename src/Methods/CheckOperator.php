@@ -6,16 +6,14 @@ namespace UltimateValidator;
 
 class CheckOperator {
   
-    
     /**
      * Checking for flag type error
      * Returns true on error found and false is no error is found
-     * 
-     * @param  array\flag $flag Keypairs.
-     * @param  object\object $object of parent class ($this).
-     * 
-     * @return bool\ false|true
-    */
+     *
+     * @param  mixed $dataType
+     * @param  mixed $object of parent class ($this).
+     * @return bool
+     */
     public static function check($dataType = [], UltimateValidator $object)
     {
         $object->operator   = false;

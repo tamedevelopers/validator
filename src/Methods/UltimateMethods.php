@@ -21,7 +21,7 @@ class UltimateMethods {
     /**
      * Private instance of parent validator
      * 
-     * @var object\object
+     * @var object
      */
     public static $object;
 
@@ -30,7 +30,7 @@ class UltimateMethods {
      *
      * @param  object $object Ultimate validator onject.
      *
-     * @return void\initialize
+     * @return void
      */
     public static function initialize(UltimateValidator $object)
     {
@@ -44,7 +44,7 @@ class UltimateMethods {
      *
      * @param  string $param  form input name.
      *
-     * @return bool\checkIfParamIsset true|false
+     * @return bool
      */
     public static function checkIfParamIsset(?string $param = null)
     {
@@ -58,7 +58,7 @@ class UltimateMethods {
      * Set default params on load 
      * @param $type\ Default type is INPUT_GET as value 1
      * 
-     * @return object\setParams
+     * @return object
      */
     public static function setParams(?int $type = 1)
     {
@@ -82,7 +82,7 @@ class UltimateMethods {
 
     /**
      * Check if Form has been submitted
-     * @return bool\isSubmitted
+     * @return bool
      */
     public static function isSubmitted()
     {
@@ -97,7 +97,7 @@ class UltimateMethods {
      * Check server request method if `GET`
      * ->beforeSubmit Method will apply when REQUEST is GET
      * 
-     * @return bool\isRequestMethod
+     * @return bool
      */
     public static function isRequestMethod()
     {
@@ -152,7 +152,7 @@ class UltimateMethods {
     /**
      * Check if param is set in parent param
      *
-     * @param string\key $key
+     * @param string $key
      *
      * @return bool
      */
@@ -167,7 +167,7 @@ class UltimateMethods {
      /**
      * Remove value of parameters form objects
      *
-     * @param array\keys $keys
+     * @param array $keys
      *
      * @return array
      */
@@ -180,7 +180,7 @@ class UltimateMethods {
 
     /**
      * Get needed data from array 
-     * @param  array\keys  $keys of needed data
+     * @param  array  $keys of needed data
      * @param  array  $allData param to check from
      * 
      * @return array
@@ -200,10 +200,10 @@ class UltimateMethods {
 
     /**
      * Get all needed params except the removed onces
-     * @param  array|keys  $keys of to remove from parameters
-     * @param  array|data  $data param to check from
+     * @param  array  $keys of to remove from parameters
+     * @param  array  $data param to check from
      * 
-     * @return array 
+     * @return mixed
      */
     public static function exceptData(?array $keys = null, ?array $data = null)
     {
@@ -222,7 +222,7 @@ class UltimateMethods {
      * 
      * @param  int|float  $response
      * @param  string|array|object  $message 
-     * @return string|json\echoJson  
+     * @return string
      */
     public static function echoJson(?int $response = 0, $message = null)
     {
@@ -234,7 +234,7 @@ class UltimateMethods {
      * 
      * @param string $key of param name
      * 
-     * @return array|object|string\old
+     * @return mixed
      */
     public static function old($key = null)
     {
@@ -249,7 +249,7 @@ class UltimateMethods {
      * Resolve flash message and save in memeory
      * @param object/UltimateValidator $object
      * 
-     * @return array|string\resolveFlash
+     * @return mixed
      */
     public static function resolveFlash(UltimateValidator $object)
     {
@@ -277,7 +277,7 @@ class UltimateMethods {
      * Reset flash data to default values
      * @param object/UltimateValidator $object
      * 
-     * @return array|string\resetFlash
+     * @return mixed
      */
     public static function resetFlash(UltimateValidator $object)
     {
@@ -293,7 +293,7 @@ class UltimateMethods {
      * Return error message in the form of array
      * @param string $key/ message|class
      * 
-     * @return string\getErrorMessage
+     * @return string
      */
     public static function getErrorMessage(?string $key = 'class')
     {

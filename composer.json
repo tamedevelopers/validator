@@ -37,11 +37,6 @@
             "UltimateValidator\\Tests\\": "tests/"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-main": "3.3.5-dev"
-        }
-    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }

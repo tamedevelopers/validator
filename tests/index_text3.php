@@ -80,7 +80,7 @@ use UltimateValidator\CsrfToken;
                 <?= $form->getErrorMessage('message') ?>
             </div>
 
-            <?php csrf(); ?>
+            <?= csrf(); ?>
 
             <div class="row">
                 <div class="">

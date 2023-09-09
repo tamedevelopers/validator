@@ -12,7 +12,7 @@ if (! function_exists('form')) {
      * @param mixed $attribute 
      * - Any outside parameter you would want to use within the form instance
      * 
-     * @return object\data\UltimateValidator
+     * @return \UltimateValidator\UltimateValidator
      */
     function form(mixed $attribute = null)
     {
@@ -21,18 +21,18 @@ if (! function_exists('form')) {
 }
 
 
-if (! function_exists('request')) {
+if (! function_exists('form_request')) {
 
     /**
      * Get Server Request 
      * @param $key \Optional
      * - $key => Array data key value if accesible or returns entire data 
      * 
-     * @return mixed\data\RequestMethod
+     * @return \UltimateValidator\RequestMethod
      */
-    function request(?string $key = null)
+    function form_request(?string $key = null)
     {
-        return new RequestMethod();
+        return new RequestMethod($key);
     }
 }
 

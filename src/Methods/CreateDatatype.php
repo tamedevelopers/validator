@@ -10,9 +10,10 @@ class CreateDatatype {
      * Each form submit strings
      * [string:first_name:>:15 => 'First name is required']
      * 
-     * @param  string $key string like :string::name .
+     * @param string $key string like :string::name .
      * 
-     * @return array datas [data_type|variable|operator|value]
+     * @return array 
+     * - datas [data_type|variable|operator|value]
      */
     public static function create(?string $key)
     {
