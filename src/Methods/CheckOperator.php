@@ -11,7 +11,7 @@ class CheckOperator {
      * Returns true on error found and false is no error is found
      *
      * @param  mixed $dataType
-     * @param  mixed $object of parent class ($this).
+     * @param  \UltimateValidator\UltimateValidator|mixed $object
      * @return bool
      */
     public static function check($dataType = [], UltimateValidator $object)

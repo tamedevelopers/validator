@@ -14,7 +14,7 @@ trait SubmitSuccessTrait {
      * 
      * @param  array $data
      * 
-     * @return object
+     * @return $this
      */
     private function submitInitialization(?array $data = [])
     {

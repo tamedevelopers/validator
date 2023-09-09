@@ -28,7 +28,7 @@ class UltimateMethods {
     /**
      * Initialize methods to have access to global object (self::$object)
      *
-     * @param  object $object Ultimate validator onject.
+     * @param \UltimateValidator\UltimateValidator|mixed $object
      *
      * @return void
      */
@@ -56,7 +56,8 @@ class UltimateMethods {
 
     /**
      * Set default params on load 
-     * @param $type\ Default type is INPUT_GET as value 1
+     * @param $type
+     * - Default type is INPUT_GET as value 1
      * 
      * @return object
      */
@@ -221,7 +222,7 @@ class UltimateMethods {
      * Returns encoded JSON object of response and message
      * 
      * @param  int|float  $response
-     * @param  string|array|object  $message 
+     * @param  mixed  $message 
      * @return string
      */
     public static function echoJson(?int $response = 0, $message = null)
@@ -247,7 +248,7 @@ class UltimateMethods {
 
     /**
      * Resolve flash message and save in memeory
-     * @param object/UltimateValidator $object
+     * @param \UltimateValidator\UltimateValidator|mixed $object
      * 
      * @return mixed
      */
@@ -275,7 +276,7 @@ class UltimateMethods {
 
     /**
      * Reset flash data to default values
-     * @param object/UltimateValidator $object
+     * @param \UltimateValidator\UltimateValidator|mixed $object
      * 
      * @return mixed
      */

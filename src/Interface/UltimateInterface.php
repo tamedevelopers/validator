@@ -10,7 +10,7 @@ interface UltimateInterface
     /**
      * Return value of needed parameters form objects
      *
-     * @param array|null\keys $keys
+     * @param array|null $keys
      *
      * @return array
      */
@@ -19,7 +19,7 @@ interface UltimateInterface
     /**
      * Remove value of parameters form objects
      *
-     * @param array|null\keys $keys
+     * @param array|null $keys
      *
      * @return array|null
      */
@@ -28,7 +28,7 @@ interface UltimateInterface
     /**
      * Check if param is set in parent param
      *
-     * @param string\key $key
+     * @param string $key
      *
      * @return bool
      */
@@ -37,7 +37,7 @@ interface UltimateInterface
     /**
      * Remove value of parameters form objects
      *
-     * @param array\keys $keys
+     * @param array $keys
      *
      * @return array
      */
