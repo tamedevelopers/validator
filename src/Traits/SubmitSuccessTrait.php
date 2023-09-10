@@ -46,7 +46,9 @@ trait SubmitSuccessTrait {
              * Or If token not correct for encrypted token in the session
              */
             if($this->allow_csrf){
-                $this->error = true;
+                // set error to true
+                $this->isErrorTrue();
+
                 if(!$this->param->has('csrf_token')){
                     $this->message  = ExceptionMessage::csrfTokenNotFound();
                     return $this;
@@ -66,7 +68,7 @@ trait SubmitSuccessTrait {
                 * Configuration error
                 */
                 if($dataType === "indicator"){
-                    $this->error    = true;
+                    $this->isErrorTrue();
                     $this->message  = ExceptionMessage::indicator();
                     break;
                 }
@@ -77,24 +79,26 @@ trait SubmitSuccessTrait {
                 // allowed errors handling type
                 // if error is to be handled one by one
                 if($this->errorType === false){
+
                     // set error to true
                     $this->isErrorTrue();
-
-                    if($checkDataType === false || $checkDataType === '!isset'){
+                    
+                    if($this->isDataTypeNotSet($checkDataType)){
                         $this->message  = $message;
                         break;
                     }
-                    elseif($checkDataType === false || $checkDataType === '!found'){
+                    elseif($this->isDataTypeNotFound($checkDataType)){
                         $this->message  = ExceptionMessage::notFound($dataType);
                         break;
                     } else{
+
                         // set to false
                         $this->isErrorFalse(); 
 
                         //operator function checker
                         $this->operator     = $this->operatorMethod($dataType);
 
-                        if($this->operator === 'error'){
+                        if($this->isOperatorError()){
                             $this->message = ExceptionMessage::comparison($dataType);
                             $this->isErrorTrue();
                             break;
@@ -114,13 +118,13 @@ trait SubmitSuccessTrait {
                 else{
                     // set error to true
                     $this->isErrorTrue();
-
-                    if($checkDataType === false || $checkDataType === '!isset'){
+                    
+                    if($this->isDataTypeNotSet($checkDataType)){ 
                         if(!in_array($dataType['variable'], array_keys($this->message))){
                             $this->message[$dataType['variable']]    = $message;
                         }
                     }
-                    elseif($checkDataType === false || $checkDataType === '!found'){
+                    elseif($this->isDataTypeNotFound($checkDataType)){
                         if(!in_array($dataType['variable'], array_keys($this->message))){
                             $this->message[$dataType['variable']]    = ExceptionMessage::notFound($dataType);
                         }
@@ -129,7 +133,7 @@ trait SubmitSuccessTrait {
                         $this->operator = $this->operatorMethod($dataType);
 
                         // check error types
-                        if($this->operator === 'error'){
+                        if($this->isOperatorError()){
                             $this->message[$dataType['variable']]    = ExceptionMessage::comparison($dataType);
                             break;
                         }
@@ -161,6 +165,50 @@ trait SubmitSuccessTrait {
         }
         
         return $this;
+    }
+    
+    /**
+     * errOperator
+     *
+     * @return bool
+     */
+    private function isOperatorError()
+    {
+        if($this->operator === 'error'){
+            return true;
+        } 
+
+        return false;
+    }
+    
+    /**
+     * isDataTypeNotSet
+     *
+     * @param  mixed $type
+     * @return bool
+     */
+    private function isDataTypeNotSet($type)
+    {
+        if($type === false || $type === '!isset'){
+            return true;
+        } 
+
+        return false;
+    }
+    
+    /**
+     * isDataTypeNotFound
+     *
+     * @param  mixed $type
+     * @return bool
+     */
+    private function isDataTypeNotFound($type)
+    {
+        if($type === false || $type === '!found'){
+            return true;
+        } 
+
+        return false;
     }
 
     /**

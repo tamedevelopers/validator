@@ -73,14 +73,23 @@ trait ValidatorTrait {
     }
 
     /**
-     * Return error message in the form of array
-     * @param string $key/ message|class
+     * Return error message in the form of converted string
      * 
      * @return string
      */
-    public function getErrorMessage($key = 'message')
+    public function getMessage()
     {
-        return UltimateMethods::getErrorMessage($key);
+        return UltimateMethods::getMessage();
+    }
+
+    /**
+     * Return error class
+     * 
+     * @return string
+     */
+    public function getClass()
+    {
+        return UltimateMethods::getClass();
     }
 
     /**
@@ -111,7 +120,7 @@ trait ValidatorTrait {
     }
 
     /**
-     * Set Request to POST
+     * Convert Form Request to POST
      * 
      * @return $this
      */
@@ -129,7 +138,7 @@ trait ValidatorTrait {
     }
 
     /**
-     * Set Request to GET
+     * Convert Form Request to GET
      * 
      * @return $this
      */
@@ -147,7 +156,7 @@ trait ValidatorTrait {
     }
 
     /**
-     * Set Request to REQUEST_METHOD
+     * Convert Form Request to REQUEST_METHOD
      * 
      * @return $this
      */
@@ -228,8 +237,8 @@ trait ValidatorTrait {
     private function getType(?string $type = null)
     {
         // if defined
-        if(defined('GLOBAL_OPFORM_REQUEST')){
-            $type = GLOBAL_OPFORM_REQUEST;
+        if(defined('GLOBAL_FORM_REQUEST')){
+            $type = GLOBAL_FORM_REQUEST;
         }
 
         return GetRequestType::request($type);

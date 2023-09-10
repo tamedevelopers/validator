@@ -528,18 +528,16 @@ $form->submit([
 });
 ```
 
-## Get Error Message
+## Get Message and Class
 | key     |      Description           |
 |---------|----------------------------|
 | message | `Message` This convert all error messages and return as a string with `<br>` |
-| class   | `Class name` \| on form success  `opForm__success` \| on form error  `opForm__error` |
+| class   | `Class name` Class name on error and success  |
 
-- Takes a param as `string` message|class
-    - If no param is passed, it returns `class name`
 
 ```
-$form->getErrorMessage('message');
-$form->getErrorMessage('class');
+$form->getMessage();
+$form->getClass();
 ```
 ![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/phpFormValidator/main/getErrorMessage.png)
 

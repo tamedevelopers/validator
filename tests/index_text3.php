@@ -1,7 +1,5 @@
 <?php
 
-use UltimateValidator\CsrfToken;
-
     include_once __DIR__ . "/../vendor/autoload.php";
 
     $outsideParam = [
@@ -12,12 +10,13 @@ use UltimateValidator\CsrfToken;
 
     // This can be on just one file accesible to all forms request
     config_form([
-        'request'       => 'POST',
         'error_type'    => true,
-        'csrf_token'    => true,
+        'csrf_token'    => false,
+        'class'         => [
+            'error'     => 'custom_error_class',
+            'success'   => 'custom_success_class'
+        ]
     ]);
-
-    $form = new \UltimateValidator\UltimateValidator($outsideParam);
 
     //auto find request method if no param set
     $form = new \UltimateValidator\UltimateValidator($outsideParam);
@@ -76,11 +75,15 @@ use UltimateValidator\CsrfToken;
 
         <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
-            <div class="errorMSg mb-5 <?= $form->getErrorMessage('class') ?>">
-                <?= $form->getErrorMessage('message') ?>
+            <div class="errorMSg mb-5 <?= $form->getClass() ?>">
+                <?= $form->getMessage() ?>
             </div>
 
-            <?= csrf(); ?>
+            <!-- 
+                Since we have turned the token verification off 
+                Then we don't need to include the <?php csrf(); ?> with form anymore
+            -->
+
 
             <div class="row">
                 <div class="">

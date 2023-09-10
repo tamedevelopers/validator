@@ -7,9 +7,10 @@
         'marital_status'    => 'Single', 
         'occupation'        => 'Web Artisans'
     ];
+    
 
     $form = form($data);
-    $form->token(false)->get()->submit([
+    $form->et(true)->get()->submit([
         "string:name"       => 'Please enter a name',
         "str_len:name:<:5"  => 'Name should be more than five(5) characters',
         "email:email"       => 'Please enter a valid email address',
@@ -26,10 +27,6 @@
         
         // access parent scope data\ $data
         $attribute = $response->attribute;
-
-        var_dump(
-            form_request()->all()
-        );
 
         // message
         $response->message = "Submitted Successfully";
@@ -56,9 +53,11 @@
         <form method="get" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
             
-            <div class="errorMSg mb-5 <?= $form->getErrorMessage('class') ?>">
-                <?= $form->getErrorMessage('message') ?>
+            <div class="errorMSg mb-5 <?= $form->getClass() ?>">
+                <?= $form->getMessage() ?>
             </div>
+
+            <?= csrf() ?>
 
             <div class="row">
                 <div class="">

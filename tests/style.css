@@ -61,11 +61,11 @@ input:focus{
     border: 1px solid #043c04;
     color: #000;
 }
-.opForm__error{
+.form__error{
     border: 1px solid #ff0000;
     color: #ff0000;
 }
-.opForm__success{
+.form__success{
     border: 1px solid #043c04;
     color: #000;
 }

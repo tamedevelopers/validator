@@ -54,8 +54,13 @@ class UltimateValidator implements UltimateInterface
         UltimateMethods::setParams($this->type);
 
         // if defined
-        if(defined('GLOBAL_OPFORM_CSRF_TOKEN')){
-            $this->allow_csrf = GLOBAL_OPFORM_CSRF_TOKEN;
+        if(defined('GLOBAL_FORM_CSRF_TOKEN')){
+            $this->allow_csrf = GLOBAL_FORM_CSRF_TOKEN;
+        }
+
+        // if defined
+        if(defined('GLOBAL_FORM_ERROR')){
+            $this->errorType = GLOBAL_FORM_ERROR;
         }
     }
 

@@ -9,7 +9,7 @@ trait PropertyTrait {
     /**
      * param
      */ 
-    public  $param; 
+    public $param; 
 
     /**
      * attribute 
@@ -25,7 +25,7 @@ trait PropertyTrait {
 
     /**
      * data type
-     * @var bool|null
+     * @var mixed
      */
     public  $type; 
 
@@ -41,6 +41,15 @@ trait PropertyTrait {
     public $flash = [
         'message'   => [],
         'class'     => '',
+    ];
+
+    /**
+     * error class
+     * @var array
+     */
+    public $error_class = [
+        'success'   => 'form__success',
+        'error'     => 'form__error',
     ];
 
     /**

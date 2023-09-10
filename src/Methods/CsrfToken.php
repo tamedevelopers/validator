@@ -39,8 +39,8 @@ class CsrfToken{
         self::$token    = bin2hex(random_bytes(32));
 
         // if defined
-        if(defined('GLOBAL_OPFORM_CSRF_TOKEN')){
-            self::$allow_csrf = GLOBAL_OPFORM_CSRF_TOKEN;
+        if(defined('GLOBAL_FORM_CSRF_TOKEN')){
+            self::$allow_csrf = GLOBAL_FORM_CSRF_TOKEN;
         }
 
         // if csrf is allowed to be use

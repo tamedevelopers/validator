@@ -44,8 +44,8 @@
         <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
 
-            <div class="errorMSg mb-5 <?= $form->getErrorMessage('class') ?>">
-                <?= $form->getErrorMessage('message') ?>
+            <div class="errorMSg mb-5 <?= $form->getClass() ?>">
+                <?= $form->getMessage() ?>
             </div>
 
             <?= csrf(); ?>

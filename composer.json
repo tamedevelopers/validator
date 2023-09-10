@@ -18,11 +18,6 @@
     "require": {
         "php": ">=7.2"
     },
-    "config": {
-        "platform": {
-            "php": "7.2"
-        }
-    },
     "autoload": {
         "files": [
             "src/helpers.php"

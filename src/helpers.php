@@ -49,29 +49,38 @@ if (! function_exists('config_form')) {
      */
     function config_form(?array $option = [])
     {
-        $default = [
-            'error_type'    => $option['error_type'] ?? false,
-            'csrf_token'    => $option['csrf_token'] ?? true,
-            'request'       => $option['request'] ?? 'POST',
-        ];
+        $default = array_merge([
+            'error_type'    => false,
+            'csrf_token'    => true,
+            'request'       => 'POST',
+            'class'         => [
+                'error'     => 'form__error',
+                'success'   => 'form__success'
+            ]
+        ], $option);
 
         // check if is boolean values
         $default['error_type'] = is_bool($default['error_type']) ? $default['error_type'] : false;
         $default['csrf_token'] = is_bool($default['csrf_token']) ? $default['csrf_token'] : true;
 
         // Error type
-        if(!defined('GLOBAL_OPFORM_ERROR')){
-            define('GLOBAL_OPFORM_ERROR', $default['error_type']);
+        if(!defined('GLOBAL_FORM_ERROR')){
+            define('GLOBAL_FORM_ERROR', $default['error_type']);
         }
 
         // Csrf Token
-        if(!defined('GLOBAL_OPFORM_CSRF_TOKEN')){
-            define('GLOBAL_OPFORM_CSRF_TOKEN', $default['csrf_token']);
+        if(!defined('GLOBAL_FORM_CSRF_TOKEN')){
+            define('GLOBAL_FORM_CSRF_TOKEN', $default['csrf_token']);
         }
 
         // Request
-        if(!defined('GLOBAL_OPFORM_REQUEST')){
-            define('GLOBAL_OPFORM_REQUEST', $default['request']);
+        if(!defined('GLOBAL_FORM_REQUEST')){
+            define('GLOBAL_FORM_REQUEST', $default['request']);
+        }
+
+        // class
+        if(!defined('GLOBAL_FORM_CLASS')){
+            define('GLOBAL_FORM_CLASS', $default['class']);
         }
     }
 }

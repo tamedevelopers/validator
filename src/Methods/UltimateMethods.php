@@ -7,21 +7,11 @@ namespace UltimateValidator;
 use UltimateValidator\Collections\Collection;
 
 class UltimateMethods {
-  
-    /**
-     * error class
-     * 
-     * @var array
-     */
-    private static $error_class = [
-        'success'   => "opForm__success",
-        'error'     => "opForm__error",
-    ];
 
     /**
      * Private instance of parent validator
      * 
-     * @var object
+     * @var \UltimateValidator\UltimateValidator
      */
     public static $object;
 
@@ -247,7 +237,7 @@ class UltimateMethods {
     }
 
     /**
-     * Resolve flash message and save in memeory
+     * Resolve flash message and save in memory
      * @param \UltimateValidator\UltimateValidator|mixed $object
      * 
      * @return mixed
@@ -259,16 +249,19 @@ class UltimateMethods {
             foreach($object->message as $message){ 
                 $object->flash['message'][] = $message; 
             }
-        }else{
+        } else{
             $object->flash['message'][] = $object->message;
         }
 
+        // configure error class
+        self::configErrorClass($object);
+
         // set default class error
-        $object->flash['class'] = self::$error_class['error'];
+        $object->flash['class'] = $object->error_class['error'];
 
         // if form validation is successful
         if($object->flashVerify){
-            $object->flash['class'] = self::$error_class['success'];
+            $object->flash['class'] = $object->error_class['success'];
         }
         
         return self::$object;
@@ -291,19 +284,23 @@ class UltimateMethods {
     }
 
     /**
-     * Return error message in the form of array
-     * @param string $key/ message|class
+     * Return error message in the form of converted string
      * 
      * @return string
      */
-    public static function getErrorMessage(?string $key = 'class')
+    public static function getMessage()
     {
-        // convert flash message to string
-        $message = implode(' <br>', self::$object->flash['message']);
+        return implode(' <br>', self::$object->flash['message']);
+    }
 
-        return  strtolower($key) == 'message' 
-                ? $message 
-                : self::$object->flash['class'];
+    /**
+     * Return error class
+     * 
+     * @return string
+     */
+    public static function getClass()
+    {
+        return self::$object->flash['class'];
     }
 
     /**
@@ -318,6 +315,21 @@ class UltimateMethods {
     public static function getForm()
     {
         return self::$object->param->toArray() ?? null;
+    }
+
+    /**
+     * configErrorClass
+     *
+     * @param  mixed $object
+     * @return void
+     */
+    static private function configErrorClass(&$object)
+    {
+        if(defined('GLOBAL_FORM_CLASS')){
+            $object->error_class = GLOBAL_FORM_CLASS;
+        }
+
+        return $object->error_class;
     }
 
     /**
