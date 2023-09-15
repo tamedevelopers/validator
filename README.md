@@ -39,8 +39,8 @@
 * [onlyData](#onlydata-method)
 * [ExceptData](#exceptdata-method)
 * [GetForm](#getForm)
+* [Get Message and Class](#get-message-and-class)
 * [Collection](#collection)
-* [Get Error Message](#get-error-message)
 * [Collection Methods](#collection-methods)
 * [Form Request](#form-request)
 * [toObject](#toobject)
@@ -60,7 +60,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/validator": "^3.3.6" 
+    "peterson/validator": "^3.3.7" 
 }
 ```
 

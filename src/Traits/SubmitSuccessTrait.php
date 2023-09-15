@@ -88,7 +88,8 @@ trait SubmitSuccessTrait {
                         break;
                     }
                     elseif($this->isDataTypeNotFound($checkDataType)){
-                        $this->message  = ExceptionMessage::notFound($dataType);
+                        // ExceptionMessage::notFound($dataType)
+                        $this->message  = $message;
                         break;
                     } else{
 
@@ -126,7 +127,8 @@ trait SubmitSuccessTrait {
                     }
                     elseif($this->isDataTypeNotFound($checkDataType)){
                         if(!in_array($dataType['variable'], array_keys($this->message))){
-                            $this->message[$dataType['variable']]    = ExceptionMessage::notFound($dataType);
+                            // ExceptionMessage::notFound($dataType);
+                            $this->message[$dataType['variable']]    = $message;
                         }
                     } else{
                         //operator function checker
