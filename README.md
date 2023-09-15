@@ -143,12 +143,19 @@ $form->post()->submit([
 | request     |  String `POST\|GET\|ALL` Default `POST` |
 | error_type  |  Boolean `true\|false` Default `false`  |
 | csrf_token  |  Boolean `true\|false` Default `true`   |
+| class       |  Array `error\|success` error class type to be returned on both success and failure   |
+
+
 
 ```
 config_form([
     'request'       => 'POST',
     'error_type'    => true,
     'csrf_token'    => true,
+    'class'         => [
+        'error'     => 'form__error',
+        'success'   => 'form__success'
+    ]
 ]); 
 ```
 
