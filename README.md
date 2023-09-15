@@ -173,7 +173,7 @@ config_form([
 ```
 csrf();
 ```
-![Sample Csrf Form Input](https://raw.githubusercontent.com/tamedevelopers/phpFormValidator/main/csrf_input.png)
+![Sample Csrf Form Input](https://raw.githubusercontent.com/tamedevelopers/phpFormValidator/main/getErrorMessage.png)
 
 ### Csrf Token
 - This will return the `csrf token` string
