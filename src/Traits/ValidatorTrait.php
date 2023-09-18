@@ -222,7 +222,7 @@ trait ValidatorTrait {
             $this->operator = 'error';
             //value check command
             if(isset($dataType['value'])){
-                $this->operator = CheckOperator::check($dataType, $this);
+                $this->operator = CheckOperator::check($this, $dataType);
             }
         }
         return $this->operator;

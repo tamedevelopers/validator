@@ -10,11 +10,11 @@ class CheckOperator {
      * Checking for flag type error
      * Returns true on error found and false is no error is found
      *
-     * @param  mixed $dataType
      * @param  \UltimateValidator\UltimateValidator|mixed $object
+     * @param  mixed $dataType
      * @return bool
      */
-    public static function check($dataType = [], UltimateValidator $object)
+    public static function check(UltimateValidator $object, $dataType = [])
     {
         $object->operator   = false;
         $flagOperator       = $dataType['operator'];
