@@ -60,7 +60,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/validator": "^3.3.7" 
+    "peterson/validator": "^3.3.8" 
 }
 ```
 
