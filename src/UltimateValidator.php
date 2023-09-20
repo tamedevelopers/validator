@@ -207,11 +207,14 @@ class UltimateValidator implements UltimateInterface
      * 
      * @param string $key of param name
      * 
+     * @param mixed $default
+     * [optional] 
+     * 
      * @return mixed
      */
-    public function old($key = null)
+    public function old($key = null, $default = null)
     {
-        return UltimateMethods::old($key);
+        return UltimateMethods::old($key, $default);
     }
 
     /**

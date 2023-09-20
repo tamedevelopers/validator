@@ -48,7 +48,7 @@
                 <?= $form->getMessage() ?>
             </div>
 
-            <?= csrf(); ?>
+            <?php csrf() ?>
 
             <div class="row">
                 <div class="">

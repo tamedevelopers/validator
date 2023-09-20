@@ -31,12 +31,17 @@
         // message
         $response->message = "Submitted Successfully";
 
-        var_dump($param->email);
-        var_dump($param['name']);
-        var_dump($attribute->occupation);
+        var_dump(
+            $param->email,
+            $param['name'],
+            $attribute->occupation
+        );
+
+
         // var_dump( $response->getForm() );
     });
 
+    
 ?>
 
 
@@ -57,7 +62,7 @@
                 <?= $form->getMessage() ?>
             </div>
 
-            <?= csrf() ?>
+            <?php csrf() ?>
 
             <div class="row">
                 <div class="">
@@ -67,12 +72,35 @@
                 
                 <div class="">
                     <label for="html">Email</label>
-                    <input type="text" name="email" value="<?= $form->old('email'); ?>">
+                    <input type="text" name="email" value="<?= old('email'); ?>">
                 </div>
                 
                 <div class="">
                     <label for="html">Age</label>
-                    <input type="text" name="age" value="<?= $form->old('age'); ?>">
+                    <input type="text" name="age" value="<?= old('age'); ?>">
+                </div>
+
+                <div class="activities">
+                    <p class="title">
+                        Activities you're interested in:
+                    </p>
+
+                    <label for="reading">
+                        Reading
+                        <input type="checkbox" name="activities[]" value="reading" id="reading" <?= isset(old('activities')['reading']) ? 'checked' : '' ?> >
+                    </label>
+                    <label for="writing">
+                        Writing
+                        <input type="checkbox" name="activities[]" value="writing" id="writing" <?= isset(old('activities')['writing']) ? 'checked' : '' ?>>
+                    </label>
+                    <label for="running">
+                        Running
+                        <input type="checkbox" name="activities[]" value="running" id="running" <?= isset(old('activities')['running']) ? 'checked' : '' ?>>
+                    </label>
+                    <label for="swimming">
+                        Swimming
+                        <input type="checkbox" name="activities[]" value="swimming" id="swimming" <?= isset(old('activities')['swimming']) ? 'checked' : '' ?>>
+                    </label>
                 </div>
 
                 <button type="submit" class="btn mt-2">Submit</button>

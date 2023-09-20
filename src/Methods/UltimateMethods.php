@@ -225,15 +225,19 @@ class UltimateMethods {
      * 
      * @param string $key of param name
      * 
+     * @param mixed $default
+     * [optional] 
+     * 
      * @return mixed
      */
-    public static function old($key = null)
+    public static function old($key = null, $default = null)
     {
         // in array keys
         $formData = self::getForm();
+
         if(is_array($formData) && in_array($key, array_keys($formData))){
             // get data using key
-            $data = $formData[$key];
+            $data = $formData[$key] ?? $default;
 
             // check if the data to be returned is an array
             if(is_array($data)){
@@ -242,6 +246,8 @@ class UltimateMethods {
             
             return $data;
         }
+
+        return $default;
     }
 
     /**
@@ -322,7 +328,10 @@ class UltimateMethods {
      */
     public static function getForm()
     {
-        return self::$object->param->toArray() ?? null;
+        $mainForm = self::$object->param->toArray();
+        return !empty($mainForm) 
+                ? $mainForm
+                : self::$object->all()->param->toArray();
     }
 
     /**

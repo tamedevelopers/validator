@@ -20,6 +20,24 @@ if (! function_exists('form')) {
     }
 }
 
+if (! function_exists('old')) {
+    
+    /**
+     * Return previously entered value
+     * 
+     * @param string $key of param name
+     * 
+     * @param mixed $default
+     * [optional] 
+     * 
+     * @return mixed
+     */
+    function old($key = null, $default = null)
+    {
+       return form()->old($key, $default);
+    }
+}
+
 
 if (! function_exists('form_request')) {
 

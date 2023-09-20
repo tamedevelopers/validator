@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 body{
-    padding: 5rem 30rem;
+    padding: 100px 50px;
 }
 .hidden{
     display: none;
@@ -12,10 +12,22 @@ body{
 .d-block{
     display: block !important;
 }
+.activities .title{
+    margin: 20px 0;
+}
+.activities label{
+    display: block;
+}
+.activities label input{
+    width: 20px;
+}
 .form{
-    margin: 20px 0 0;
+    margin: 40px auto 0 auto;
     padding: 20px;
     background: rgba(245, 243, 243, .32);
+    width: 100%;
+    max-width: 650px;
+    box-sizing: border-box;
 }
 form h2{
     margin: 0 0 20px;

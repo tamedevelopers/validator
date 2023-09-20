@@ -61,7 +61,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/validator": "^3.3.9" 
+    "peterson/validator": "^4.0.1" 
 }
 ```
 
@@ -99,7 +99,7 @@ $data = [
 $form = new UltimateValidator\UltimateValidator($data);
 ```
 
-- **Example 3** `Helpers Function`
+- or -- `Helpers Function`
 ```
 $form = form();
 ```
@@ -474,7 +474,8 @@ $form->submit([
 ```
 
 ## Old
-- Takes a param as `string` 
+- Takes a param as `string`
+    - Second parameter is optional `mixed data`
     - Return old inserted data
 
 ```
@@ -482,8 +483,17 @@ $form->submit([
     "s:password" => 'Please enter a name',
     "s:retype_pass:!==:{$form->old('password')}" => 'Password mismatch, Please enter same password',
 ]);
+
+
+<input type="email" name="email" placeholder="Email Address" value="<?= $form->old('email')>">
+```
+
+- or -- `Helpers Function`
+```
+<input type="email" name="email" value="<?= old('email', 'default_value')>">
 ```
 ![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/phpFormValidator/main/old.png)
+
 
 
 ## GetForm
@@ -656,8 +666,9 @@ $form->toJson([
 
 | function      | Description                       |
 |---------------|-----------------------------------|
+| old()         | Inherit instance of `(new UltimateValidator)` old() method  |
 | form()        | Return instance of `(new UltimateValidator)` class  |
-| form_request()     | Return instance of `(new RequestMethod)` class      |
+| form_request()| Return instance of `(new RequestMethod)` class      |
 
 
 ## Useful links
