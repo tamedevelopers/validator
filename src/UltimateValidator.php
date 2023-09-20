@@ -214,4 +214,14 @@ class UltimateValidator implements UltimateInterface
         return UltimateMethods::old($key);
     }
 
+    /**
+     * Reset Error from Success to Error Class
+     * 
+     * @return void
+     */
+    public function resetError()
+    {
+        $this->flashVerify = false;
+    }
+
 }

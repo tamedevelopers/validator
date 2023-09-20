@@ -31,6 +31,7 @@
   * [noInterface](#nointerface)
   * [Before Submit](#before-submit)
   * [After Submit](#after-submit)
+* [ResetError](#resetError)
 * [Only](#only)
 * [Except](#except)
 * [Has](#has)
@@ -60,7 +61,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/validator": "^3.3.8" 
+    "peterson/validator": "^3.3.9" 
 }
 ```
 
@@ -400,6 +401,30 @@ $form->submit([
 ])->afterSubmit(function(){
 
     // execute code
+});
+```
+
+## ResetError
+- Even if you're inside the `success() method`
+- With this helper, you can be able to reset the class, to error class
+
+```
+->success(function($response){
+
+    $availableUserAmount = 900;
+
+    <!-- Lets say for instance, users have wallet balance and the form request has no error -->
+    <!-- But you need to perform another error validator before you allow request to pass through -->
+    <!-- Don't forget the add the "return;" key to stop any other code from executing -->
+
+
+    if($response->amount > $availableUserAmount){
+        $response->resetError();
+        $response->message = "Your wallet balance is too low, Please recharge before you can Subscribe to Plan!";        
+        return;
+    }
+
+    // perform other request before
 });
 ```
 
