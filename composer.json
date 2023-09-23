@@ -1,5 +1,5 @@
 {
-    "name": "peterson/validator",
+    "name": "tamedevelopers/validator",
     "type": "library",
     "description": "PHP Form Validator is a small no-depencies library for PHP codes.",
     "keywords": ["php form validator", "form validator", "form", "php forms", "php", "forms", "easy validation"],
@@ -16,20 +16,21 @@
         }
     ],
     "require": {
-        "php": ">=7.2"
+        "php": ">=7.2",
+        "tamedevelopers/support": "^1.0.0"
     },
     "autoload": {
         "files": [
             "src/helpers.php"
         ],
         "psr-4": {
-            "UltimateValidator\\": "src/"
+            "Tamedevelopers\\Validator\\": "src/"
         },
         "classmap": ["src/*"]
     },
     "autoload-dev": {
         "psr-4": {
-            "UltimateValidator\\Tests\\": "tests/"
+            "Tamedevelopers\\Validator\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",

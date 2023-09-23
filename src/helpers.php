@@ -1,8 +1,8 @@
 <?php 
 
-use UltimateValidator\CsrfToken;
-use UltimateValidator\RequestMethod;
-use UltimateValidator\UltimateValidator;
+use Tamedevelopers\Validator\Validator;
+use Tamedevelopers\Validator\Methods\CsrfToken;
+use Tamedevelopers\Validator\Methods\RequestMethod;
 
 
 if (! function_exists('form')) {
@@ -12,11 +12,11 @@ if (! function_exists('form')) {
      * @param mixed $attribute 
      * - Any outside parameter you would want to use within the form instance
      * 
-     * @return \UltimateValidator\UltimateValidator
+     * @return \Tamedevelopers\Validator\Validator
      */
     function form(mixed $attribute = null)
     {
-        return new UltimateValidator($attribute);
+        return new Validator($attribute);
     }
 }
 
@@ -46,7 +46,7 @@ if (! function_exists('form_request')) {
      * @param $key \Optional
      * - $key => Array data key value if accesible or returns entire data 
      * 
-     * @return \UltimateValidator\RequestMethod
+     * @return \Tamedevelopers\Validator\RequestMethod
      */
     function form_request(?string $key = null)
     {

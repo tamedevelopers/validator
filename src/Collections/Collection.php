@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace UltimateValidator\Collections;
+namespace Tamedevelopers\Validator\Collections;
 
 
 use ArrayAccess;

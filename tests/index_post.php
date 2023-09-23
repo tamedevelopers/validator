@@ -3,7 +3,7 @@
     include_once __DIR__ . "/../vendor/autoload.php";
 
     // it use $_SERVER['REQUEST_METHOD'] as default if not passed to the handler
-    $form = new \UltimateValidator\UltimateValidator();
+    $form = new \Tamedevelopers\Validator\Validator();
 
     $form->submit([
         "s:name"        => 'Please enter a name',
@@ -24,7 +24,7 @@
         // message
         $response->message = "Submitted Successfully";
 
-        var_dump($param);
+        dump($param);
         // var_dump($param->toArray());
     });
 

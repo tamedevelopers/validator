@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace UltimateValidator;
+namespace Tamedevelopers\Validator\Methods;
+
+use Tamedevelopers\Support\Tame;
 
 
 class CsrfToken{
@@ -71,7 +73,7 @@ class CsrfToken{
         
         // if session data is available
         if($session) {
-            $token = CsrfToken::decryptStr($session->encryption, $session->key, $session->passphrase);
+            $token = Tame::decryptStr($session->encryption, $session->key, $session->passphrase);
         } else {
             $token = self::generateToken();
         }
@@ -129,7 +131,7 @@ class CsrfToken{
 
         // if csrf is allowed to be use
         if(self::$allow_csrf){
-            $_SESSION[self::$session] = CsrfToken::encryptStr(self::$token);
+            $_SESSION[self::$session] = Tame::encryptStr(self::$token);
             return self::$token;
         }
     }
@@ -145,88 +147,9 @@ class CsrfToken{
         if(self::$allow_csrf){
             if ($_SERVER['REQUEST_METHOD'] == 'GET' && empty($_GET)) {
                 unset($_SESSION[self::$session]);
-                $_SESSION[self::$session] = CsrfToken::encryptStr(self::$token);
+                $_SESSION[self::$session] = Tame::encryptStr(self::$token);
             } 
         }
-    }
-
-    /**
-     * Decrypt string
-     * 
-     * @return string
-     */
-    static private function decryptStr($encryption, $key, $passkey)
-    {
-        // get encryption
-        $openSSL = self::openSSLEncrypt();
-
-        // Store the cipher method
-        $ciphering = $openSSL->cipher_algo;
-
-        // Use OpenSSl Encryption method
-        $options = $openSSL->options;
-
-        // Store the encryption key
-        $key = $key;
-        
-        // Non-NULL Initialization Vector for encryption
-        $passphrase = $passkey;
-        
-        // Use openssl_decrypt() function to decrypt the data
-        return openssl_decrypt($encryption, $ciphering, $key, $options, $passphrase);
-    }
-
-    /**
-     * Encrypt string
-     * 
-     * @return string
-     */
-    static private function encryptStr(?string $string = null)
-    {
-        // get encryption
-        $openSSL = self::openSSLEncrypt();
-
-        // Store the cipher method
-        $ciphering = $openSSL->cipher_algo;
-
-        // Store the encryption key
-        $key = $openSSL->key;
-        
-        // Use OpenSSl Encryption method
-        $options = $openSSL->options;
-        
-        // Non-NULL Initialization Vector for encryption
-        $passphrase = $openSSL->passphrase;
-        
-        // Use openssl_encrypt() function to encrypt the data
-        $encrypt = openssl_encrypt(
-            $string, 
-            $ciphering, 
-            $key, 
-            $options, 
-            $passphrase
-        );
-        
-        return json_encode([
-            'key'           => $key,
-            'passphrase'    => $passphrase,
-            'encryption'    => $encrypt
-        ]);
-    }
-
-    /**
-     * Create OPEN SSL Encryption
-     * 
-     * @return object
-     */
-    static private function openSSLEncrypt()
-    {
-        return (object) [
-            'key'           => bin2hex(random_bytes(8)),
-            'cipher_algo'   => 'BF-CBC',
-            'passphrase'    => bin2hex(random_bytes(4)),
-            'options'       => OPENSSL_CIPHER_RC2_40
-        ];
     }
 
 }

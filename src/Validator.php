@@ -11,10 +11,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UltimateValidator;
+namespace Tamedevelopers\Validator;
 
-use UltimateValidator\Collections\Collection;
-use UltimateValidator\Interface\UltimateInterface;
+use Tamedevelopers\Validator\Traits\PropertyTrait;
+use Tamedevelopers\Validator\Collections\Collection;
+use Tamedevelopers\Validator\Traits\ValidatorTrait;
+use Tamedevelopers\Validator\Methods\ValidatorMethod;
+use Tamedevelopers\Validator\Traits\SubmitSuccessTrait;
+use Tamedevelopers\Validator\Interface\ValidatorInterface;
 
 
 /**
@@ -26,7 +30,7 @@ use UltimateValidator\Interface\UltimateInterface;
  * @copyright 2021-2023 Tame Developers
  * @license   http://www.opensource.org/licenses/MIT The MIT License
  */
-class UltimateValidator implements UltimateInterface
+class Validator implements ValidatorInterface
 {
 
     use ValidatorTrait, 
@@ -48,10 +52,10 @@ class UltimateValidator implements UltimateInterface
         $this->attribute    = new Collection($attribute);
         
         // initialize methods
-        UltimateMethods::initialize($this);
+        ValidatorMethod::initialize($this);
         
         // set params
-        UltimateMethods::setParams($this->type);
+        ValidatorMethod::setParams($this->type);
 
         // if defined
         if(defined('GLOBAL_FORM_CSRF_TOKEN')){
@@ -90,7 +94,7 @@ class UltimateValidator implements UltimateInterface
                 $function($this);
 
                 // save into a remembering variable
-                UltimateMethods::resolveFlash($this);
+                ValidatorMethod::resolveFlash($this);
             }
         }
         return $this;
@@ -110,7 +114,7 @@ class UltimateValidator implements UltimateInterface
                 $function($this);
 
                 // save into a remembering variable
-                UltimateMethods::resolveFlash($this);
+                ValidatorMethod::resolveFlash($this);
             }
         }
         return $this;
@@ -126,9 +130,9 @@ class UltimateValidator implements UltimateInterface
     public function beforeSubmit($function)
     {
         // reset data
-        UltimateMethods::resetFlash($this);
+        ValidatorMethod::resetFlash($this);
 
-        if(UltimateMethods::isRequestMethod()){
+        if(ValidatorMethod::isRequestMethod()){
             if(is_callable($function)){
                 $function($this);
             }
@@ -146,9 +150,9 @@ class UltimateValidator implements UltimateInterface
     public function afterSubmit($function)
     {
         // reset data
-        UltimateMethods::resetFlash($this);
+        ValidatorMethod::resetFlash($this);
         
-        if(UltimateMethods::isSubmitted()){
+        if(ValidatorMethod::isSubmitted()){
             if(is_callable($function)){
                 $function($this);
             }
@@ -164,7 +168,7 @@ class UltimateValidator implements UltimateInterface
      */
     public function only($keys = null)
     {
-        return UltimateMethods::only($keys);
+        return ValidatorMethod::only($keys);
     }
 
     /**
@@ -175,7 +179,7 @@ class UltimateValidator implements UltimateInterface
      */
     public function except($keys = null)
     {
-        return UltimateMethods::except($keys);
+        return ValidatorMethod::except($keys);
     }
 
     /**
@@ -187,7 +191,7 @@ class UltimateValidator implements UltimateInterface
      */
     public function has(?string $key = null)
     {
-        return UltimateMethods::has($key);
+        return ValidatorMethod::has($key);
     }
 
     /**
@@ -199,7 +203,7 @@ class UltimateValidator implements UltimateInterface
      */
     public function merge(?array $keys = null, ?array $data = null)
     {
-        return UltimateMethods::merge($keys, $data);
+        return ValidatorMethod::merge($keys, $data);
     }
 
     /**
@@ -214,7 +218,7 @@ class UltimateValidator implements UltimateInterface
      */
     public function old($key = null, $default = null)
     {
-        return UltimateMethods::old($key, $default);
+        return ValidatorMethod::old($key, $default);
     }
 
     /**

@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-namespace UltimateValidator;
+namespace Tamedevelopers\Validator\Traits;
+
+use Tamedevelopers\Validator\Methods\CheckOperator;
+use Tamedevelopers\Validator\Methods\GetRequestType;
+use Tamedevelopers\Validator\Methods\ValidatorMethod;
 
 trait ValidatorTrait {
   
@@ -30,7 +34,7 @@ trait ValidatorTrait {
      */
     public function onlyData(?array $keys = null, ?array $allData = null)
     {
-        return UltimateMethods::onlyData($keys, $allData);
+        return ValidatorMethod::onlyData($keys, $allData);
     }
 
     /**
@@ -42,7 +46,7 @@ trait ValidatorTrait {
      */
     public function exceptData(?array $keys = null, ?array $data = null)
     {
-        return UltimateMethods::exceptData($keys, $data);
+        return ValidatorMethod::exceptData($keys, $data);
     } 
 
     /**
@@ -56,7 +60,7 @@ trait ValidatorTrait {
      */
     public function getForm($type = null)
     {
-        return UltimateMethods::getForm($type);
+        return ValidatorMethod::getForm($type);
     }
 
     /**
@@ -69,7 +73,7 @@ trait ValidatorTrait {
      */
     public function echoJson(?int $response = 0, $message = null)
     {
-        return UltimateMethods::echoJson($response, $message);
+        return ValidatorMethod::echoJson($response, $message);
     }
 
     /**
@@ -79,7 +83,7 @@ trait ValidatorTrait {
      */
     public function getMessage()
     {
-        return UltimateMethods::getMessage();
+        return ValidatorMethod::getMessage();
     }
 
     /**
@@ -89,7 +93,7 @@ trait ValidatorTrait {
      */
     public function getClass()
     {
-        return UltimateMethods::getClass();
+        return ValidatorMethod::getClass();
     }
 
     /**
@@ -129,10 +133,10 @@ trait ValidatorTrait {
         $this->type = INPUT_POST;
 
         // initialize methods
-        UltimateMethods::initialize($this);
+        ValidatorMethod::initialize($this);
 
         // set params
-        UltimateMethods::setParams($this->type);
+        ValidatorMethod::setParams($this->type);
 
         return $this;
     }
@@ -147,10 +151,10 @@ trait ValidatorTrait {
         $this->type = INPUT_GET;
 
         // initialize methods
-        UltimateMethods::initialize($this);
+        ValidatorMethod::initialize($this);
 
         // set params
-        UltimateMethods::setParams($this->type);
+        ValidatorMethod::setParams($this->type);
 
         return $this;
     }
@@ -167,10 +171,10 @@ trait ValidatorTrait {
                                 : INPUT_POST;
 
         // initialize methods
-        UltimateMethods::initialize($this);
+        ValidatorMethod::initialize($this);
 
         // set params
-        UltimateMethods::setParams($this->type);
+        ValidatorMethod::setParams($this->type);
 
         return $this;
     }

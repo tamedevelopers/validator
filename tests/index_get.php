@@ -31,13 +31,12 @@
         // message
         $response->message = "Submitted Successfully";
 
-        var_dump(
+        dump(
             $param->email,
             $param['name'],
             $attribute->occupation
         );
-
-
+        
         // var_dump( $response->getForm() );
     });
 

@@ -1,5 +1,7 @@
 <?php
 
+use Tamedevelopers\Support\Hash;
+
     include_once __DIR__ . "/../vendor/autoload.php";
 
     $outsideParam = [
@@ -19,7 +21,7 @@
     ]);
 
     //auto find request method if no param set
-    $form = new \UltimateValidator\UltimateValidator($outsideParam);
+    $form = new \Tamedevelopers\Validator\Validator($outsideParam);
     $form->submit([
         "string:current_password"   => 'Enter your old password',
         "string:new_password"       => 'Enter a new password',
@@ -45,7 +47,8 @@
         $use = $outsideParam;
 
         $data['user_id']            = rand(10000, 99999);
-        $data['retype_password']    = md5($param['retype_password']);
+        $data['password']           = Hash::make($param['retype_password']);
+        $data['retype_password']    = bcrypt($param['retype_password']);
 
         // merge example
         $merge = $response->merge($response->param->toArray(), $data);
@@ -53,8 +56,12 @@
         // message
         $response->message = "Form submitted Successfully";
 
-        print_r($param->retype_password);
-        print_r($merge);
+        dump(
+            $param->retype_password,
+            $merge,
+            $data
+        );
+
         // print_r($response->getForm());
         // print_r($attributeParam );
     });

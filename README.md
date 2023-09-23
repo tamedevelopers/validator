@@ -61,7 +61,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "peterson/validator": "^4.0.1" 
+    "tamedevelopers/validator": "^4.2.0" 
 }
 ```
 
@@ -72,7 +72,7 @@ composer update
 
 **Or composer require**:
 ```
-composer require peterson/validator
+composer require tamedevelopers/validator
 ```
 
 ## Instantiate
@@ -84,9 +84,9 @@ composer require peterson/validator
 ```
 require_once __DIR__ . '/vendor/autoload.php';
 
-use \UltimateValidator\UltimateValidator;
+use \Tamedevelopers\Validator\Validator;
 
-$form = new UltimateValidator();
+$form = new Validator();
 ```
 
 - **Example 2**
@@ -96,7 +96,7 @@ $data = [
     'marital' => 'Single',
 ];
 
-$form = new UltimateValidator\UltimateValidator($data);
+$form = new Tamedevelopers\Validator\Validator($data);
 ```
 
 - or -- `Helpers Function`
@@ -106,12 +106,12 @@ $form = form();
 
 ## Laravel Support
 - Now supports Laravel and with same Functionalities no different
-    - `use UltimateValidator\UltimateValidator;`
+    - `use Tamedevelopers\Validator\Validator;`
 
 ```
 public function save(Request $request){
 
-    $form = new UltimateValidator();
+    $form = new Validator();
     or
     $form = form();
 }
@@ -666,9 +666,9 @@ $form->toJson([
 
 | function      | Description                       |
 |---------------|-----------------------------------|
-| old()         | Inherit instance of `(new UltimateValidator)` old() method  |
-| form()        | Return instance of `(new UltimateValidator)` class  |
-| form_request()| Return instance of `(new RequestMethod)` class      |
+| old()         | Inherit instance of `(new Validator)` old() method    |
+| form()        | Return instance of `(new Validator)` class            |
+| form_request()| Return instance of `(new RequestMethod)` class        |
 
 
 ## Useful links

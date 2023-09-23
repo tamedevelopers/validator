@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace UltimateValidator;
+namespace Tamedevelopers\Validator\Methods;
+
+use Tamedevelopers\Validator\Validator;
 
 class CheckOperator {
   
@@ -10,17 +12,17 @@ class CheckOperator {
      * Checking for flag type error
      * Returns true on error found and false is no error is found
      *
-     * @param  \UltimateValidator\UltimateValidator|mixed $object
+     * @param  \Tamedevelopers\Validator\Validator|mixed $object
      * @param  mixed $dataType
      * @return bool
      */
-    public static function check(UltimateValidator $object, $dataType = [])
+    public static function check(Validator $object, $dataType = [])
     {
         $object->operator   = false;
         $flagOperator       = $dataType['operator'];
         $flagValue          = $dataType['value'];
 
-        if(UltimateMethods::checkIfParamIsset($dataType['variable'])){
+        if(ValidatorMethod::checkIfParamIsset($dataType['variable'])){
 
             //equal to operator
             if($flagOperator == '==')

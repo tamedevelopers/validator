@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace UltimateValidator;
+namespace Tamedevelopers\Validator\Methods;
+
+use Tamedevelopers\Support\Tame;
 
 class CheckDatatype {
   
@@ -29,7 +31,7 @@ class CheckDatatype {
     public static function check(?array $data_flags)
     {
         // parent object
-        self::$object = UltimateMethods::$object;
+        self::$object = ValidatorMethod::$object;
 
         // if input parameter is isset -- proceed to error validating
         $type = true;
@@ -41,7 +43,7 @@ class CheckDatatype {
 
         else{
             // check if value param isset
-            if(UltimateMethods::checkIfParamIsset($data_flags['variable'])){
+            if(ValidatorMethod::checkIfParamIsset($data_flags['variable'])){
                 $type = self::validateForminput($data_flags);
             } 
             
@@ -145,7 +147,10 @@ class CheckDatatype {
 
             // string validation
             default:
-                $type = self::filter_string(filter_input(self::$object->type, $data_flags['variable']));
+                $type = Tame::filter_input(
+                    filter_input(self::$object->type, $data_flags['variable'])
+                );
+
                 // mostly for value of 0
                 if(empty($type) && $type != '0') {
                     $type = false;
@@ -156,17 +161,4 @@ class CheckDatatype {
         return $type;
     }
 
-    /**
-     * Filter sanitize string
-     *
-     * @param string $string
-     * 
-     * @return string
-    */
-    private static function filter_string(?string $string = null)
-    {
-        // htmlspecialchars('data', ENT_HTML5);
-        return htmlspecialchars((string) $string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    }
-    
 }

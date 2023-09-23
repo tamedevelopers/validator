@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace UltimateValidator\Interface;
+namespace Tamedevelopers\Validator\Interface;
 
-interface UltimateInterface 
+
+interface ValidatorInterface 
 {
     
     /**

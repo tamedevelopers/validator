@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
-namespace UltimateValidator;
+namespace Tamedevelopers\Validator\Traits;
 
-use UltimateValidator\CsrfToken;
+use Tamedevelopers\Validator\Methods\CsrfToken;
+use Tamedevelopers\Validator\Methods\CheckDatatype;
+use Tamedevelopers\Validator\Methods\CreateDatatype;
+use Tamedevelopers\Validator\Methods\ValidatorMethod;
+use Tamedevelopers\Validator\Methods\ExceptionMessage;
 
 trait SubmitSuccessTrait {
   
@@ -24,7 +28,7 @@ trait SubmitSuccessTrait {
         $this->beforeSubmit($this);
         
         // only begin validation when submitted
-        if(UltimateMethods::isSubmitted())
+        if(ValidatorMethod::isSubmitted())
         {
             // set to false
             $this->proceed = $this->flashVerify = false;

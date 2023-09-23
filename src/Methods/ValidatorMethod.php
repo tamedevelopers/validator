@@ -2,27 +2,28 @@
 
 declare(strict_types=1);
 
-namespace UltimateValidator;
+namespace Tamedevelopers\Validator\Methods;
 
-use UltimateValidator\Collections\Collection;
+use Tamedevelopers\Validator\Validator;
+use Tamedevelopers\Validator\Collections\Collection;
 
-class UltimateMethods {
+class ValidatorMethod {
 
     /**
      * Private instance of parent validator
      * 
-     * @var \UltimateValidator\UltimateValidator
+     * @var \Tamedevelopers\Validator\Validator
      */
     public static $object;
 
     /**
      * Initialize methods to have access to global object (self::$object)
      *
-     * @param \UltimateValidator\UltimateValidator|mixed $object
+     * @param \Tamedevelopers\Validator\Validator|mixed $object
      *
      * @return void
      */
-    public static function initialize(UltimateValidator $object)
+    public static function initialize(Validator $object)
     {
         self::$object = $object;
 
@@ -252,11 +253,11 @@ class UltimateMethods {
 
     /**
      * Resolve flash message and save in memory
-     * @param \UltimateValidator\UltimateValidator|mixed $object
+     * @param \Tamedevelopers\Validator\Validator|mixed $object
      * 
      * @return mixed
      */
-    public static function resolveFlash(UltimateValidator $object)
+    public static function resolveFlash(Validator $object)
     {
         // if message is an array
         if(self::isArray($object->message)){
@@ -283,11 +284,11 @@ class UltimateMethods {
 
     /**
      * Reset flash data to default values
-     * @param \UltimateValidator\UltimateValidator|mixed $object
+     * @param \Tamedevelopers\Validator\Validator|mixed $object
      * 
      * @return mixed
      */
-    public static function resetFlash(UltimateValidator $object)
+    public static function resetFlash(Validator $object)
     {
         $object->flash = [
             'message'   => [],

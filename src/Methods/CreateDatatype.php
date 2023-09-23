@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace UltimateValidator;
+namespace Tamedevelopers\Validator\Methods;
 
 class CreateDatatype {
   
