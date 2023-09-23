@@ -1,10 +1,10 @@
 # PHP Form Validator  - PFV
 
-[![Total Downloads](https://poser.pugx.org/peterson/validator/downloads)](https://packagist.org/packages/peterson/validator)
-[![Latest Stable Version](https://poser.pugx.org/peterson/validator/version.png)](https://packagist.org/packages/peterson/validator)
-[![License](https://poser.pugx.org/peterson/validator/license)](https://packagist.org/packages/peterson/validator)
+[![Total Downloads](https://poser.pugx.org/tamedeveloper/validator/downloads)](https://packagist.org/packages/tamedeveloper/validator)
+[![Latest Stable Version](https://poser.pugx.org/tamedeveloper/validator/version.png)](https://packagist.org/packages/tamedeveloper/validator)
+[![License](https://poser.pugx.org/tamedeveloper/validator/license)](https://packagist.org/packages/tamedeveloper/validator)
 [![Build Status](https://github.com/tamedevelopers/phpFormValidator/actions/workflows/php.yml/badge.svg)](https://github.com/tamedevelopers/phpFormValidator/actions)
-[![Code Coverage](https://codecov.io/gh/peterson/validator/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/peterson/validator/branch/3.2.2.x)
+[![Code Coverage](https://codecov.io/gh/tamedeveloper/validator/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/tamedeveloper/validator/branch/3.2.2.x)
 
 ## Documentation
 
