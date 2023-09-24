@@ -61,7 +61,7 @@ Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.o
 **Step 1** — update your `composer.json`:
 ```composer.json
 "require": {
-    "tamedevelopers/validator": "^4.2.0" 
+    "tamedevelopers/validator": "^4.2.1" 
 }
 ```
 
