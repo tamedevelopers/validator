@@ -52,7 +52,7 @@
 
 ## Requirements
 
-- `>= php7.2+`
+- `>= php 8.0+`
 
 ## Installation
 
