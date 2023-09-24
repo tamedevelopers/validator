@@ -54,7 +54,7 @@
 
 - `>= php 8.0+`
 
-## Installation
+## Installation 
 
 Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.org) dependency manager for PHP because it'll simplify installation.
 
