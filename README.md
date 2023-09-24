@@ -3,7 +3,7 @@
 [![Total Downloads](https://poser.pugx.org/tamedeveloper/validator/downloads)](https://packagist.org/packages/tamedeveloper/validator)
 [![Latest Stable Version](https://poser.pugx.org/tamedeveloper/validator/version.png)](https://packagist.org/packages/tamedeveloper/validator)
 [![License](https://poser.pugx.org/tamedeveloper/validator/license)](https://packagist.org/packages/tamedeveloper/validator)
-[![Build Status](https://github.com/tamedevelopers/phpFormValidator/actions/workflows/php.yml/badge.svg)](https://github.com/tamedevelopers/phpFormValidator/actions)
+[![Build Status](https://github.com/tamedevelopers/validator/actions/workflows/php.yml/badge.svg)](https://github.com/tamedevelopers/validator/actions)
 [![Code Coverage](https://codecov.io/gh/tamedeveloper/validator/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/tamedeveloper/validator/branch/3.2.2.x)
 
 ## Documentation
@@ -174,7 +174,7 @@ config_form([
 ```
 csrf();
 ```
-![Sample Csrf Form Input](https://raw.githubusercontent.com/tamedevelopers/phpFormValidator/main/getErrorMessage.png)
+![Sample Csrf Form Input](https://raw.githubusercontent.com/tamedevelopers/validator/main/getErrorMessage.png)
 
 ### Csrf Token
 - This will return the `csrf token` string
@@ -492,7 +492,7 @@ $form->submit([
 ```
 <input type="email" name="email" value="<?= old('email', 'default_value')>">
 ```
-![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/phpFormValidator/main/old.png)
+![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/validator/main/old.png)
 
 
 
@@ -581,7 +581,7 @@ $form->submit([
 $form->getMessage();
 $form->getClass();
 ```
-![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/phpFormValidator/main/getErrorMessage.png)
+![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/validator/main/getErrorMessage.png)
 
 
 ## Collection
@@ -674,7 +674,7 @@ $form->toJson([
 ## Useful links
 
 - @author Fredrick Peterson (Tame Developers)
-- [Lightweight - PHP Form Validator](https://github.com/tamedevelopers/phpFormValidator)
+- [Lightweight - PHP Form Validator](https://github.com/tamedevelopers/validator)
 - If you love this PHP Library, you can [Buy Tame Developers a coffee](https://www.buymeacoffee.com/tamedevelopers)
 - Link to Youtube Video Tutorial on usage will be available soon
 
