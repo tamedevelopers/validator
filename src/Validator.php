@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator;
 
+use Tamedevelopers\Support\Collections\Collection;
 use Tamedevelopers\Validator\Traits\PropertyTrait;
-use Tamedevelopers\Validator\Collections\Collection;
 use Tamedevelopers\Validator\Traits\ValidatorTrait;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
 use Tamedevelopers\Validator\Traits\SubmitSuccessTrait;

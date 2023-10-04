@@ -54,23 +54,10 @@
 
 - `>= php 8.0+`
 
-## Installation 
+## Installation
 
-Prior to installing `ultimate-uploader` get the [Composer](https://getcomposer.org) dependency manager for PHP because it'll simplify installation.
+Prior to installing `support package` get the [Composer](https://getcomposer.org) dependency manager for PHP because it'll simplify installation.
 
-**Step 1** — update your `composer.json`:
-```composer.json
-"require": {
-    "tamedevelopers/validator": "^4.2.1" 
-}
-```
-
-**Step 2** — run [Composer](https://getcomposer.org):
-```update
-composer update
-```
-
-**Or composer require**:
 ```
 composer require tamedevelopers/validator
 ```
@@ -89,14 +76,15 @@ use \Tamedevelopers\Validator\Validator;
 $form = new Validator();
 ```
 
-- **Example 2**
+- **Example 2** — `You can also pass in any data type` and this will be taken and pass to the `attribute` property.
 ```
-$data = [
+$form = new Tamedevelopers\Validator\Validator([
     'user' => 'F. Pete', 
     'marital' => 'Single',
-];
+]);
 
-$form = new Tamedevelopers\Validator\Validator($data);
+// this will return the data you pass
+$form->attribute
 ```
 
 - or -- `Helpers Function`

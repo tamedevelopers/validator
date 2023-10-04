@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tamedevelopers\Validator\Methods;
 
 use Tamedevelopers\Validator\Validator;
-use Tamedevelopers\Validator\Collections\Collection;
+use Tamedevelopers\Support\Collections\Collection;
 
 class ValidatorMethod {
 
