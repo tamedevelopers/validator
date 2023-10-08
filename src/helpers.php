@@ -1,8 +1,8 @@
 <?php 
 
+use Tamedevelopers\Support\Str;
 use Tamedevelopers\Validator\Validator;
 use Tamedevelopers\Validator\Methods\CsrfToken;
-use Tamedevelopers\Validator\Methods\RequestMethod;
 
 
 if (! function_exists('form')) {
@@ -14,7 +14,7 @@ if (! function_exists('form')) {
      * 
      * @return \Tamedevelopers\Validator\Validator
      */
-    function form(mixed $attribute = null)
+    function form($attribute = null)
     {
         return new Validator($attribute);
     }
@@ -26,7 +26,6 @@ if (! function_exists('old')) {
      * Return previously entered value
      * 
      * @param string $key of param name
-     * 
      * @param mixed $default
      * [optional] 
      * 
@@ -38,67 +37,38 @@ if (! function_exists('old')) {
     }
 }
 
-
-if (! function_exists('form_request')) {
-
-    /**
-     * Get Server Request 
-     * @param $key \Optional
-     * - $key => Array data key value if accesible or returns entire data 
-     * 
-     * @return \Tamedevelopers\Validator\RequestMethod
-     */
-    function form_request(?string $key = null)
-    {
-        return new RequestMethod($key);
-    }
-}
-
-
 if (! function_exists('config_form')) {
-
+    
     /**
-     * Set Global Configuration of FORM Setting
-     * @param array $options
-     * - [csrf_token => bool] \True|False 
-     * - True|False
-     * 
+     * Set Global Form Configuration
+     *
+     * @param  bool $error_type
+     * @param  bool $csrf_token
+     * @param  string|null $request
+     * @param  array $class
      * @return void
      */
-    function config_form(?array $option = [])
+    function config_form(?bool $error_type = false, ?bool $csrf_token = true, $request = null, array $class = [])
     {
-        $default = array_merge([
-            'error_type'    => false,
-            'csrf_token'    => true,
-            'request'       => 'POST',
-            'class'         => [
-                'error'     => 'form__error',
-                'success'   => 'form__success'
-            ]
-        ], $option);
-
-        // check if is boolean values
-        $default['error_type'] = is_bool($default['error_type']) ? $default['error_type'] : false;
-        $default['csrf_token'] = is_bool($default['csrf_token']) ? $default['csrf_token'] : true;
-
-        // Error type
-        if(!defined('GLOBAL_FORM_ERROR')){
-            define('GLOBAL_FORM_ERROR', $default['error_type']);
+        // If request not in array
+        if(!in_array(Str::lower($request), ['post', 'get', 'any', 'all'])){
+            $request = 'any';
         }
 
-        // Csrf Token
-        if(!defined('GLOBAL_FORM_CSRF_TOKEN')){
-            define('GLOBAL_FORM_CSRF_TOKEN', $default['csrf_token']);
-        }
+        // configure class
+        $class = array_merge([
+            'error'     => 'alert alert-danger',
+            'success'   => 'alert alert-success'
+        ], $class);
 
-        // Request
-        if(!defined('GLOBAL_FORM_REQUEST')){
-            define('GLOBAL_FORM_REQUEST', $default['request']);
-        }
-
-        // class
-        if(!defined('GLOBAL_FORM_CLASS')){
-            define('GLOBAL_FORM_CLASS', $default['class']);
+        // config holder
+        if(!defined('TAME_VALIDATOR_CONFIG')){
+            define('TAME_VALIDATOR_CONFIG', [
+                'error_type' => $error_type,
+                'csrf_token' => $csrf_token,
+                'request'   => $request,
+                'class'     => $class,
+            ]);
         }
     }
 }

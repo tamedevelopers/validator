@@ -8,20 +8,16 @@
         'occupation'        => 'Web Artisans'
     ];
     
+    // config_form();
 
-    $form = form($data);
-    $form->et(true)->get()->submit([
-        "string:name"       => 'Please enter a name',
-        "str_len:name:<:5"  => 'Name should be more than five(5) characters',
-        "email:email"       => 'Please enter a valid email address',
-        "int:age"           => 'Age is required',
-        "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
-    ])->error(function($response){ 
-
-        //for ajax error return | decode on frontend before usage
-        $response->echoJson(0, $response->message);
-
-    })->success(function($response){
+    $form = form($data)->all();
+    $form->rules([
+        // "string:name|==|4"       => 'Please enter a name',
+        // "str_len|name|<|5"  => 'Name should be more than five(5) characters',
+        // "email|email"       => 'Please enter a valid email address',
+        // "int:age"           => 'Age is required',
+        // "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
+    ])->success(function($response){
         // access the form data
         $param = $response->param;
         
@@ -34,7 +30,8 @@
         dump(
             $param->email,
             $param['name'],
-            $attribute->occupation
+            $attribute->occupation,
+            $response
         );
         
         // var_dump( $response->getForm() );

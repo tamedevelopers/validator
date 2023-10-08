@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Methods;
 
-use Tamedevelopers\Validator\Validator;
 
-class CheckOperator {
+class Operator {
   
     /**
      * Checking for flag type error
      * Returns true on error found and false is no error is found
      *
-     * @param  \Tamedevelopers\Validator\Validator|mixed $object
-     * @param  mixed $dataType
+     * @param  array $param
+     * @param  array $dataType
      * @return bool
      */
-    public static function check(Validator $object, $dataType = [])
+    public static function validate($param, $dataType = [])
     {
-        $object->operator   = false;
+        $operator   = false;
         $flagOperator       = $dataType['operator'];
         $flagValue          = $dataType['value'];
 
@@ -27,53 +26,53 @@ class CheckOperator {
             //equal to operator
             if($flagOperator == '==')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 if($dataString == $flagValue){
-                    $object->operator = true;
+                    self::setOperator($operator);
                 }
             }
 
             //strictly equal to operator
             elseif($flagOperator == '===')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 if($dataString === $flagValue){
-                    $object->operator = true;
+                    self::setOperator($operator);
                 }
             }
 
             //not equal to operator
             elseif($flagOperator == '!=')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 if($dataString != $flagValue){
-                    $object->operator = true;
+                    self::setOperator($operator);
                 }
             }
 
             //strictly not equal to operator
             elseif($flagOperator == '!==')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 if($dataString !== $flagValue){ 
-                    $object->operator = true;
+                    self::setOperator($operator);
                 }
             }
 
             //greater than operator
             elseif($flagOperator == '>')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
                     if($dataString > (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }else{
                     $dataString = (float) $dataString;
                     if($dataString > (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }
             }
@@ -81,17 +80,17 @@ class CheckOperator {
             //greater than or equal to operator
             elseif($flagOperator == '>=')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
                     if($dataString >= (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }else{
                     $dataString = (float) $dataString;
                     if($dataString >= (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }
             }
@@ -99,17 +98,17 @@ class CheckOperator {
             //less than operator
             elseif($flagOperator == '<')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
                     if($dataString  < (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }else{
                     $dataString = (float) $dataString;
                     if($dataString  < (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }
             }
@@ -117,17 +116,17 @@ class CheckOperator {
             //less than or equal to operator
             elseif($flagOperator == '<=')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
                     if($dataString  <= (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }else{
                     $dataString = (float) $dataString;
                     if($dataString  <= (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }
             }
@@ -135,17 +134,17 @@ class CheckOperator {
             //less than or greather than to operator
             elseif($flagOperator == '<||>')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
                     if($dataString  < (float) $flagValue || $dataString  > (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }else{
                     $dataString = (float) $dataString;
                     if($dataString  < (float) $flagValue || $dataString  > (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }
             }
@@ -153,24 +152,35 @@ class CheckOperator {
             //less than and greather than to operator
             elseif($flagOperator == '<&&>')
             {
-                $dataString = $object->param[$dataType['variable']];
+                $dataString = $param[$dataType['variable']];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
                     if($dataString  < (float) $flagValue && $dataString  > (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }else{
                     $dataString = (float) $dataString;
                     if($dataString  < (float) $flagValue && $dataString  > (float) $flagValue){
-                        $object->operator = true;
+                        self::setOperator($operator);
                     }
                 }
             }
             
         }
 
-        return $object->operator;
+        return $operator;
+    }
+    
+    /**
+     * setOperator
+     *
+     * @param  mixed $object
+     * @return void
+     */
+    static private function setOperator(&$operator)
+    {
+        $operator = true;
     }
     
 }

@@ -21,18 +21,39 @@ trait PropertyTrait {
      * public message notice
      * @var mixed
      */
-    public  $message; 
+    public $message;
 
     /**
-     * data type
-     * @var mixed
+     * Defined rules collectors
+     *
+     * @var array
      */
-    public  $type; 
+    private $rules = [];
 
     /**
-     * operator check
+     * Keep track of manually calling the validate method
+     *
+     * @var bool
      */
-    public  $operator; 
+    private $isValidatedCalled = false;
+
+    /**
+     * proceed
+     * @var bool
+     */
+    public $flashVerify;
+
+    /**
+     * proceed
+     * @var bool
+     */
+    private $proceed;
+
+    /**
+     * error 
+     * @var bool
+     */
+    private $error = false;
 
     /**
      * flash
@@ -47,40 +68,22 @@ trait PropertyTrait {
      * error class
      * @var array
      */
-    public $error_class = [
-        'success'   => 'form__success',
-        'error'     => 'form__error',
+    public $class = [
+        'success'   => 'alert alert-success',
+        'error'     => 'alert alert-danger',
     ];
 
     /**
-     * proceed
-     * @var bool
+     * error class
+     * @var array
      */
-    public $flashVerify;
-
-    /**
-     * Message Error Type \Default is false
-     * - true \This will return an array of error message
-     * @var bool
-     */
-    private $errorType = false;
-
-    /**
-     * proceed
-     * @var bool
-     */
-    private $proceed;
-
-    /**
-     * error 
-     * @var bool
-     */
-    private $error = false;
-    
-    /**
-     * Use Csrf Token
-     * @var bool
-     */
-    private $allow_csrf = true;
+    public $config = [
+        'csrf'      => null,
+        'before'    => false,
+        'after'     => false,
+        'operator'  => false,
+        'errorType' => false,
+        'request'   => false,
+    ];
     
 }

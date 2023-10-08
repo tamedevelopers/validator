@@ -4,33 +4,36 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Methods;
 
-class CreateDatatype {
+class RuleIndicator {
   
     /**
      * Each form submit strings
-     * [string:first_name:>:15 => 'First name is required']
+     * [string:name:>:15 => 'First name is required']
      * 
-     * @param string $key string like :string::name .
+     * @param string $string 
+     * - string like :string::name .
      * 
      * @return array 
-     * - datas [data_type|variable|operator|value]
+     * - [data_type|input_name|operator|value]
      */
-    public static function create(?string $key)
+    public static function validate($string)
     {
-        // explode data
-        $data = explode(":", $key);
+        // clean string
+        $string =  str_replace([':', '|'], ':', $string);
 
-        // explode indicator
+        // explode data
+        $data = explode(":", $string);
+
         // count how many occurence in string
-        $find_occur = substr_count($key, ':'); 
+        $find_occur = substr_count($string, ':'); 
 
         // error
         if(count($data) > 4 || $find_occur > 3 || !isset($data[1])){
             return "indicator";
         }
 
-        $data['data_type'] = $data[0];
-        $data['variable'] = $data[1];
+        $data['data_type']  = $data[0];
+        $data['input_name'] = $data[1];
 
         //create operator
         if(isset($data[2])){

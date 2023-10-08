@@ -4,14 +4,25 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Traits;
 
+use Tamedevelopers\Validator\Methods\Datatype;
 use Tamedevelopers\Validator\Methods\CsrfToken;
-use Tamedevelopers\Validator\Methods\CheckDatatype;
-use Tamedevelopers\Validator\Methods\CreateDatatype;
+use Tamedevelopers\Validator\Methods\RuleIndicator;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
 use Tamedevelopers\Validator\Methods\ExceptionMessage;
 
-trait SubmitSuccessTrait {
+trait ValidateSuccessTrait {
   
+    
+    /**
+     * Validate Rules
+     *
+     * @return $this
+     */
+    private function validateRules()
+    {
+        return $this->submitInitialization($this->rules);
+    }
+
     
      /**
      * Create Form Validation Data
@@ -22,11 +33,7 @@ trait SubmitSuccessTrait {
      */
     private function submitInitialization(?array $data = [])
     {
-        /**
-        * before isset function call
-        */
-        $this->beforeSubmit($this);
-        
+
         // only begin validation when submitted
         if(ValidatorMethod::isSubmitted())
         {
@@ -34,14 +41,9 @@ trait SubmitSuccessTrait {
             $this->proceed = $this->flashVerify = false;
             
             /**
-            * after isset function call
+            * Set Message Error Type
             */
-            $this->afterSubmit($this);
-            
-            /**
-            * Convert message type
-            */
-            $this->allowedType($this->errorType);
+            $this->setMessageErrorType($this->config['errorType']);
 
             /**
              * Check for Csrf Token before allow processing of form data
@@ -49,9 +51,9 @@ trait SubmitSuccessTrait {
              * If Csrf Token is allowed to be used, then we Check if found along with form
              * Or If token not correct for encrypted token in the session
              */
-            if($this->allow_csrf){
+            if($this->config['csrf']){
                 // set error to true
-                $this->isErrorTrue();
+                $this->setErrorTrue();
 
                 if(!$this->param->has('csrf_token')){
                     $this->message  = ExceptionMessage::csrfTokenNotFound();
@@ -66,52 +68,52 @@ trait SubmitSuccessTrait {
             foreach($data as $key => $message){
                 
                 // create data types
-                $dataType = CreateDatatype::create($key);
+                $ruleValidator = RuleIndicator::validate($key);
                 
                 /**
                 * Configuration error
                 */
-                if($dataType === "indicator"){
-                    $this->isErrorTrue();
+                if($ruleValidator === "indicator"){
+                    $this->setErrorTrue();
                     $this->message  = ExceptionMessage::indicator();
                     break;
                 }
 
-                //check response error from input flags
-                $checkDataType = CheckDatatype::check($dataType);
+                // Check response error from input flags
+                $checkDataType = Datatype::validate($ruleValidator);
                 
                 // allowed errors handling type
                 // if error is to be handled one by one
-                if($this->errorType === false){
+                if($this->config['errorType'] === false){
 
                     // set error to true
-                    $this->isErrorTrue();
+                    $this->setErrorTrue();
                     
                     if($this->isDataTypeNotSet($checkDataType)){
                         $this->message  = $message;
                         break;
                     }
                     elseif($this->isDataTypeNotFound($checkDataType)){
-                        // ExceptionMessage::notFound($dataType)
+                        // ExceptionMessage::notFound($ruleValidator)
                         $this->message  = $message;
                         break;
                     } else{
 
                         // set to false
-                        $this->isErrorFalse(); 
+                        $this->setErrorFalse(); 
 
                         //operator function checker
-                        $this->operator     = $this->operatorMethod($dataType);
+                        $this->config['operator']     = $this->operatorMethod($ruleValidator);
 
                         if($this->isOperatorError()){
-                            $this->message = ExceptionMessage::comparison($dataType);
-                            $this->isErrorTrue();
+                            $this->message = ExceptionMessage::comparison($ruleValidator);
+                            $this->setErrorTrue();
                             break;
                         }
                         else{
-                            if(!is_null($this->operator) && $this->operator){
+                            if(!is_null($this->config['operator']) && $this->config['operator']){
                                 $this->message  = $message;
-                                $this->isErrorTrue();
+                                $this->setErrorTrue();
                                 break;
                             }
                         }
@@ -122,37 +124,37 @@ trait SubmitSuccessTrait {
                 // multiple error handling 
                 else{
                     // set error to true
-                    $this->isErrorTrue();
+                    $this->setErrorTrue();
                     
                     if($this->isDataTypeNotSet($checkDataType)){ 
-                        if(!in_array($dataType['variable'], array_keys($this->message))){
-                            $this->message[$dataType['variable']]    = $message;
+                        if(!in_array($ruleValidator['variable'], array_keys($this->message))){
+                            $this->message[$ruleValidator['variable']]    = $message;
                         }
                     }
                     elseif($this->isDataTypeNotFound($checkDataType)){
-                        if(!in_array($dataType['variable'], array_keys($this->message))){
-                            // ExceptionMessage::notFound($dataType);
-                            $this->message[$dataType['variable']]    = $message;
+                        if(!in_array($ruleValidator['variable'], array_keys($this->message))){
+                            // ExceptionMessage::notFound($ruleValidator);
+                            $this->message[$ruleValidator['variable']]    = $message;
                         }
                     } else{
                         //operator function checker
-                        $this->operator = $this->operatorMethod($dataType);
+                        $this->config['operator'] = $this->operatorMethod($ruleValidator);
 
                         // check error types
                         if($this->isOperatorError()){
-                            $this->message[$dataType['variable']]    = ExceptionMessage::comparison($dataType);
+                            $this->message[$ruleValidator['variable']]    = ExceptionMessage::comparison($ruleValidator);
                             break;
                         }
-                        elseif(!is_null($this->operator) && $this->operator){
-                            if(!in_array($dataType['variable'], array_keys($this->message))){
-                                $this->message[$dataType['variable']]    = $message;
+                        elseif(!is_null($this->config['operator']) && $this->config['operator']){
+                            if(!in_array($ruleValidator['variable'], array_keys($this->message))){
+                                $this->message[$ruleValidator['variable']]    = $message;
                             }
                         }
                         else{
                             // if no message error exist 
                             // meaning array count is 0
                             if(!count($this->message)){
-                                $this->isErrorFalse();
+                                $this->setErrorFalse();
                             }
                         }
                     }
@@ -180,9 +182,9 @@ trait SubmitSuccessTrait {
      */
     private function isOperatorError()
     {
-        if($this->operator === 'error'){
+        if($this->config['operator'] === 'error'){
             return true;
-        } 
+        }
 
         return false;
     }
@@ -195,7 +197,7 @@ trait SubmitSuccessTrait {
      */
     private function isDataTypeNotSet($type)
     {
-        if($type === false || $type === '!isset'){
+        if(in_array($type, [false, '!isset'])){
             return true;
         } 
 
@@ -210,7 +212,7 @@ trait SubmitSuccessTrait {
      */
     private function isDataTypeNotFound($type)
     {
-        if($type === false || $type === '!found'){
+        if(in_array($type, [false, '!found'])){
             return true;
         } 
 
@@ -222,7 +224,7 @@ trait SubmitSuccessTrait {
      * 
      * @return void
      */
-    private function isErrorTrue()
+    private function setErrorTrue()
     {
         $this->error = true;
     }
@@ -232,9 +234,21 @@ trait SubmitSuccessTrait {
      * 
      * @return void
      */
-    private function isErrorFalse()
+    private function setErrorFalse()
     {
         $this->error = false;
+    }
+
+    /**
+     * Only ignore if validate metho, has been manually called
+     *
+     * @return mixed
+     */
+    private function ignoreIfValidatorHasBeenCalled()
+    {
+        if(!$this->isValidatedCalled){
+            $this->validate();
+        }
     }
     
 }

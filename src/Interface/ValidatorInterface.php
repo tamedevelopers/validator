@@ -9,40 +9,38 @@ interface ValidatorInterface
 {
     
     /**
-     * Return value of needed parameters form objects
+     * Return value of needed param from Form
      *
      * @param array|null $keys
-     *
      * @return array
      */
-    public function only(?array $keys = null);
+    public function only($keys = null);
 
     /**
-     * Remove value of parameters form objects
+     * Remove value of param from Form
      *
      * @param array|null $keys
-     *
      * @return array|null
      */
-    public function except(?array $keys = null);
+    public function except($keys = null);
 
     /**
-     * Check if param is set in parent param
+     * Check if Form has a param
      *
-     * @param string $key
-     *
+     * @param string|null $key
      * @return bool
      */
-    public function has(?string $key = null);
+    public function has($key = null);
 
     /**
-     * Remove value of parameters form objects
+     * Merge `keys` value to Form param
      *
-     * @param array $keys
+     * @param array|null $keys
+     * @param array|null $data
      *
      * @return array
      */
-    public function merge(?array $keys = null, ?array $data = null);
+    public function merge($keys = null, $data = null);
 
     
 }

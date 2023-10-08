@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 body{
-    padding: 100px 50px;
+    padding: 20px 50px 50px;
 }
 .hidden{
     display: none;
@@ -65,6 +65,10 @@ input:focus{
     padding: 5px 10px;
     font-weight: 500;
 }
+.alert{
+    position: relative;
+    padding: 2rem;
+}
 .danger{
     border: 1px solid #ff0000;
     color: #ff0000;
@@ -73,11 +77,11 @@ input:focus{
     border: 1px solid #043c04;
     color: #000;
 }
-.form__error{
+.alert-danger{
     border: 1px solid #ff0000;
     color: #ff0000;
 }
-.form__success{
+.alert-success{
     border: 1px solid #043c04;
     color: #000;
 }

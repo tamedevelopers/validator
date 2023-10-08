@@ -23,15 +23,15 @@
   * [POST](#post)
   * [GET](#get)
   * [ALL](#all)
-  * [Submit](#submit)
-  * [Error](#error)
+  * [Rules](#rules)
+  * [Validate](#validate)
   * [Success](#success)
   * [Data Flags](#data-flags)
-  * [Operator Statement](#operator-statement)
+  * [Operators](#operators)
   * [noInterface](#nointerface)
-  * [Before Submit](#before-submit)
-  * [After Submit](#after-submit)
-* [ResetError](#resetError)
+  * [Before](#before)
+  * [After](#after)
+* [Reset Error](#reset-error)
 * [Only](#only)
 * [Except](#except)
 * [Has](#has)
@@ -43,7 +43,6 @@
 * [Get Message and Class](#get-message-and-class)
 * [Collection](#collection)
 * [Collection Methods](#collection-methods)
-* [Form Request](#form-request)
 * [toObject](#toobject)
 * [toArray](#toarray)
 * [toJson](#tojson)
@@ -56,35 +55,19 @@
 
 ## Installation
 
-Prior to installing `support package` get the [Composer](https://getcomposer.org) dependency manager for PHP because it'll simplify installation.
+Prior to installing `validator package` get the [Composer](https://getcomposer.org) dependency manager for PHP because it'll simplify installation.
 
 ```
 composer require tamedevelopers/validator
 ```
 
-## Instantiate
-- Optional `attribute` param. Whatever data outside class you need to use inside.
-    - Will automatically be converted to `Collection Data`
-
-**Step 1** — `Instantiate class using`:
-
+## Instantiate — `Instantiate class using`
 ```
 require_once __DIR__ . '/vendor/autoload.php';
 
 use \Tamedevelopers\Validator\Validator;
 
 $form = new Validator();
-```
-
-- **Example 2** — `You can also pass in any data type` and this will be taken and pass to the `attribute` property.
-```
-$form = new Tamedevelopers\Validator\Validator([
-    'user' => 'F. Pete', 
-    'marital' => 'Single',
-]);
-
-// this will return the data you pass
-$form->attribute
 ```
 
 - or -- `Helpers Function`
@@ -109,17 +92,17 @@ public function save(Request $request){
 - All are Optional `method`
     - These methods are only mandatory on usage and should always come first before others.
 
-| Methods   |        Description            |
-|-----------|-------------------------------|
-| ->et()    |  Takes param as `bool` to format error's on display: `single or multiple` |
-| ->token() |  Takes param as `bool` to Enable or Disable `csrf_token` for each request |
-| ->post()  |  No param needed. SET `form` request to `POST` only |
-| ->get()   |  No param needed. SET `form` request to `GET` only |
+| Methods       |        Description                                                        |
+|---------------|---------------------------------------------------------------------------|
+| ->errorType() |  `bool` to format error's on display: `single or multiple`                |
+| ->token()     |  `bool` to Enable or Disable `csrf_token` for each request                |
+| ->post()      |  Convert Form request to `POST` only                                      |
+| ->get()       |  Convert Form request to  `GET` only                                      |
+| ->all()       |  Convert Form request to `any`                                            |
 
 ```
 $form->post()->submit([
-    "string:country:==:0"   => 'Please Select a Country',
-    "email:email"           => 'Please enter a valid email address',
+    // 
 ]);
 ```
 
@@ -134,16 +117,14 @@ $form->post()->submit([
 | csrf_token  |  Boolean `true\|false` Default `true`   |
 | class       |  Array `error\|success` error class type to be returned on both success and failure   |
 
-
-
 ```
 config_form([
     'request'       => 'POST',
     'error_type'    => true,
     'csrf_token'    => true,
     'class'         => [
-        'error'     => 'form__error',
-        'success'   => 'form__success'
+        'error'     => 'alert alert-danger',
+        'success'   => 'alert alert-success'
     ]
 ]); 
 ```
@@ -185,15 +166,13 @@ csrf_token();
 | true  |  This allow all errors to be displayed once, `as an array` |
 
 ```
-$form->et(false);
+$form->errorType(false);
 ```
 
 - or
-
 ```
 $form->et(true)->submit([
-    "string:country:==:0"   => 'Please Select a Country',
-    "email:email"           => 'Please enter a valid email address',
+    // 
 ])
 ```
 
@@ -201,75 +180,58 @@ $form->et(true)->submit([
 - Takes a param as `bool` Default is `false`
     - Allow disability of `csrf_token` on each form request
 
-| Error |        Description            |
-|-------|-------------------------------|
-| false |  `Default` Will disable `csrf_token` usage  |
-| true  |  This allow `csrf_token` per request only   |
+| Error |        Description                            |
+|-------|-----------------------------------------------|
+| false |  `Default` Will disable `csrf_token` usage    |
+| true  |  This allow `csrf_token` per request only     |
 
 ```
 $form->token(false);
-```
 
-- or
-
-```
-$form->token(true)->submit([
-    "string:country:==:0"   => 'Please Select a Country',
-    "email:email"           => 'Please enter a valid email address',
-])
+$form->csrf(false);
 ```
 
 ### POST
-- You can call separately or Call Before any other method, if intend to use.
-    - This will set the Form Request to `POST`
-        - This will always override the `config_form()` settings
+- Set the Form Request to `POST`
+    - This will always override the `config_form()` settings
 
 ```
-$form->post()->submit([
-    "string:country:==:0"   => 'Please Select a Country',
-    "email:email"           => 'Please enter a valid email address',
-])
+$form->post();
 ```
 
 ### GET
-- Same as `POST`
-    - This will set the Form Request to `GET`
+- Set the Form Request to `GET`
 
 ```
-$form->get()->submit([
-    "string:country:==:0"   => 'Please Select a Country',
-    "email:email"           => 'Please enter a valid email address',
-])
+$form->get();
 ```
 
 ### All
-- Same as `POST\|GET`
-    - This will set the Form Request using `$_SERVER['REQUEST_METHOD']`
+- Set the Form Request using `$_REQUEST`
 
 ```
 $form->all()->submit([
-    "string:country:==:0"   => 'Please Select a Country',
+    // 
+])
+```
+
+### Rules
+- By default only `DATA TYPE` and `[INPUT_NAME]` is required
+    - Always seperate each indicator with a 'colon' `:` or 'pipe' `|`
+
+| DATA TYPE |  INPUT_NAME  | COMPARISON OPERATOR | VALUE TO COMPARE |
+|-----------|--------------|---------------------|------------------|
+| string    | : country    | :  ==               | : 0              |
+| email     | : email      | :                   |                  |
+
+```
+$form->rules([
+    "string|country|==|0"   => 'Please Select a Country',
     "email:email"           => 'Please enter a valid email address',
 ])
 ```
 
-### Submit
-- By default only Flags and HTML input name is required
-    - Always seperate each indicator with a `colon` `:`
-
-| FLAGS  |  HTML_INPUT_NAME | COMPARISON OPERATOR | VALUE TO COMPARE |
-|--------|------------------|---------------------|------------------|
-| string | : country        | :  ==               | : 0              |
-| email  | : email          | :                   |                  |
-
-```
-$form->submit([
-    "string:country:==:0"   => 'Please Select a Country',
-    "email:email"           => 'Please enter a valid email address',
-])
-```
-
-- HTML FORM Structure Sample
+- HTML FORM Structure
 ```
 <form>
     <select name="country">
@@ -283,16 +245,16 @@ $form->submit([
 </form>
 ```
 
-### Error 
-- Expects a `callable` function as the param
+### Validate 
+- Takes an [optional] `callable` function as the param
 
 ```
 $form->submit([
     "s:name" => 'Please enter a name',
-])->error(function($response){
+])->validate(function($response){
 
     $response->param; //Collection of form data
-    $response->message; //message property
+    $response->getMessage(); //message property
 });
 ```
 
@@ -305,28 +267,26 @@ $form->submit([
     "s:name" => 'Please enter a name',
 ])->success(function(){
     //on success
-
-    $response->param; //Collection of form data
 });
 ```
 
 ### Data Flags 
 - `Supports 9 Data Flags type`
 
-| flag_name  | abbr |          Description          |
+| Data types | abbr |          Description          |
 |------------|------|-------------------------------|
 | email      |  e   |  `Email` data validation      |
 | bool       |  b   |  `Boolean` data validation    |
 | string     |  s   |  `String` data validation     |
 | str_len    |  sl  |  `String Length` validation   |
-| enum       |  en  |  `Enum` Forms checkbox, radio or any form data that normally has no value when not checked |
+| enum       |  en  |  `Enum` Forms `checkbox \| radio` or any form data that normally has no value when not checked |
 | array      |  a   |  `Array` data validation      |
 | float      |  f   |  `Float` data validation      |
 | int        |  i   |  `Int` data validation        |
 | url        |  u   |  `Url` data validation        |
 
 
-### Operator Statement 
+### Operators
 - `Supports 10 operational statement`
 
 | sign |          Description          |
@@ -345,8 +305,7 @@ $form->submit([
 
 ### noInterface
 - Expects a `callable` function as the param
-    - Since `Submit` method must be passed for you to access most properties
-        - Wrapping Non-Submitable code inside the `noInterface` makes code more neat
+    - have access to form data without any validation
 
 ```
 $form->noInterface(function($response){
@@ -357,42 +316,32 @@ $form->noInterface(function($response){
 });
 ```
 
-### Before Submit 
+### Before
 - Expects a `callable` function as the param
-    - Pass any variable name of choice to the function, to have access instance of class
+    - Will only execute code within when Request is [GET]
+        - CSRF Token `does'nt` apply to this method
 
 ```
-$form->submit([
+$form->rules([
     "s:name" => 'Please enter a name',
-])->beforeSubmit(function($response){
-
-    // execute code
-});
-```
-- Positioning doen't matter, as they're `Chainable methods`
-
-```
-$form->beforeSubmit(function($response){
-
-    // execute code
-})->submit([
-    "s:name" => 'Please enter a name',
-]);
-```
-
-### After Submit 
-- Same as `beforeSubmit()`
-
-```
-$form->submit([
-    "s:name" => 'Please enter a name',
-])->afterSubmit(function(){
+])->before(function($response){
 
     // execute code
 });
 ```
 
-## ResetError
+### After
+- Expects a `callable` function as the param
+    - Will always execute no matter the request method type
+        - CSRF Token `does'nt` apply to this method
+
+```
+$form->after(function(){
+    // execute code
+});
+```
+
+## Reset Error
 - Even if you're inside the `success() method`
 - With this helper, you can be able to reset the class, to error class
 
@@ -407,7 +356,7 @@ $form->submit([
 
 
     if($response->amount > $availableUserAmount){
-        $response->resetError();
+        $response->reset();
         $response->message = "Your wallet balance is too low, Please recharge before you can Subscribe to Plan!";        
         return;
     }
@@ -418,62 +367,47 @@ $form->submit([
 
 ## Only
 - Takes a param as an `array` 
-    - `keys` of data only needed
+    - `keys` of data only needed, from the `form param`
 
 ```
 ->success(function($response){
-
+    //
     $data = $response->only(['password', 'username']);
-
-    ---
-    Will return only the password and username
 });
 ```
 
 ## Except
-- Takes a param as an `array` 
-    - `keys` of data only needed
+- Exact opposite of `only()` method
 
 ```
 ->success(function($response){
     
     $data = $response->except(['_token']);
-
-    ---
-    Will return all values except `_token`
 });
 ```
 
 ## Has
-- Takes a param as `string` 
-    - Return `bool` true|false
+- Takes a param as `string` input name
+    - Returns boolean as `true|\false`
 
 ```
 ->success(function($response){
     
     if($response->has('remeber_me')){
-
         // execute code
     }
-
-    --
-    If the remeber_me exist along with submitted form data
 });
 ```
 
 ## Old
-- Takes a param as `string`
-    - Second parameter is optional `mixed data`
-    - Return old inserted data
+- Takes a param as `string` and return old inserted data
+    - Second parameter is [optional] `mixed data`. 
 
 ```
-$form->submit([
+$form->rules([
     "s:password" => 'Please enter a name',
     "s:retype_pass:!==:{$form->old('password')}" => 'Password mismatch, Please enter same password',
 ]);
-
-
-<input type="email" name="email" placeholder="Email Address" value="<?= $form->old('email')>">
 ```
 
 - or -- `Helpers Function`
@@ -481,7 +415,6 @@ $form->submit([
 <input type="email" name="email" value="<?= old('email', 'default_value')>">
 ```
 ![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/validator/main/old.png)
-
 
 
 ## GetForm
@@ -497,7 +430,7 @@ $form->submit([
 ## Merge
 - Same as PHP function `array_merge`
     - Merge two array data together
-        - Second data will always repalace any matched key data in the first array
+    - Second data will always repalace any matched key data in the first array
 
 ```
 ->success(function($response){
@@ -514,29 +447,29 @@ $form->submit([
 ```
 
 ## OnlyData
-- Used to get only the data you need from array element
+- Return only `data passed` from set of given array elements.
 
-| Keys            |  Data                       |
-|-----------------|-----------------------------|
-| Keys are array  |  Main data to select from   |
+| Keys     |  Data                       |
+|----------|-----------------------------|
+| `array`  |  Main data to select from   |
 
 ```
 ->success(function($response){
-    $array = [
+
+    $data = $response->OnlyData(['email', 'password'], [
         'email'     => 'mailer@mail.com', 
         '_token'    => md5('token'), 
-        'password'  => 'test'
-    ];
-
-    $data = $response->OnlyData(['email', 'password'], $array);
+        'age'       => 17,
+        'password'  => 'test',
+    ]);
 
     ---
-    This will select only the `email` and `password` from $array
+    Only ['email', 'password'] will be returned.
 });
 ```
 
 ## ExceptData
-- Used to exempt data you dont need from array element
+- Exact opposite of `OnlyData()` method
 
 | Keys            |  Data                       |
 |-----------------|-----------------------------|
@@ -545,16 +478,14 @@ $form->submit([
 ```
 ->success(function($response){
     
-    $array = [
+    $data = $response->exceptData(['_token'], [
         'email'     => 'mailer@mail.com', 
         '_token'    => md5('token'), 
         'password'  => 'test'
-    ];
-
-    $data = $response->exceptData(['_token'], $array);
+    ]);
 
     ---
-    Will return all values except `_token`
+    Return all array element, except ['_token']
 });
 ```
 
@@ -577,7 +508,7 @@ $form->getClass();
     - This enable us access property as an `object` or `array index`
 
 ```
-$form->submit([
+$form->rules([
     "string:country:==:0"   => 'Please Select a Country',
     "email:email"           => 'Please enter a valid email address',
 ])->success(function($response){
@@ -601,24 +532,6 @@ $form->submit([
 |  toObject()       |  `object` Convert items to object   |
 |  toJson()         |  `string` Convert items to json     |
 
-
-## Form Request
-- Optional\ Takes a param as `string` on each method to get needed data
-    - Returns `data` or `null`
-
-| function              | Description                   |
-|-----------------------|-------------------------------|
-| form_request()->all()      | Return All requests data      |
-| form_request()->get()      | Return GET data               |
-| form_request()->post()     | Return POST data              |
-| form_request()->cookie()   | Return Cookies data           |
-| form_request()->session()  | Return Session data           |
-| form_request()->env()      | Return ENV data               |
-
-```
-form_request()->get('password')
-form_request()->env('APP_DEBUG')
-```
 
 ## toObject
 - Takes a param as `mixed` data
@@ -652,11 +565,10 @@ $form->toJson([
 
 ## Helpers
 
-| function      | Description                       |
-|---------------|-----------------------------------|
-| old()         | Inherit instance of `(new Validator)` old() method    |
-| form()        | Return instance of `(new Validator)` class            |
-| form_request()| Return instance of `(new RequestMethod)` class        |
+| function  | Description                       |
+|-----------|-----------------------------------|
+| old()     | Inherit instance of `(new Validator)` old() method    |
+| form()    | Return instance of `(new Validator)` class            |
 
 
 ## Useful links

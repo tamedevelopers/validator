@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Methods;
 
+use Tamedevelopers\Support\Str;
 use Tamedevelopers\Support\Tame;
+use Tamedevelopers\Support\Server;
 
 
 class CsrfToken{
@@ -28,7 +30,60 @@ class CsrfToken{
      * @var bool
      */
     static private $allow_csrf = true;
+    
+    /**
+     * Create CSRF Session
+     *
+     * @return void
+     */
+    static public function initilaizeCSRFSession()
+    {
+        if(defined('GLOBAL_FORM_CSRF_TOKEN')){
+            self::$allow_csrf = GLOBAL_FORM_CSRF_TOKEN;
+        }
 
+        if(self::$allow_csrf){
+            // Start the session if it has not already been started
+            if (session_status() == PHP_SESSION_NONE) {
+                @session_start();
+            }
+
+            // Generate on new page load
+            self::generateTokenOnPageLoad();
+        }
+    }
+
+    
+    /**
+     * __construct
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        // self::$session  = 'csrf_token';
+        // self::$token    = bin2hex(random_bytes(32));
+
+        // // if defined
+        // if(defined('GLOBAL_FORM_CSRF_TOKEN')){
+        //     self::$allow_csrf = GLOBAL_FORM_CSRF_TOKEN;
+        // }
+
+        // // if csrf is allowed to be use
+        // if(self::$allow_csrf){
+        //     // Start the session if it has not already been started
+        //     if (session_status() == PHP_SESSION_NONE) {
+        //         @session_start();
+        //     }
+
+        //     // Generate on new page load
+        //     self::generateTokenOnPageLoad();
+        // }
+
+        dd(
+            'ss'
+        );
+    }
 
     /**
      * initialize data
@@ -49,7 +104,11 @@ class CsrfToken{
         if(self::$allow_csrf){
             // Start the session if it has not already been started
             if (session_status() == PHP_SESSION_NONE) {
-                @session_start();
+                session_start();
+
+                dd(
+                    PHP_SESSION_NONE
+                );
             }
 
             // Generate on new page load
@@ -68,8 +127,14 @@ class CsrfToken{
 
         // session
         $session = isset($_SESSION[self::$session]) 
-                    ? json_decode($_SESSION[self::$session], false)
+                    ? Server::toObject($_SESSION[self::$session])
                     : null;
+
+
+        dd(
+            $session,
+            'am here'
+        );
         
         // if session data is available
         if($session) {
@@ -115,6 +180,11 @@ class CsrfToken{
         $session    = self::$session;
         $token      = self::getToken();
 
+        dump(
+            $session,
+            $token,
+        );
+
         if(self::$allow_csrf){
             echo '<input type="hidden" name="'.$session.'" value="'.$token.'">';
         }
@@ -144,11 +214,14 @@ class CsrfToken{
     static private function generateTokenOnPageLoad()
     {
         // if csrf is allowed to be use
-        if(self::$allow_csrf){
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && empty($_GET)) {
-                unset($_SESSION[self::$session]);
-                $_SESSION[self::$session] = Tame::encryptStr(self::$token);
-            } 
+        if(self::$allow_csrf && empty($_REQUEST['csrf_token']))
+        {
+            dump(
+                'on load generate',
+                session_status()
+            );
+            // unset($_SESSION[self::$session]);
+            // $_SESSION[self::$session] = Tame::encryptStr(self::$token);
         }
     }
 

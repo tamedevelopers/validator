@@ -17,137 +17,176 @@ use Tamedevelopers\Support\Collections\Collection;
 use Tamedevelopers\Validator\Traits\PropertyTrait;
 use Tamedevelopers\Validator\Traits\ValidatorTrait;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
-use Tamedevelopers\Validator\Traits\SubmitSuccessTrait;
+use Tamedevelopers\Validator\Traits\ValidateSuccessTrait;
 use Tamedevelopers\Validator\Interface\ValidatorInterface;
 
 
 /**
  * Validator
  *
- * @package   Ultimate\Validator
- * @author    Tame Developers <tamedevelopers@gmail.co>
+ * @package   tamedevelopers\validator
+ * @author    Tame Developers <tamedevelopers@gmail.com>
  * @author    Fredrick Peterson <fredi.peterson2000@gmail.com>
  * @copyright 2021-2023 Tame Developers
  * @license   http://www.opensource.org/licenses/MIT The MIT License
+ * @link https://github.com/tamedevelopers/validator
  */
 class Validator implements ValidatorInterface
 {
 
     use ValidatorTrait, 
         PropertyTrait,
-        SubmitSuccessTrait;
-    
+        ValidateSuccessTrait;
     
     /**
-     * @param  mixed $attribute
      * @param  mixed $attribute
      * - Any outside parameter you would want to use within the form instance
      * 
      * @return void
      */
-    public function __construct(mixed $attribute = null) 
+    public function __construct($attribute = null) 
     {
-        $this->message      = [];
-        $this->type         = $this->getType();
-        $this->attribute    = new Collection($attribute);
-        
+        $this->attribute        = new Collection($attribute);
+        $this->message          = [];
+
+        // if defined
+        if(defined('TAME_VALIDATOR_CONFIG')){
+            $const = TAME_VALIDATOR_CONFIG;
+            $this->config['class']      = $const['class'];
+            $this->config['request']    = $const['request'];
+            $this->config['errorType']  = $const['error_type'];
+            $this->config['csrf']       = $const['csrf_token'];
+        } else{
+            $this->config['request'] = $this->getFormRequest();
+        }
+
         // initialize methods
         ValidatorMethod::initialize($this);
         
         // set params
-        ValidatorMethod::setParams($this->type);
-
-        // if defined
-        if(defined('GLOBAL_FORM_CSRF_TOKEN')){
-            $this->allow_csrf = GLOBAL_FORM_CSRF_TOKEN;
-        }
-
-        // if defined
-        if(defined('GLOBAL_FORM_ERROR')){
-            $this->errorType = GLOBAL_FORM_ERROR;
-        }
+        ValidatorMethod::setParams($this->config['request']);
     }
 
     /**
-     * Create Form Validation Data
+     * Create validation rules
      * 
-     * @param  array $data
-     * 
+     * @param  array $rules
      * @return $this
      */
-    public function submit(?array $data = []) 
+    public function rules(?array $rules = []) 
     {
-        return $this->submitInitialization($data);
+        $this->rules = $rules;
+
+        return $this;
     }
 
     /**
-     * @param  callable  $function.
-     * @param  null|void  pass a $var into the funtion to access the returned object
-     * usage   ->error(  function($response){}  );
+     * Begin form validation
      * 
+     * @param  callable|null  $function
      * @return $this
      */
-    public function error(?callable $function)
+    public function validate(callable $function = null)
+    {
+        // validate rules
+        $this->validateRules();
+
+        // validation has been called
+        // this helps us to keep track if to call in the future instance or not
+        $this->isValidatedCalled = true;
+        
+        if($this->hasErrors()){
+            if(is_callable($function)){
+                $function($this);
+            }
+
+            // save into a remembering variable
+            ValidatorMethod::resolveFlash($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Check if Form has validation errors
+     * 
+     * @return bool
+     */
+    public function hasErrors()
     {
         if(!is_null($this->proceed) && $this->proceed === false){
-            if(is_callable($function)){
-                $function($this);
-
-                // save into a remembering variable
-                ValidatorMethod::resolveFlash($this);
-            }
+            return true;
         }
-        return $this;
+
+        return false;
     }
     
+
     /**
-     * @param  callable  $function.
-     * @param  null|void  pass a $var into the funtion to access the returned object
-     * usage   ->success(  function($response){}  );
+     * Check if Form has been validated
      * 
-     * @return $this
+     * @return bool
      */
-    public function success(?callable $function)
+    public function isValidated()
     {
+        $this->ignoreIfValidatorHasBeenCalled();
+
         if(!is_null($this->proceed) && $this->proceed){
+            return true;
+        }
+
+        return false;
+    }
+    
+    /**
+     * Form success response
+     * 
+     * @param  callable  $function
+     * @return $this
+     */
+    public function success(callable $function)
+    {
+        if($this->isValidated()){
             if(is_callable($function)){
                 $function($this);
-
-                // save into a remembering variable
-                ValidatorMethod::resolveFlash($this);
             }
+
+            // save into a remembering variable
+            ValidatorMethod::resolveFlash($this);
         }
+
         return $this;
     }
     
     /**
-     * @param  callable  $function.
-     * Before form is set
-     * usage   ->beforeSubmit(  function($response){}  );
+     * Before form submission 
+     * - [GET] request type only allowed
      * 
+     * @param  callable  $function.
      * @return $this
      */
-    public function beforeSubmit($function)
+    public function before($function)
     {
         // reset data
         ValidatorMethod::resetFlash($this);
 
-        if(ValidatorMethod::isRequestMethod()){
+        if(ValidatorMethod::isGetRequestBeforeSubmitted()){
             if(is_callable($function)){
                 $function($this);
             }
         }
+
         return $this;
     }
 
     /**
-     * @param  callable  $function.
-     * After form is set
-     * usage   ->afterSubmit(  function($response){}  );
+     * After form submission
+     * - [All] request type allowed
      * 
+     * @param  callable  $function.
      * @return $this
      */
-    public function afterSubmit($function)
+    public function after($function)
     {
         // reset data
         ValidatorMethod::resetFlash($this);
@@ -161,9 +200,9 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * Needed input values from submited form object
-     * @param  array|null  $keys of input
-     * 
+     * Return value of needed param from Form
+     *
+     * @param array|null $keys
      * @return array
      */
     public function only($keys = null)
@@ -172,10 +211,10 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * Remove input values from submited form object
-     * @param  array|null  $keys of input
-     * 
-     * @return array
+     * Remove value of param from Form
+     *
+     * @param array|null $keys
+     * @return array|null
      */
     public function except($keys = null)
     {
@@ -183,25 +222,25 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * Check if param is set in parent param
+     * Check if Form has a param
      *
-     * @param string $key
-     *
+     * @param string|null $key
      * @return bool
      */
-    public function has(?string $key = null)
+    public function has($key = null)
     {
         return ValidatorMethod::has($key);
     }
 
     /**
-     * Remove value of parameters form objects
+     * Merge `keys` value to Form param
      *
-     * @param array $keys
+     * @param array|null $keys
+     * @param array|null $data
      *
      * @return array
      */
-    public function merge(?array $keys = null, ?array $data = null)
+    public function merge($keys = null, $data = null)
     {
         return ValidatorMethod::merge($keys, $data);
     }
@@ -226,7 +265,7 @@ class Validator implements ValidatorInterface
      * 
      * @return void
      */
-    public function resetError()
+    public function reset()
     {
         $this->flashVerify = false;
     }

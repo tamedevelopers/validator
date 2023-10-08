@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Methods;
 
+use Tamedevelopers\Support\Str;
 use Tamedevelopers\Validator\Validator;
 use Tamedevelopers\Support\Collections\Collection;
 
@@ -11,65 +12,64 @@ class ValidatorMethod {
 
     /**
      * Private instance of parent validator
-     * 
-     * @var \Tamedevelopers\Validator\Validator
+     * @var mixed
      */
-    public static $object;
+    public static $validator;
 
     /**
-     * Initialize methods to have access to global object (self::$object)
+     * Initialize methods to have access to global validator (self::$validator)
      *
-     * @param \Tamedevelopers\Validator\Validator|mixed $object
-     *
-     * @return void
+     * @return \Tamedevelopers\Validator\Validator
      */
-    public static function initialize(Validator $object)
+    public static function initialize($validator)
     {
-        self::$object = $object;
+        self::$validator = $validator;
 
-        return self::$object;
+        return self::$validator;
     }
 
     /**
      * Return value of needed parameters form objects
      *
-     * @param  string $param  form input name.
-     *
+     * @param  string|null $param  form input name.
      * @return bool
      */
-    public static function checkIfParamIsset(?string $param = null)
+    public static function checkIfParamIsset($param = null)
     {
-        if(self::$object->type == INPUT_POST){
+        if(self::$validator->config['request'] == INPUT_POST){
             return isset($_POST[$param]);
+        } elseif(self::$validator->config['request'] == INPUT_GET){
+            return isset($_GET[$param]);
         }
-        return isset($_GET[$param]);
+        
+        return isset($_REQUEST[$param]);
     }
 
     /**
      * Set default params on load 
-     * @param $type
+     * @param string|int $request
      * - Default type is INPUT_GET as value 1
      * 
-     * @return object
+     * @return mixed
      */
-    public static function setParams(?int $type = 1)
+    public static function setParams($request = 1)
     {
         // if the param is not set then we use request method to 
         // determine data received data from forms
 
         // get Data using POST method
-        if($type === INPUT_POST){
-            self::$object->param = $_POST;
-        } elseif($type === INPUT_GET){
-            self::$object->param = $_GET;
+        if($request === INPUT_POST){
+            self::$validator->param = $_POST;
+        } elseif($request === INPUT_GET){
+            self::$validator->param = $_GET;
         } else{
-            self::$object->param = filter_input_array(self::$object->type);
+            self::$validator->param = $_REQUEST;
         }
 
         // convert into a collection of data
-        self::$object->param  = new Collection(self::$object->param);
+        self::$validator->param  = new Collection(self::$validator->param);
         
-        return self::$object;
+        return self::$validator;
     }
 
     /**
@@ -78,28 +78,27 @@ class ValidatorMethod {
      */
     public static function isSubmitted()
     {
-        $items = self::$object->param;
+        $items = self::$validator->param;
         if($items && $items->count() > 0){
             return true;
         }
+
         return false;
     }
 
     /**
-     * Check server request method if `GET`
-     * ->beforeSubmit Method will apply when REQUEST is GET
-     * 
+     * Allow data performaceon `GET` Request before submit
      * @return bool
      */
-    public static function isRequestMethod()
+    public static function isGetRequestBeforeSubmitted()
     {
-        $type = trim(strtolower((string) $_SERVER['REQUEST_METHOD'])) ?? '';
-        if($type === 'get'){
-            // allow when get TYPE is not submitted
+        if(Str::lower($_SERVER['REQUEST_METHOD']) === 'get'){
+            // allow when get TYPE if not submitted
             if(!self::isSubmitted()){
                 return true;
             }
         }
+
         return false;
     }
 
@@ -114,10 +113,11 @@ class ValidatorMethod {
         $data = [];
         if(is_array($keys)){
             foreach($keys as $key){
-                if(in_array($key, array_keys(self::$object->param->toArray()))){
-                    $data[$key] = self::$object->param[$key];
+                if(in_array($key, array_keys(self::$validator->param->toArray()))){
+                    $data[$key] = self::$validator->param[$key];
                 }
             }
+
             return $data;
         }
     }
@@ -130,13 +130,14 @@ class ValidatorMethod {
      */
     public static function except($keys = null)
     {
-        $data = self::$object->param->toArray();
+        $data = self::$validator->param->toArray();
         if(is_array($keys)){
             foreach($keys as $key){
                 if(in_array($key, array_keys($data))){
                     unset($data[$key]);
                 }
             }
+
             return $data;
         }
     }
@@ -144,26 +145,28 @@ class ValidatorMethod {
     /**
      * Check if param is set in parent param
      *
-     * @param string $key
+     * @param string|null $key
      *
      * @return bool
      */
-    public static function has(?string $key = null)
+    public static function has($key = null)
     {
-        if(in_array($key, array_keys(self::$object->param->toArray()))){
+        if(in_array($key, array_keys(self::$validator->param->toArray()))){
             return true;
         }
+
         return false;
     }
 
      /**
      * Remove value of parameters form objects
      *
-     * @param array $keys
+     * @param array|null $keys
+     * @param array|null $data
      *
      * @return array
      */
-    public static function merge(?array $keys = null, ?array $data = null)
+    public static function merge($keys = null, $data = null)
     {
         if(is_array($keys) && is_array($data)){
             return array_merge($keys,  $data);
@@ -173,11 +176,11 @@ class ValidatorMethod {
     /**
      * Get needed data from array 
      * @param  array  $keys of needed data
-     * @param  array  $allData param to check from
+     * @param  array|null  $allData param to check from
      * 
      * @return array
      */
-    public static function onlyData(?array $keys = null, ?array $allData = null)
+    public static function onlyData($keys = null, $allData = null)
     {
         $data = [];
         if(is_array($keys) && is_array($data)){
@@ -186,18 +189,19 @@ class ValidatorMethod {
                     $data[$key] = $allData[$key];
                 }
             }
+
             return $data;
         }
     }
 
     /**
      * Get all needed params except the removed onces
-     * @param  array  $keys of to remove from parameters
-     * @param  array  $data param to check from
+     * @param  array|null  $keys of to remove from parameters
+     * @param  array|null  $data param to check from
      * 
      * @return mixed
      */
-    public static function exceptData(?array $keys = null, ?array $data = null)
+    public static function exceptData($keys = null, $data = null)
     {
         if(is_array($keys) && is_array($data)){
             foreach($keys as $key){
@@ -205,20 +209,9 @@ class ValidatorMethod {
                     unset($data[$key]);
                 }
             }
+
             return $data;
         }
-    } 
-
-    /**
-     * Returns encoded JSON object of response and message
-     * 
-     * @param  int|float  $response
-     * @param  mixed  $message 
-     * @return string
-     */
-    public static function echoJson(?int $response = 0, $message = null)
-    {
-        echo json_encode(['response' => $response, 'message' => $message]);
     }
 
     /**
@@ -253,49 +246,49 @@ class ValidatorMethod {
 
     /**
      * Resolve flash message and save in memory
-     * @param \Tamedevelopers\Validator\Validator|mixed $object
+     * @param \Tamedevelopers\Validator\Validator|mixed $validator
      * 
      * @return mixed
      */
-    public static function resolveFlash(Validator $object)
+    public static function resolveFlash(Validator $validator)
     {
         // if message is an array
-        if(self::isArray($object->message)){
-            foreach($object->message as $message){ 
-                $object->flash['message'][] = $message; 
+        if(is_array($validator->message)){
+            foreach($validator->message as $message){ 
+                $validator->flash['message'][] = $message; 
             }
         } else{
-            $object->flash['message'][] = $object->message;
+            $validator->flash['message'][] = $validator->message;
         }
 
         // configure error class
-        self::configErrorClass($object);
-
-        // set default class error
-        $object->flash['class'] = $object->error_class['error'];
+        self::configErrorClass($validator);
 
         // if form validation is successful
-        if($object->flashVerify){
-            $object->flash['class'] = $object->error_class['success'];
+        if($validator->flashVerify){
+            $validator->flash['class'] = $validator->class['success'];
+        } else{
+            // Set class to error
+            $validator->flash['class'] = $validator->class['error'];
         }
         
-        return self::$object;
+        return self::$validator;
     }
 
     /**
      * Reset flash data to default values
-     * @param \Tamedevelopers\Validator\Validator|mixed $object
+     * @param \Tamedevelopers\Validator\Validator|mixed $validator
      * 
      * @return mixed
      */
-    public static function resetFlash(Validator $object)
+    public static function resetFlash(Validator $validator)
     {
-        $object->flash = [
+        $validator->flash = [
             'message'   => [],
             'class'     => '',
         ];
         
-        return self::$object;
+        return self::$validator;
     }
 
     /**
@@ -305,7 +298,7 @@ class ValidatorMethod {
      */
     public static function getMessage()
     {
-        return implode(' <br>', self::$object->flash['message']);
+        return implode(' <br>', self::$validator->flash['message']);
     }
 
     /**
@@ -315,7 +308,7 @@ class ValidatorMethod {
      */
     public static function getClass()
     {
-        return self::$object->flash['class'];
+        return self::$validator->flash['class'];
     }
 
     /**
@@ -325,56 +318,29 @@ class ValidatorMethod {
      * @param string $type |attribute|attributes
      * .ie form (array) of param | attributes (object) of param 
      * 
-     * @return object 
+     * @return mixed 
      */
     public static function getForm()
     {
-        $mainForm = self::$object->param->toArray();
+        $mainForm = self::$validator->param->toArray();
         return !empty($mainForm) 
                 ? $mainForm
-                : self::$object->all()->param->toArray();
+                : self::$validator->all()->param->toArray();
     }
 
     /**
      * configErrorClass
      *
-     * @param  mixed $object
-     * @return void
+     * @param  mixed $validator
+     * @return mixed
      */
-    static private function configErrorClass(&$object)
+    static private function configErrorClass(&$validator)
     {
-        if(defined('GLOBAL_FORM_CLASS')){
-            $object->error_class = GLOBAL_FORM_CLASS;
+        if(defined('TAME_VALIDATOR_CONFIG')){
+            $validator->class = TAME_VALIDATOR_CONFIG['class'];
         }
 
-        return $object->error_class;
-    }
-
-    /**
-     * Check if a string is a valid JSON format.
-     *
-     * @param string $string The string to check
-     * @return bool True if the string is a valid JSON, false otherwise
-     */
-    private static function isJson(?string $string = null)
-    {
-        // Try decoding the string
-        $decoded = json_decode($string);
-
-        // Check if there are no JSON syntax errors and the result is not null
-        return (json_last_error() === JSON_ERROR_NONE) && ($decoded !== null);
-    }
-
-    /**
-     * Check if a data is a valid Array format.
-     *
-     * @param object|array|string $data The data to check
-     * @return bool True if the data is a valid array, false otherwise
-     */
-    private static function isArray($data = null)
-    {
-        // Check if data is an array or not
-        return is_array($data) ? true : false;
+        return $validator->class;
     }
 
 }
