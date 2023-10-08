@@ -87,7 +87,7 @@ use Tamedevelopers\Support\Hash;
                 Since we have turned the token verification off 
                 Then we don't need to include the <?php csrf(); ?> with form anymore
             -->
-
+            <?php csrf(); ?>
             <div class="row">
                 <div class="">
                     <label for="html">Current password</label>

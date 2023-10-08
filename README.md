@@ -26,7 +26,7 @@
   * [Rules](#rules)
   * [Validate](#validate)
   * [Save](#save)
-  * [Data Flags](#data-flags)
+  * [Data Types](#data-types)
   * [Operators](#operators)
   * [noInterface](#nointerface)
   * [Before](#before)
@@ -37,8 +37,8 @@
 * [Has](#has)
 * [Old](#old)
 * [Merge](#merge)
-* [onlyData](#onlydata-method)
-* [ExceptData](#exceptdata-method)
+* [Only Data](#only-data)
+* [Except Data](#except-data)
 * [GetForm](#getForm)
 * [Get Message and Class](#get-message-and-class)
 * [Collection](#collection)
@@ -236,7 +236,7 @@ $form->rules([
 </form>
 ```
 
-### Validate 
+### Validate
 - Takes an [optional] `callable` function as the param
 
 ```
@@ -249,7 +249,7 @@ $form->rules([
 });
 ```
 
-### Save 
+### Save
 - Expects a `callable` function as the param
     - Message property will be empty string on success `$response->message`
 
@@ -261,7 +261,7 @@ $form->rules([
 });
 ```
 
-### Data Flags 
+### Data Types
 - `Supports 9 Data Flags type`
 
 | Data types | abbr |          Description          |
@@ -437,7 +437,7 @@ $form->rules([
 });
 ```
 
-## OnlyData
+## Only Data
 - Return only `data passed` from set of given array elements.
 
 | Keys     |  Data                       |
@@ -447,7 +447,7 @@ $form->rules([
 ```
 ->save(function($response){
 
-    $data = $response->OnlyData(['email', 'password'], [
+    $data = $response->onlyData(['email', 'password'], [
         'email'     => 'mailer@mail.com', 
         '_token'    => md5('token'), 
         'age'       => 17,
@@ -459,8 +459,8 @@ $form->rules([
 });
 ```
 
-## ExceptData
-- Exact opposite of `OnlyData()` method
+## Except Data
+- Exact opposite of `onlyData()` method
 
 | Keys            |  Data                       |
 |-----------------|-----------------------------|

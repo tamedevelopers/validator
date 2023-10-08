@@ -19,7 +19,7 @@ use Tamedevelopers\Validator\Traits\ValidatorTrait;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
 use Tamedevelopers\Validator\Traits\ValidateSuccessTrait;
 use Tamedevelopers\Validator\Interface\ValidatorInterface;
-
+use Tamedevelopers\Validator\Methods\CsrfToken;
 
 /**
  * Validator
@@ -122,6 +122,9 @@ class Validator implements ValidatorInterface
 
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
+
+            // delete csrf session token
+            CsrfToken::unsetToken();
         }
 
         return $this;

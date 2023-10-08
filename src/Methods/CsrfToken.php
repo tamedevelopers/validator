@@ -94,6 +94,20 @@ class CsrfToken{
     }
 
     /**
+     * Unset token if available Csrf Token
+     * 
+     * @return void
+     */
+    static public function unsetToken()
+    {
+        if(self::$csrf){
+            if(isset($_SESSION[self::$session])){
+                unset($_SESSION[self::$session]);
+            }
+        }
+    }
+
+    /**
      * Generate Public input Csrf Token
      * 
      * @return string|null
