@@ -31,6 +31,8 @@
   * [noInterface](#nointerface)
   * [Before](#before)
   * [After](#after)
+  * [Has Error](#has-error)
+  * [Is Validated](#is-validated)
 * [Reset Error](#reset-error)
 * [Only](#only)
 * [Except](#except)
@@ -330,6 +332,20 @@ $form->rules([
 $form->after(function(){
     // execute code
 });
+```
+
+### Has Error
+- Returns bool `true\|false`
+
+```
+$form->hasError();
+```
+
+### Is Validated
+- Returns bool `true\|false`, When Form has already been validated
+
+```
+$form->isValidated();
 ```
 
 ## Reset Error
