@@ -8,16 +8,19 @@
         'occupation'        => 'Web Artisans'
     ];
     
-    // config_form();
+    config_form(
+        csrf_token: true,
+        request: 'all',
+    );
 
     $form = form($data)->all();
-    $form->rules([
-        // "string:name|==|4"       => 'Please enter a name',
-        // "str_len|name|<|5"  => 'Name should be more than five(5) characters',
-        // "email|email"       => 'Please enter a valid email address',
-        // "int:age"           => 'Age is required',
-        // "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
-    ])->success(function($response){
+    $form->token(true)->rules([
+        "string|name|==|4"  => 'Please enter a name',
+        "str_len|name|<|5"  => 'Name should be more than five(5) characters',
+        "email|email"       => 'Please enter a valid email address',
+        "int:age"           => 'Age is required',
+        "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
+    ])->save(function($response){
         // access the form data
         $param = $response->param;
         
@@ -31,7 +34,7 @@
             $param->email,
             $param['name'],
             $attribute->occupation,
-            $response
+            // $response
         );
         
         // var_dump( $response->getForm() );

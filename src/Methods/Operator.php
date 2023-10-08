@@ -11,176 +11,178 @@ class Operator {
      * Checking for flag type error
      * Returns true on error found and false is no error is found
      *
-     * @param  array $param
+     * @param  mixed $validator
      * @param  array $dataType
      * @return bool
      */
-    public static function validate($param, $dataType = [])
+    public static function validate($validator, $dataType = [])
     {
-        $operator   = false;
-        $flagOperator       = $dataType['operator'];
-        $flagValue          = $dataType['value'];
+        $operatorError  = false;
+        $operator       = $dataType['operator'];
+        $value          = $dataType['value'];
+        $input_name     = $dataType['input_name'];
+        $param          = $validator->param;
 
-        if(ValidatorMethod::checkIfParamIsset($dataType['variable'])){
+        if(ValidatorMethod::checkIfParamIsset($input_name)){
 
             //equal to operator
-            if($flagOperator == '==')
+            if($operator == '==')
             {
-                $dataString = $param[$dataType['variable']];
-                if($dataString == $flagValue){
-                    self::setOperator($operator);
+                $dataString = $param[$input_name];
+                if($dataString == $value){
+                    self::setOperator($operatorError);
                 }
             }
 
             //strictly equal to operator
-            elseif($flagOperator == '===')
+            elseif($operator == '===')
             {
-                $dataString = $param[$dataType['variable']];
-                if($dataString === $flagValue){
-                    self::setOperator($operator);
+                $dataString = $param[$input_name];
+                if($dataString === $value){
+                    self::setOperator($operatorError);
                 }
             }
 
             //not equal to operator
-            elseif($flagOperator == '!=')
+            elseif($operator == '!=')
             {
-                $dataString = $param[$dataType['variable']];
-                if($dataString != $flagValue){
-                    self::setOperator($operator);
+                $dataString = $param[$input_name];
+                if($dataString != $value){
+                    self::setOperator($operatorError);
                 }
             }
 
             //strictly not equal to operator
-            elseif($flagOperator == '!==')
+            elseif($operator == '!==')
             {
-                $dataString = $param[$dataType['variable']];
-                if($dataString !== $flagValue){ 
-                    self::setOperator($operator);
+                $dataString = $param[$input_name];
+                if($dataString !== $value){ 
+                    self::setOperator($operatorError);
                 }
             }
 
             //greater than operator
-            elseif($flagOperator == '>')
+            elseif($operator == '>')
             {
-                $dataString = $param[$dataType['variable']];
+                $dataString = $param[$input_name];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
-                    if($dataString > (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString > (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }else{
                     $dataString = (float) $dataString;
-                    if($dataString > (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString > (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }
             }
 
             //greater than or equal to operator
-            elseif($flagOperator == '>=')
+            elseif($operator == '>=')
             {
-                $dataString = $param[$dataType['variable']];
+                $dataString = $param[$input_name];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
-                    if($dataString >= (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString >= (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }else{
                     $dataString = (float) $dataString;
-                    if($dataString >= (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString >= (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }
             }
 
             //less than operator
-            elseif($flagOperator == '<')
+            elseif($operator == '<')
             {
-                $dataString = $param[$dataType['variable']];
+                $dataString = $param[$input_name];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
-                    if($dataString  < (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString  < (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }else{
                     $dataString = (float) $dataString;
-                    if($dataString  < (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString  < (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }
             }
 
             //less than or equal to operator
-            elseif($flagOperator == '<=')
+            elseif($operator == '<=')
             {
-                $dataString = $param[$dataType['variable']];
+                $dataString = $param[$input_name];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
-                    if($dataString  <= (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString  <= (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }else{
                     $dataString = (float) $dataString;
-                    if($dataString  <= (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString  <= (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }
             }
 
             //less than or greather than to operator
-            elseif($flagOperator == '<||>')
+            elseif($operator == '<||>')
             {
-                $dataString = $param[$dataType['variable']];
+                $dataString = $param[$input_name];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
-                    if($dataString  < (float) $flagValue || $dataString  > (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString  < (float) $value || $dataString  > (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }else{
                     $dataString = (float) $dataString;
-                    if($dataString  < (float) $flagValue || $dataString  > (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString  < (float) $value || $dataString  > (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }
             }
 
             //less than and greather than to operator
-            elseif($flagOperator == '<&&>')
+            elseif($operator == '<&&>')
             {
-                $dataString = $param[$dataType['variable']];
+                $dataString = $param[$input_name];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
-                    if($dataString  < (float) $flagValue && $dataString  > (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString  < (float) $value && $dataString  > (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }else{
                     $dataString = (float) $dataString;
-                    if($dataString  < (float) $flagValue && $dataString  > (float) $flagValue){
-                        self::setOperator($operator);
+                    if($dataString  < (float) $value && $dataString  > (float) $value){
+                        self::setOperator($operatorError);
                     }
                 }
             }
             
         }
 
-        return $operator;
+        return $operatorError;
     }
     
     /**
      * setOperator
      *
-     * @param  mixed $object
+     * @param  mixed $operatorError
      * @return void
      */
-    static private function setOperator(&$operator)
+    static private function setOperator(&$operatorError)
     {
-        $operator = true;
+        $operatorError = true;
     }
     
 }

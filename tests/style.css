@@ -67,7 +67,7 @@ input:focus{
 }
 .alert{
     position: relative;
-    padding: 2rem;
+    padding: 1rem;
 }
 .danger{
     border: 1px solid #ff0000;

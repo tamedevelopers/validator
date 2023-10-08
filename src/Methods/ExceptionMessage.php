@@ -55,5 +55,15 @@ class ExceptionMessage {
    {
       return "CSRF Token Mismatch. Please refresh the page and try again.";
    }
+  
+   /**
+    * Empty rules `error` message
+    * 
+    * @return string 
+    */
+   public static function emptyRules()
+   {
+      return "Rules cannot be empty. Use noInterface() method instead.";
+   }
     
 }

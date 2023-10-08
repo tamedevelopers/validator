@@ -45,14 +45,16 @@ if (! function_exists('config_form')) {
      * @param  bool $error_type
      * @param  bool $csrf_token
      * @param  string|null $request
+     * - Available type is: [post|get|all]
+     * 
      * @param  array $class
      * @return void
      */
     function config_form(?bool $error_type = false, ?bool $csrf_token = true, $request = null, array $class = [])
     {
         // If request not in array
-        if(!in_array(Str::lower($request), ['post', 'get', 'any', 'all'])){
-            $request = 'any';
+        if(!in_array(Str::lower($request), ['post', 'get', 'all'])){
+            $request = 'post';
         }
 
         // configure class
@@ -83,7 +85,7 @@ if (! function_exists('csrf_token')) {
      */
     function csrf_token()
     {
-        return CsrfToken::getToken() ;
+        return (new CsrfToken)->getToken();
     }
 }
 
@@ -97,6 +99,6 @@ if (! function_exists('csrf')) {
      */
     function csrf()
     {
-        return CsrfToken::generateCSRFInputToken() ;
+        return (new CsrfToken)->generateCSRFInputToken();
     }
 }

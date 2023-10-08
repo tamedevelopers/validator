@@ -23,15 +23,32 @@ class GetRequestType {
         // always empty|null except 
         // `config_form()` has been used
         if(!empty($request)){
-            $requestStatus = match ($request) {
-                'all', 'any' => INPUT_SERVER,
-                'get'  => INPUT_GET,
-                'post' => INPUT_POST,
-                default => INPUT_POST
-            };
+            // convert any and get needed request
+            if($request === 'all'){
+                $requestStatus = self::fetchRequest($_SERVER['REQUEST_METHOD']);
+            } else{
+                $requestStatus = self::fetchRequest($request);
+            }
         }
 
         return $requestStatus;
+    }
+
+    
+    /**
+     * Fetch Requerst
+     *
+     * @param  string|null $request
+     * @return int
+     */
+    private static function fetchRequest($request = null)
+    {
+        $request = Str::lower($request);
+        return match ($request) {
+            'get'  => INPUT_GET,
+            'post' => INPUT_POST,
+            default => INPUT_POST
+        };
     }
     
 }

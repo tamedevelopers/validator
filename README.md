@@ -25,7 +25,7 @@
   * [ALL](#all)
   * [Rules](#rules)
   * [Validate](#validate)
-  * [Success](#success)
+  * [Save](#save)
   * [Data Flags](#data-flags)
   * [Operators](#operators)
   * [noInterface](#nointerface)
@@ -101,7 +101,7 @@ public function save(Request $request){
 | ->all()       |  Convert Form request to `any`                                            |
 
 ```
-$form->post()->submit([
+$form->post()->rules([
     // 
 ]);
 ```
@@ -169,13 +169,6 @@ csrf_token();
 $form->errorType(false);
 ```
 
-- or
-```
-$form->et(true)->submit([
-    // 
-])
-```
-
 ### Token
 - Takes a param as `bool` Default is `false`
     - Allow disability of `csrf_token` on each form request
@@ -187,8 +180,6 @@ $form->et(true)->submit([
 
 ```
 $form->token(false);
-
-$form->csrf(false);
 ```
 
 ### POST
@@ -207,10 +198,10 @@ $form->get();
 ```
 
 ### All
-- Set the Form Request using `$_REQUEST`
+- Will automatically detect if request type is `GET\|POST` and get it's data.
 
 ```
-$form->all()->submit([
+$form->all()->rules([
     // 
 ])
 ```
@@ -249,7 +240,7 @@ $form->rules([
 - Takes an [optional] `callable` function as the param
 
 ```
-$form->submit([
+$form->rules([
     "s:name" => 'Please enter a name',
 ])->validate(function($response){
 
@@ -258,14 +249,14 @@ $form->submit([
 });
 ```
 
-### Success 
+### Save 
 - Expects a `callable` function as the param
     - Message property will be empty string on success `$response->message`
 
 ```
-$form->submit([
+$form->rules([
     "s:name" => 'Please enter a name',
-])->success(function(){
+])->save(function(){
     //on success
 });
 ```
@@ -346,7 +337,7 @@ $form->after(function(){
 - With this helper, you can be able to reset the class, to error class
 
 ```
-->success(function($response){
+->save(function($response){
 
     $availableUserAmount = 900;
 
@@ -370,7 +361,7 @@ $form->after(function(){
     - `keys` of data only needed, from the `form param`
 
 ```
-->success(function($response){
+->save(function($response){
     //
     $data = $response->only(['password', 'username']);
 });
@@ -380,7 +371,7 @@ $form->after(function(){
 - Exact opposite of `only()` method
 
 ```
-->success(function($response){
+->save(function($response){
     
     $data = $response->except(['_token']);
 });
@@ -391,7 +382,7 @@ $form->after(function(){
     - Returns boolean as `true|\false`
 
 ```
-->success(function($response){
+->save(function($response){
     
     if($response->has('remeber_me')){
         // execute code
@@ -421,7 +412,7 @@ $form->rules([
 - Return all submitted form data as an `array`
 
 ```
-->success(function($response){
+->save(function($response){
 
     $data = $response->getForm();
 });
@@ -433,7 +424,7 @@ $form->rules([
     - Second data will always repalace any matched key data in the first array
 
 ```
-->success(function($response){
+->save(function($response){
     
     $data = [
         'name' => 'Lorem Name',
@@ -454,7 +445,7 @@ $form->rules([
 | `array`  |  Main data to select from   |
 
 ```
-->success(function($response){
+->save(function($response){
 
     $data = $response->OnlyData(['email', 'password'], [
         'email'     => 'mailer@mail.com', 
@@ -476,7 +467,7 @@ $form->rules([
 | Keys are array  |  Main data to select from   |
 
 ```
-->success(function($response){
+->save(function($response){
     
     $data = $response->exceptData(['_token'], [
         'email'     => 'mailer@mail.com', 
@@ -511,7 +502,7 @@ $form->getClass();
 $form->rules([
     "string:country:==:0"   => 'Please Select a Country',
     "email:email"           => 'Please enter a valid email address',
-])->success(function($response){
+])->save(function($response){
 
     $param = $response->param;
 

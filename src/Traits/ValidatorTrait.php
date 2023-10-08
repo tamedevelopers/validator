@@ -99,21 +99,11 @@ trait ValidatorTrait {
      * @param  bool $type
      * @return $this
      */
-    public function et(?bool $type = false)
+    public function errorType(?bool $type = false)
     {
         $this->config['errorType'] = $type;
 
         return $this;
-    }
-
-    /**
-     * Error type handler
-     * @param  bool $type
-     * @return $this
-     */
-    public function errorType(?bool $type = false)
-    {
-        return $this->et($type);
     }
 
     /**
@@ -128,18 +118,6 @@ trait ValidatorTrait {
         $this->config['csrf'] = $type;
 
         return $this;
-    }
-
-    /**
-     * CSRF Token
-     * @param  bool $type\ Token type
-     * - true|false \Default is false
-     * 
-     * @return $this
-     */
-    public function csrf(?bool $type = false)
-    {
-        return $this->token($type);
     }
 
     /**
@@ -185,7 +163,7 @@ trait ValidatorTrait {
      */
     public function all()
     {
-        $this->config['request'] = INPUT_SERVER;
+        $this->config['request'] = $this->getFormRequest('all');
 
         // initialize methods
         ValidatorMethod::initialize($this);

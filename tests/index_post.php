@@ -5,27 +5,24 @@
     // it use $_SERVER['REQUEST_METHOD'] as default if not passed to the handler
     $form = new \Tamedevelopers\Validator\Validator();
 
-    $form->submit([
+    $form->rules([
         "s:name"        => 'Please enter a name',
         "sl:name:<:5"   => 'Name should be more than five(5) characters',
         "e:email"       => 'Please enter a valid email address',
         "i:age"         => 'Age is required',
         "i:age:<:16"    => 'Sorry! you must be 16yrs and above to use this site',
         "i:age:>:36"    => 'Sorry! Age limit is 36 in other to use this site',
-    ])->error(function($response){
-
-        //for ajax error return | decode on frontend before usage
-        $response->echoJson(0, $response->message);
-        
-    })->success(function($response){
+    ])->save(function($response){
         // access the form data
         $param = $response->param;
 
         // message
         $response->message = "Submitted Successfully";
 
-        dump($param);
-        // var_dump($param->toArray());
+        dump(
+            $param,
+            $param->toArray()
+        );
     });
 
 ?>

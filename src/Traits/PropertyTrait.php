@@ -78,9 +78,7 @@ trait PropertyTrait {
      * @var array
      */
     public $config = [
-        'csrf'      => null,
-        'before'    => false,
-        'after'     => false,
+        'csrf'      => true,
         'operator'  => false,
         'errorType' => false,
         'request'   => false,

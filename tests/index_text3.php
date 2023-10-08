@@ -11,32 +11,30 @@ use Tamedevelopers\Support\Hash;
     ];
 
     // This can be on just one file accesible to all forms request
-    config_form([
-        'error_type'    => true,
-        'csrf_token'    => false,
-        'class'         => [
+    config_form(
+        error_type: false,
+        csrf_token: true,
+        class: [
             'error'     => 'custom_error_class',
             'success'   => 'custom_success_class'
         ]
-    ]);
+    );
 
     //auto find request method if no param set
     $form = new \Tamedevelopers\Validator\Validator($outsideParam);
-    $form->submit([
+
+    $form->rules([
         "string:current_password"   => 'Enter your old password',
         "string:new_password"       => 'Enter a new password',
         "string:retype_password"    => 'Retype new password',
         "string:retype_password:!==:{$form->old('new_password')}" => 'Password mis-match... Try again.' 
-    ])->beforeSubmit(function(){
+    ])->before(function(){
 
-        print_r( 'beforeSubmit example usage'  );
-    })->afterSubmit(function(){
+        print_r( 'before Submit example usage'  );
+    })->after(function(){
 
-        print_r("**afterSubmit usage example** <br>");
-    })->error(function($response){ 
-
-        // $response->echoJson(0, $response->message);
-    })->success(function($response) use ($outsideParam){
+        print_r("**after Submit usage example** <br>");
+    })->save(function($response) use ($outsideParam){
         // access the form data
         $param = $response->param;
         
@@ -66,7 +64,6 @@ use Tamedevelopers\Support\Hash;
         // print_r($attributeParam );
     });
 
-
 ?>
 
 
@@ -90,7 +87,6 @@ use Tamedevelopers\Support\Hash;
                 Since we have turned the token verification off 
                 Then we don't need to include the <?php csrf(); ?> with form anymore
             -->
-
 
             <div class="row">
                 <div class="">

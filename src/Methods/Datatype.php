@@ -97,51 +97,53 @@ class Datatype {
     {
         // lowercase
         $rulesData['data_type'] = Str::lower($rulesData['data_type']);
-
+        $request = self::$validator->config['request'];
+        $param = self::$validator->param[$rulesData['input_name']];
+        
         switch($rulesData['data_type']){
 
             // email validation
             case (in_array($rulesData['data_type'], ['email', 'e'])):
-                $type = filter_input(self::$validator->type, $rulesData['input_name'], FILTER_VALIDATE_EMAIL);
+                $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_EMAIL);
                 break;
                 
             // integer validation
             case (in_array($rulesData['data_type'], ['int', 'i'])):
-                $type = filter_input(self::$validator->type, $rulesData['input_name'], FILTER_VALIDATE_INT);
+                $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_INT);
                 break;
                 
             // float validation
             case (in_array($rulesData['data_type'], ['float', 'f'])):
-                $type = filter_input(self::$validator->type, $rulesData['input_name'], FILTER_VALIDATE_FLOAT);
+                $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_FLOAT);
                 break;
               
             // url validation
             case (in_array($rulesData['data_type'], ['url', 'u'])):
-                $type = filter_input(self::$validator->type, $rulesData['input_name'], FILTER_VALIDATE_URL);
+                $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_URL);
                 break;
                 
             // array validation
             case (in_array($rulesData['data_type'], ['array', 'a'])):
-                if(is_string(self::$validator->param[$rulesData['input_name']])){
-                    $array = json_decode(self::$validator->param[$rulesData['input_name']], true);
+                if(is_string($param)){
+                    $array = json_decode($param, true);
                 }else{
-                    $array = self::$validator->param[$rulesData['input_name']];
+                    $array = $param;
                 }
-                $type = isset(self::$validator->param[$rulesData['input_name']]) && is_array($array) && count($array) > 0 ? true : false;
+                $type = isset($param) && is_array($array) && count($array) > 0 ? true : false;
                 break;
                
             // bool|bool validation
             case (in_array($rulesData['data_type'], ['bool', 'b'])):
-                $type = filter_input(self::$validator->type, $rulesData['input_name'], FILTER_VALIDATE_BOOL);
+                $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_BOOL);
                 break;
 
             // enum validation
             case (in_array($rulesData['data_type'], ['enum', 'en'])):
                 // if value is not set -- it will return null
-                if(is_null(filter_input(self::$validator->type, $rulesData['input_name']))){
+                if(is_null(filter_input($request, $rulesData['input_name']))){
                     $type = '';
                 }else{
-                    $type = filter_input(self::$validator->type, $rulesData['input_name']);
+                    $type = filter_input($request, $rulesData['input_name']);
                 }
 
                 // mostly for value of 0
@@ -153,7 +155,7 @@ class Datatype {
             // string validation
             default:
                 $type = Tame::filter_input(
-                    filter_input(self::$validator->type, $rulesData['input_name'])
+                    filter_input($request, $rulesData['input_name'])
                 );
 
                 // mostly for value of 0

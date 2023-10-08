@@ -11,7 +11,6 @@ use Tamedevelopers\Validator\Methods\ValidatorMethod;
 use Tamedevelopers\Validator\Methods\ExceptionMessage;
 
 trait ValidateSuccessTrait {
-  
     
     /**
      * Validate Rules
@@ -22,9 +21,8 @@ trait ValidateSuccessTrait {
     {
         return $this->submitInitialization($this->rules);
     }
-
     
-     /**
+    /**
      * Create Form Validation Data
      * 
      * @param  array $data
@@ -46,6 +44,11 @@ trait ValidateSuccessTrait {
             $this->setMessageErrorType($this->config['errorType']);
 
             /**
+            * Start csrf_token session
+            */
+            new CsrfToken($this->config['csrf']);
+
+            /**
              * Check for Csrf Token before allow processing of form data
              * 
              * If Csrf Token is allowed to be used, then we Check if found along with form
@@ -65,7 +68,8 @@ trait ValidateSuccessTrait {
             }
             
             // start loop process
-            foreach($data as $key => $message){
+            foreach($data as $key => $message)
+            {
                 
                 // create data types
                 $ruleValidator = RuleIndicator::validate($key);
@@ -73,7 +77,8 @@ trait ValidateSuccessTrait {
                 /**
                 * Configuration error
                 */
-                if($ruleValidator === "indicator"){
+                if($ruleValidator === "indicator")
+                {
                     $this->setErrorTrue();
                     $this->message  = ExceptionMessage::indicator();
                     break;
@@ -81,10 +86,11 @@ trait ValidateSuccessTrait {
 
                 // Check response error from input flags
                 $checkDataType = Datatype::validate($ruleValidator);
-                
+
                 // allowed errors handling type
                 // if error is to be handled one by one
-                if($this->config['errorType'] === false){
+                if($this->config['errorType'] === false)
+                {
 
                     // set error to true
                     $this->setErrorTrue();
@@ -122,19 +128,21 @@ trait ValidateSuccessTrait {
                 
                 // if errors is to be handled as an array
                 // multiple error handling 
-                else{
+                else {
                     // set error to true
                     $this->setErrorTrue();
                     
+                    $input_name = $ruleValidator['input_name'];
+                    
                     if($this->isDataTypeNotSet($checkDataType)){ 
-                        if(!in_array($ruleValidator['variable'], array_keys($this->message))){
-                            $this->message[$ruleValidator['variable']]    = $message;
+                        if(!in_array($input_name, array_keys($this->message))){
+                            $this->message[$input_name]    = $message;
                         }
                     }
                     elseif($this->isDataTypeNotFound($checkDataType)){
-                        if(!in_array($ruleValidator['variable'], array_keys($this->message))){
+                        if(!in_array($input_name, array_keys($this->message))){
                             // ExceptionMessage::notFound($ruleValidator);
-                            $this->message[$ruleValidator['variable']]    = $message;
+                            $this->message[$input_name]    = $message;
                         }
                     } else{
                         //operator function checker
@@ -142,12 +150,12 @@ trait ValidateSuccessTrait {
 
                         // check error types
                         if($this->isOperatorError()){
-                            $this->message[$ruleValidator['variable']]    = ExceptionMessage::comparison($ruleValidator);
+                            $this->message[$input_name]    = ExceptionMessage::comparison($ruleValidator);
                             break;
                         }
                         elseif(!is_null($this->config['operator']) && $this->config['operator']){
-                            if(!in_array($ruleValidator['variable'], array_keys($this->message))){
-                                $this->message[$ruleValidator['variable']]    = $message;
+                            if(!in_array($input_name, array_keys($this->message))){
+                                $this->message[$input_name]    = $message;
                             }
                         }
                         else{
@@ -167,6 +175,10 @@ trait ValidateSuccessTrait {
             */
             if(!$this->error){
                 $this->proceed = $this->flashVerify = true;
+            } 
+            // error message on empty rules
+            elseif(count($this->rules) === 0){
+                $this->message  = ExceptionMessage::emptyRules();
             }
             
             return $this;

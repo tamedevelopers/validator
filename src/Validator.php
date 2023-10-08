@@ -53,7 +53,7 @@ class Validator implements ValidatorInterface
         if(defined('TAME_VALIDATOR_CONFIG')){
             $const = TAME_VALIDATOR_CONFIG;
             $this->config['class']      = $const['class'];
-            $this->config['request']    = $const['request'];
+            $this->config['request']    = $this->getFormRequest($const['request']);
             $this->config['errorType']  = $const['error_type'];
             $this->config['csrf']       = $const['csrf_token'];
         } else{
@@ -95,7 +95,7 @@ class Validator implements ValidatorInterface
         // this helps us to keep track if to call in the future instance or not
         $this->isValidatedCalled = true;
         
-        if($this->hasErrors()){
+        if($this->hasError()){
             if(is_callable($function)){
                 $function($this);
             }
@@ -106,45 +106,14 @@ class Validator implements ValidatorInterface
 
         return $this;
     }
-
-    /**
-     * Check if Form has validation errors
-     * 
-     * @return bool
-     */
-    public function hasErrors()
-    {
-        if(!is_null($this->proceed) && $this->proceed === false){
-            return true;
-        }
-
-        return false;
-    }
-    
-
-    /**
-     * Check if Form has been validated
-     * 
-     * @return bool
-     */
-    public function isValidated()
-    {
-        $this->ignoreIfValidatorHasBeenCalled();
-
-        if(!is_null($this->proceed) && $this->proceed){
-            return true;
-        }
-
-        return false;
-    }
     
     /**
-     * Form success response
+     * Form save response
      * 
      * @param  callable  $function
      * @return $this
      */
-    public function success(callable $function)
+    public function save(callable $function)
     {
         if($this->isValidated()){
             if(is_callable($function)){
@@ -197,6 +166,36 @@ class Validator implements ValidatorInterface
             }
         }
         return $this;
+    }
+
+    /**
+     * Check if Form has validation errors
+     * 
+     * @return bool
+     */
+    public function hasError()
+    {
+        if(!is_null($this->proceed) && $this->proceed === false){
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if Form has been validated
+     * 
+     * @return bool
+     */
+    public function isValidated()
+    {
+        $this->ignoreIfValidatorHasBeenCalled();
+
+        if(!is_null($this->proceed) && $this->proceed){
+            return true;
+        }
+
+        return false;
     }
 
     /**
