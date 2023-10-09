@@ -18,38 +18,35 @@ class RuleIndicator {
      */
     public static function validate($string)
     {
-        // clean string
-        $string =  str_replace([':', '|'], ':', $string);
+        // max separator
+        $maxReplacements = 4;
 
-        // explode data
-        $data = explode(":", $string);
+        // Split the string by the separator (: or |)
+        $parts = preg_split('/[:|]/', $string, $maxReplacements);
 
-        // count how many occurence in string
-        $find_occur = substr_count($string, ':'); 
-
-        // error
-        if(count($data) > 4 || $find_occur > 3 || !isset($data[1])){
+        // error of indicator
+        if(empty($parts[0]) || empty($parts[1])){
             return "indicator";
         }
 
-        $data['data_type']  = $data[0];
-        $data['input_name'] = $data[1];
+        $parts['data_type']  = $parts[0];
+        $parts['input_name'] = $parts[1];
 
         //create operator
-        if(isset($data[2])){
-            $data['operator'] = $data[2];
+        if(isset($parts[2])){
+            $parts['operator'] = $parts[2];
         }
-        if(isset($data[3])){
-            $data['value'] = $data[3];
+        if(isset($parts[3])){
+            $parts['value'] = $parts[3];
         }
 
         // unset un-used keys `Key string values from array` 
-        unset($data[0]);
-        unset($data[1]);
-        unset($data[2]);
-        unset($data[3]);
+        unset($parts[0]);
+        unset($parts[1]);
+        unset($parts[2]);
+        unset($parts[3]);
 
-        return $data;
+        return $parts;
     }
     
 }
