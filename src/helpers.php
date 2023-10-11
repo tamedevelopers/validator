@@ -20,7 +20,7 @@ if (! function_exists('form')) {
     }
 }
 
-if (! function_exists('old')) {
+if (! AppIsNotCorePHP() && ! function_exists('old')) {
     
     /**
      * Return previously entered value
@@ -76,7 +76,7 @@ if (! function_exists('config_form')) {
 }
 
 
-if (! function_exists('csrf_token')) {
+if (! AppIsNotCorePHP() && ! function_exists('csrf_token')) {
 
     /**
      * Get Csrf Token
@@ -90,7 +90,7 @@ if (! function_exists('csrf_token')) {
 }
 
 
-if (! function_exists('csrf')) {
+if (! AppIsNotCorePHP() && ! function_exists('csrf')) {
 
     /**
      * Generate Input for Csrf Token
