@@ -97,8 +97,8 @@ class Datatype {
     {
         // lowercase
         $rulesData['data_type'] = Str::lower($rulesData['data_type']);
-        $request = self::$validator->config['request'];
-        $param = self::$validator->param[$rulesData['input_name']];
+        $request    = self::$validator->config['request'];
+        $param      = self::$validator->param[$rulesData['input_name']];
         
         switch($rulesData['data_type']){
 
@@ -108,17 +108,29 @@ class Datatype {
                 break;
                 
             // integer validation
-            case (in_array($rulesData['data_type'], ['int', 'i'])):
+            case (in_array($rulesData['data_type'], ['int', 'integer', 'i'])):
                 $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_INT);
+
+                // set error to false if value is 0
+                // changing the value for validation to be ignored, since 0 also seen as false
+                if($param == '0'){
+                    $type = 'false';
+                }
                 break;
                 
             // float validation
             case (in_array($rulesData['data_type'], ['float', 'f'])):
                 $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_FLOAT);
+
+                // set error to false if value is 0
+                // changing the value for validation to be ignored, since 0 also seen as false
+                if($param == '0'){
+                    $type = 'false';
+                }
                 break;
               
             // url validation
-            case (in_array($rulesData['data_type'], ['url', 'u'])):
+            case (in_array($rulesData['data_type'], ['url', 'link', 'u'])):
                 $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_URL);
                 break;
                 
@@ -138,7 +150,7 @@ class Datatype {
                 break;
 
             // enum validation
-            case (in_array($rulesData['data_type'], ['enum', 'en'])):
+            case (in_array($rulesData['data_type'], ['enum', 'en', 'enm'])):
                 // if value is not set -- it will return null
                 if(is_null(filter_input($request, $rulesData['input_name']))){
                     $type = '';
@@ -149,6 +161,12 @@ class Datatype {
                 // mostly for value of 0
                 if(empty($type) && $type != '0') {
                     $type = false;
+                }
+
+                // set error to false if value is 0
+                // changing the value for validation to be ignored, since 0 also seen as false
+                if($param == '0'){
+                    $type = 'false';
                 }
                 break;
 
@@ -162,6 +180,13 @@ class Datatype {
                 if(empty($type) && $type != '0') {
                     $type = false;
                 }
+
+                // set error to false if value is 0
+                // changing the value for validation to be ignored, since 0 also seen as false
+                if($param == '0'){
+                    $type = 'false';
+                }
+
                 break;
         }
 

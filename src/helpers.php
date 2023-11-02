@@ -44,37 +44,43 @@ if (! function_exists('config_form')) {
      *
      * @param  bool $error_type
      * @param  bool $csrf_token
+     * 
      * @param  string|null $request
-     * - Available type is: [post|get|all]
+     * - [post|get|all]
      * 
      * @param  array $class
+     * - [error|success]
+     * 
      * @return void
      */
-    function config_form(?bool $error_type = false, ?bool $csrf_token = true, $request = null, array $class = [])
+    function config_form(?bool $error_type = false, ?bool $csrf_token = true, $request = null, ?array $class = [])
     {
-        // If request not in array
-        if(!in_array(Str::lower($request), ['post', 'get', 'all'])){
-            $request = 'post';
-        }
-
-        // configure class
-        $class = array_merge([
-            'error'     => 'alert alert-danger',
-            'success'   => 'alert alert-success'
-        ], $class);
-
         // config holder
         if(!defined('TAME_VALIDATOR_CONFIG')){
+
+            // If request not in array
+            $request = Str::lower($request);
+            $request = match ($request) {
+                'post', 'get', 'all' => $request,
+                default => 'get'
+            };
+
+            // configure class
+            $class = array_merge([
+                'error'     => 'alert alert-danger',
+                'success'   => 'alert alert-success'
+            ], $class);
+
+            // create constant
             define('TAME_VALIDATOR_CONFIG', [
-                'error_type' => $error_type,
-                'csrf_token' => $csrf_token,
-                'request'   => $request,
-                'class'     => $class,
+                'error_type'    => $error_type,
+                'csrf_token'    => $csrf_token,
+                'request'       => $request,
+                'class'         => $class,
             ]);
         }
     }
 }
-
 
 if (! AppIsNotCorePHP() && ! function_exists('csrf_token')) {
 
@@ -88,7 +94,6 @@ if (! AppIsNotCorePHP() && ! function_exists('csrf_token')) {
         return (new CsrfToken)->getToken();
     }
 }
-
 
 if (! AppIsNotCorePHP() && ! function_exists('csrf')) {
 

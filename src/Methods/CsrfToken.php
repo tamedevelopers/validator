@@ -21,7 +21,7 @@ class CsrfToken{
      * 
      * @var string
      */
-    static private $session = 'csrf_token';
+    static private $session = '_token';
     
     /**
      * Use Csrf Token 
@@ -38,7 +38,6 @@ class CsrfToken{
     public function __construct($csrf = true)
     {
         self::$csrf     = $csrf;
-        self::$session  = 'csrf_token';
         self::$token    = bin2hex(random_bytes(32));
 
         // Start the session if it has not already been started

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Traits;
 
+use Closure;
 use Tamedevelopers\Support\Tame;
 use Tamedevelopers\Support\Server;
 use Tamedevelopers\Validator\Methods\Operator;
@@ -11,18 +12,29 @@ use Tamedevelopers\Validator\Methods\GetRequestType;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
 
 trait ValidatorTrait {
+
+    /**
+     * Run a callback 
+     *
+     * @param  Closure|null $closure
+     * @return mixed
+     */
+    private function callback($closure = null)
+    {
+        if(Tame::isClosure($closure)){
+            $closure($this);
+        }
+    }
   
     /**
      * Use form methods without actually submitting form
      * 
-     * @param  callable  $function.
+     * @param  Closure $closure
      * @return void
      */
-    public function noInterface(callable $function)
+    public function noInterface($closure)
     {
-        if(is_callable($function)){
-            $function($this);
-        }
+        $this->callback($closure);
     }
 
     /**
@@ -32,9 +44,12 @@ trait ValidatorTrait {
      * 
      * @return array
      */
-    public function onlyData($keys = null, $allData = null)
+    public function onlyData($keys = null, $data = null)
     {
-        return ValidatorMethod::onlyData($keys, $allData);
+        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
+        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
+
+        return ValidatorMethod::onlyData($keys, $data);
     }
 
     /**
@@ -46,6 +61,9 @@ trait ValidatorTrait {
      */
     public function exceptData($keys = null, $data = null)
     {
+        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
+        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
+
         return ValidatorMethod::exceptData($keys, $data);
     } 
 
@@ -237,7 +255,9 @@ trait ValidatorTrait {
     {
         // if defined
         if(defined('TAME_VALIDATOR_CONFIG')){
-            $request = TAME_VALIDATOR_CONFIG['request'];
+            if(empty($request)){
+                $request = TAME_VALIDATOR_CONFIG['request'];
+            }
         }
 
         return GetRequestType::request($request);

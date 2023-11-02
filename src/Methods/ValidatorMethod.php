@@ -161,13 +161,16 @@ class ValidatorMethod {
      /**
      * Remove value of parameters form objects
      *
-     * @param array|null $keys
-     * @param array|null $data
+     * @param array|null|Collection $keys
+     * @param array|null|Collection $data
      *
      * @return array
      */
     public static function merge($keys = null, $data = null)
     {
+        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
+        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
+        
         if(is_array($keys) && is_array($data)){
             return array_merge($keys,  $data);
         }
@@ -175,34 +178,41 @@ class ValidatorMethod {
 
     /**
      * Get needed data from array 
-     * @param  array  $keys of needed data
-     * @param  array|null  $allData param to check from
+     * @param  array|null|Collection  $keys of needed data
+     * @param  array|null|Collection  $allData param to check from
      * 
      * @return array
      */
-    public static function onlyData($keys = null, $allData = null)
+    public static function onlyData($keys = null, $data = null)
     {
-        $data = [];
+        $allData = [];
+
+        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
+        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
+
         if(is_array($keys) && is_array($data)){
             foreach($keys as $key){
-                if(in_array($key, array_keys($allData))){
-                    $data[$key] = $allData[$key];
+                if(in_array($key, array_keys($data))){
+                    $allData[$key] = $data[$key];
                 }
             }
 
-            return $data;
+            return $allData;
         }
     }
 
     /**
      * Get all needed params except the removed onces
-     * @param  array|null  $keys of to remove from parameters
-     * @param  array|null  $data param to check from
+     * @param  array|null|Collection  $keys of to remove from parameters
+     * @param  array|null|Collection  $data param to check from
      * 
      * @return mixed
      */
     public static function exceptData($keys = null, $data = null)
     {
+        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
+        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
+        
         if(is_array($keys) && is_array($data)){
             foreach($keys as $key){
                 if(in_array($key, array_keys($data))){
@@ -229,19 +239,36 @@ class ValidatorMethod {
         // in array keys
         $formData = self::getForm();
 
-        if(is_array($formData) && in_array($key, array_keys($formData))){
-            // get data using key
-            $data = $formData[$key] ?? $default;
+        // Split the key into an array of segments
+        $keySegments = explode('.', $key);
 
-            // check if the data to be returned is an array
-            if(is_array($data)){
-                return array_combine($data, $data);
-            }
-            
+        // Initialize a variable to keep track of the current data
+        $data = $formData;
+
+        // Traverse through the key segments to access nested data
+        foreach ($keySegments as $segment) {
+            if (is_array($data) && array_key_exists($segment, $data)) {
+                $data = $data[$segment];
+            } 
+        }
+
+        // Check if the final data is an array
+        if (is_array($data)) {
+            $data = array_combine($data, $data);
+        }
+
+        // if not an array
+        if(!is_array($data)){
             return $data;
         }
 
-        return $default;
+        // if not empty and segment count is 1
+        if(!empty($data) && count($keySegments) === 1){
+            return $data;
+        }
+
+        // return data or default
+        return $data[end($keySegments)] ?? $default;
     }
 
     /**
@@ -323,9 +350,25 @@ class ValidatorMethod {
     public static function getForm()
     {
         $mainForm = self::$validator->param->toArray();
-        return !empty($mainForm) 
-                ? $mainForm
-                : self::$validator->all()->param->toArray();
+        
+        if(!empty($mainForm)){
+            return $mainForm;
+        } else{
+            $allForm = self::$validator->all()->param->toArray();
+            return !empty($allForm) 
+                ? $allForm
+                : array_merge($_POST, $_GET);
+        }
+    }
+
+    /**
+     * If instance of collection
+     * @param mixed $data
+     * @return bool
+     */ 
+    public static function isCollectionInstance($data = null)
+    {
+        return ($data instanceof Collection);
     }
 
     /**

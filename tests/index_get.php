@@ -40,6 +40,10 @@
         // var_dump( $response->getForm() );
     });
 
+    // dd(
+    //     old('activities.swimming')
+    // );
+
     
 ?>
 
@@ -94,11 +98,11 @@
                     </label>
                     <label for="running">
                         Running
-                        <input type="checkbox" name="activities[]" value="running" id="running" <?= isset(old('activities')['running']) ? 'checked' : '' ?>>
+                        <input type="checkbox" name="activities[]" value="running" id="running" <?= old('activities.running') ? 'checked' : '' ?>>
                     </label>
                     <label for="swimming">
                         Swimming
-                        <input type="checkbox" name="activities[]" value="swimming" id="swimming" <?= isset(old('activities')['swimming']) ? 'checked' : '' ?>>
+                        <input type="checkbox" name="activities[]" value="swimming" id="swimming" <?= old('activities.swimming') ? 'checked' : '' ?>>
                     </label>
                 </div>
 

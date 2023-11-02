@@ -233,13 +233,13 @@ $form->rules([
         <option value="USA">United States of America</option>
     </select>
 
-    <input type="hidden" name="csrf_token" value="749c345a1d407f29e777349f5e46a8d6d2cd51454b6719228b5ee28f94c30432">
+    <input type="hidden" name="_token" value="749c345a1d407f29e777349f5e46a8d6d2cd51454b6719228b5ee28f94c30432">
     <input type="email" name="email" placeholder="Email Address">
 </form>
 ```
 
 ### Validate
-- Takes an [optional] `callable` function as the param
+- Takes an [optional] `closure` function as the param
 
 ```
 $form->rules([
@@ -252,7 +252,7 @@ $form->rules([
 ```
 
 ### Save
-- Expects a `callable` function as the param
+- Expects a `closure` function as the param
     - Message property will be empty string on success `$response->message`
 
 ```
@@ -297,7 +297,7 @@ $form->rules([
 
 
 ### noInterface
-- Expects a `callable` function as the param
+- Expects a `closure` function as the param
     - have access to form data without any validation
 
 ```
@@ -310,7 +310,7 @@ $form->noInterface(function($response){
 ```
 
 ### Before
-- Expects a `callable` function as the param
+- Expects a `closure` function as the param
     - Will only execute code within when Request is [GET]
         - CSRF Token `does'nt` apply to this method
 
@@ -324,7 +324,7 @@ $form->rules([
 ```
 
 ### After
-- Expects a `callable` function as the param
+- Expects a `closure` function as the param
     - Will always execute no matter the request method type
         - CSRF Token `does'nt` apply to this method
 

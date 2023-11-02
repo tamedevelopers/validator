@@ -5,23 +5,23 @@
     // it use $_SERVER['REQUEST_METHOD'] as default if not passed to the handler
     $form = new \Tamedevelopers\Validator\Validator();
 
-    $form->rules([
+    $form->token(false)->rules([
         "s:name"        => 'Please enter a name',
         "sl:name:<:5"   => 'Name should be more than five(5) characters',
         "e:email"       => 'Please enter a valid email address',
-        "i:age"         => 'Age is required',
-        "i:age:<:16"    => 'Sorry! you must be 16yrs and above to use this site',
-        "i:age:>:36"    => 'Sorry! Age limit is 36 in other to use this site',
+        "float:age"       => 'Age is required',
+        // "i:age:<:16"    => 'Sorry! you must be 16yrs and above to use this site',
+        // "i:age:>:36"    => 'Sorry! Age limit is 36 in other to use this site',
     ])->save(function($response){
         // access the form data
-        $param = $response->param;
+        $param = $response->except(['_token']);
 
         // message
         $response->message = "Submitted Successfully";
 
         dump(
             $param,
-            $param->toArray()
+            $response->param
         );
     });
 

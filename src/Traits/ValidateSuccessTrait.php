@@ -11,6 +11,15 @@ use Tamedevelopers\Validator\Methods\ValidatorMethod;
 use Tamedevelopers\Validator\Methods\ExceptionMessage;
 
 trait ValidateSuccessTrait {
+
+        
+    /**
+     * csrf_token
+     *
+     * @var string
+     */
+    private $csrf_token = '_token';
+
     
     /**
      * Validate Rules
@@ -58,10 +67,10 @@ trait ValidateSuccessTrait {
                 // set error to true
                 $this->setErrorTrue();
 
-                if(!$this->param->has('csrf_token')){
+                if(!$this->param->has($this->csrf_token)){
                     $this->message  = ExceptionMessage::csrfTokenNotFound();
                     return $this;
-                } elseif(!CsrfToken::validateToken($this->param->csrf_token)){
+                } elseif(!CsrfToken::validateToken($this->param->{$this->csrf_token})){
                     $this->message  = ExceptionMessage::csrfTokenMismatch();
                     return $this;
                 }

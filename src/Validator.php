@@ -71,7 +71,17 @@ class Validator implements ValidatorInterface
      * Create validation rules
      * 
      * @param  array $rules
+     * - Separator <: or |>
+     * - [data_type|input_name|operator|value]
+     * 
+     * - Data Types [<int/i/integer>|<float/f>|<email/e>|<url/u/link>|<array/a>|<bool/b>|<enum/en/enm>|<string/s>]
+     * 
+     * - Operators [==,===,!=,!==,>,>=,<,<=,<||>,<&&>]
+     * 
+     * - example["string:first_name" => "First name is required"]
+     * 
      * @return $this
+     * @link https://github.com/tamedevelopers/validator
      */
     public function rules(?array $rules = []) 
     {
@@ -83,10 +93,10 @@ class Validator implements ValidatorInterface
     /**
      * Begin form validation
      * 
-     * @param  callable|null  $function
+     * @param  Closure|null  $function
      * @return $this
      */
-    public function validate(callable $function = null)
+    public function validate($closure = null)
     {
         // validate rules
         $this->validateRules();
@@ -96,9 +106,7 @@ class Validator implements ValidatorInterface
         $this->isValidatedCalled = true;
         
         if($this->hasError()){
-            if(is_callable($function)){
-                $function($this);
-            }
+            $this->callback($closure);
 
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
@@ -110,15 +118,13 @@ class Validator implements ValidatorInterface
     /**
      * Form save response
      * 
-     * @param  callable  $function
+     * @param  Closure  $function
      * @return $this
      */
-    public function save(callable $function)
+    public function save($closure)
     {
         if($this->isValidated()){
-            if(is_callable($function)){
-                $function($this);
-            }
+            $this->callback($closure);
 
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
@@ -134,18 +140,16 @@ class Validator implements ValidatorInterface
      * Before form submission 
      * - [GET] request type only allowed
      * 
-     * @param  callable  $function.
+     * @param  Closure  $closure.
      * @return $this
      */
-    public function before($function)
+    public function before($closure)
     {
         // reset data
         ValidatorMethod::resetFlash($this);
 
         if(ValidatorMethod::isGetRequestBeforeSubmitted()){
-            if(is_callable($function)){
-                $function($this);
-            }
+            $this->callback($closure);
         }
 
         return $this;
@@ -155,18 +159,16 @@ class Validator implements ValidatorInterface
      * After form submission
      * - [All] request type allowed
      * 
-     * @param  callable  $function.
+     * @param  Closure  $closure.
      * @return $this
      */
-    public function after($function)
+    public function after($closure)
     {
         // reset data
         ValidatorMethod::resetFlash($this);
         
         if(ValidatorMethod::isSubmitted()){
-            if(is_callable($function)){
-                $function($this);
-            }
+            $this->callback($closure);
         }
         return $this;
     }
