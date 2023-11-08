@@ -62,7 +62,7 @@ if (! function_exists('config_form')) {
             $request = Str::lower($request);
             $request = match ($request) {
                 'post', 'get', 'all' => $request,
-                default => 'get'
+                default => 'post'
             };
 
             // configure class

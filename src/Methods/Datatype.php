@@ -76,7 +76,7 @@ class Datatype {
      */
     protected static function checkEmun($rulesData)
     {
-        if(in_array(strtolower($rulesData['data_type']), ['enum', 'en'])){
+        if(in_array(strtolower($rulesData['data_type']), ['enum', 'en', 'enm'])){
             return true;
         }
 
@@ -91,7 +91,7 @@ class Datatype {
      * @param  array $rulesData
      * - [data_type|input_name|operator|value]
      * 
-     * @return mixed
+     * @return bool|string
      */
     protected static function validateForminput($rulesData)
     {
@@ -110,23 +110,11 @@ class Datatype {
             // integer validation
             case (in_array($rulesData['data_type'], ['int', 'integer', 'i'])):
                 $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_INT);
-
-                // set error to false if value is 0
-                // changing the value for validation to be ignored, since 0 also seen as false
-                if($param == '0'){
-                    $type = 'false';
-                }
                 break;
                 
             // float validation
             case (in_array($rulesData['data_type'], ['float', 'f'])):
                 $type = filter_input($request, $rulesData['input_name'], FILTER_VALIDATE_FLOAT);
-
-                // set error to false if value is 0
-                // changing the value for validation to be ignored, since 0 also seen as false
-                if($param == '0'){
-                    $type = 'false';
-                }
                 break;
               
             // url validation
@@ -138,10 +126,10 @@ class Datatype {
             case (in_array($rulesData['data_type'], ['array', 'a'])):
                 if(is_string($param)){
                     $array = json_decode($param, true);
-                }else{
+                } else{
                     $array = $param;
                 }
-                $type = isset($param) && is_array($array) && count($array) > 0 ? true : false;
+                $type = isset($param) && is_array($array) && count($array) > 0;
                 break;
                
             // bool|bool validation
@@ -154,19 +142,13 @@ class Datatype {
                 // if value is not set -- it will return null
                 if(is_null(filter_input($request, $rulesData['input_name']))){
                     $type = '';
-                }else{
+                } else{
                     $type = filter_input($request, $rulesData['input_name']);
                 }
 
                 // mostly for value of 0
                 if(empty($type) && $type != '0') {
                     $type = false;
-                }
-
-                // set error to false if value is 0
-                // changing the value for validation to be ignored, since 0 also seen as false
-                if($param == '0'){
-                    $type = 'false';
                 }
                 break;
 
@@ -180,13 +162,6 @@ class Datatype {
                 if(empty($type) && $type != '0') {
                     $type = false;
                 }
-
-                // set error to false if value is 0
-                // changing the value for validation to be ignored, since 0 also seen as false
-                if($param == '0'){
-                    $type = 'false';
-                }
-
                 break;
         }
 

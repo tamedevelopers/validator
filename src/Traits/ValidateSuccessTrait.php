@@ -100,7 +100,6 @@ trait ValidateSuccessTrait {
                 // if error is to be handled one by one
                 if($this->config['errorType'] === false)
                 {
-
                     // set error to true
                     $this->setErrorTrue();
                     
@@ -218,7 +217,7 @@ trait ValidateSuccessTrait {
      */
     private function isDataTypeNotSet($type)
     {
-        if(in_array($type, [false, '!isset'])){
+        if(($type === false || $type === '!isset')){
             return true;
         } 
 
@@ -233,7 +232,7 @@ trait ValidateSuccessTrait {
      */
     private function isDataTypeNotFound($type)
     {
-        if(in_array($type, [false, '!found'])){
+        if(($type === false || $type === '!found')){
             return true;
         } 
 
