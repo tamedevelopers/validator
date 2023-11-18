@@ -40,7 +40,7 @@ trait ValidateSuccessTrait {
      */
     private function submitInitialization(?array $data = [])
     {
-
+        
         // only begin validation when submitted
         if(ValidatorMethod::isSubmitted())
         {
@@ -82,7 +82,7 @@ trait ValidateSuccessTrait {
                 
                 // create data types
                 $ruleValidator = RuleIndicator::validate($key);
-                
+
                 /**
                 * Configuration error
                 */

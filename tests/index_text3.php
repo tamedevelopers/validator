@@ -12,6 +12,7 @@ use Tamedevelopers\Support\Hash;
 
     // This can be on just one file accesible to all forms request
     config_form(
+        request: 'all',
         error_type: false,
         csrf_token: true,
         class: [

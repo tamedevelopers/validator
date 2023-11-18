@@ -349,16 +349,7 @@ class ValidatorMethod {
      */
     public static function getForm()
     {
-        $mainForm = self::$validator->param->toArray();
-        
-        if(!empty($mainForm)){
-            return $mainForm;
-        } else{
-            $allForm = self::$validator->all()->param->toArray();
-            return !empty($allForm) 
-                ? $allForm
-                : array_merge($_POST, $_GET);
-        }
+        return self::$validator->param->toArray();
     }
 
     /**

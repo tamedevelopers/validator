@@ -44,7 +44,7 @@ class Datatype {
         }
 
         else{
-
+            
             // check if value param isset
             if(ValidatorMethod::checkIfParamIsset($rulesData['input_name'])){
                 $type = self::validateForminput($rulesData);
@@ -97,7 +97,7 @@ class Datatype {
     {
         // lowercase
         $rulesData['data_type'] = Str::lower($rulesData['data_type']);
-        $request    = self::$validator->config['request'];
+        $request    = self::requestType(self::$validator->config['request']);
         $param      = self::$validator->param[$rulesData['input_name']];
         
         switch($rulesData['data_type']){
@@ -166,6 +166,26 @@ class Datatype {
         }
 
         return $type;
+    }
+
+    
+    /**
+     * Get Request Type
+     *
+     * @param  mixed $request
+     * @return int
+     */
+    static private function requestType($request = null)
+    {
+        if(empty($request) || $request == 2){
+            $request = $_SERVER['REQUEST_METHOD'];
+        } 
+
+        if(Str::lower($request) == 'post' || $request == 0){
+            return INPUT_POST;
+        } 
+
+        return INPUT_GET;
     }
 
 }

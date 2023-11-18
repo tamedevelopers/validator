@@ -181,7 +181,7 @@ trait ValidatorTrait {
      */
     public function all()
     {
-        $this->config['request'] = $this->getFormRequest('all');
+        $this->config['request'] = 2;
 
         // initialize methods
         ValidatorMethod::initialize($this);
