@@ -3,7 +3,6 @@
 [![Total Downloads](https://poser.pugx.org/tamedeveloper/validator/downloads)](https://packagist.org/packages/tamedeveloper/validator)
 [![Latest Stable Version](https://poser.pugx.org/tamedeveloper/validator/version.png)](https://packagist.org/packages/tamedeveloper/validator)
 [![License](https://poser.pugx.org/tamedeveloper/validator/license)](https://packagist.org/packages/tamedeveloper/validator)
-[![Build Status](https://github.com/tamedevelopers/validator/actions/workflows/php.yml/badge.svg)](https://github.com/tamedevelopers/validator/actions)
 [![Code Coverage](https://codecov.io/gh/tamedeveloper/validator/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/tamedeveloper/validator/branch/3.2.2.x)
 
 ## Documentation
