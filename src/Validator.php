@@ -106,10 +106,11 @@ class Validator implements ValidatorInterface
         $this->isValidatedCalled = true;
         
         if($this->hasError()){
-            $this->callback($closure);
 
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
+
+            $this->callback($closure);
         }
 
         return $this;
@@ -124,11 +125,12 @@ class Validator implements ValidatorInterface
     public function save($closure)
     {
         if($this->isValidated()){
-            $this->callback($closure);
-
+            
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
-
+            
+            $this->callback($closure);
+            
             // delete csrf session token
             CsrfToken::unsetToken();
         }
