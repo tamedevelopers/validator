@@ -325,9 +325,13 @@ class ValidatorMethod {
      */
     public static function getMessage()
     {
+        // get message
         $message = !empty(self::$validator->message)
-                    ? [self::$validator->message]
+                    ? self::$validator->message
                     : self::$validator->flash['message'];
+
+        // convert to array
+        $message = !is_array($message) ? [$message] : $message;
                     
         return implode(' <br>', $message);
     }
