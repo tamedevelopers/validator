@@ -274,6 +274,7 @@ class Validator implements ValidatorInterface
     public function reset()
     {
         $this->flashVerify = false;
+        $this->flash['class'] = $this->class['error'];
     }
 
 }
