@@ -134,36 +134,36 @@ class Operator {
             }
 
             //less than or greather than to operator
-            elseif($operator == '<||>')
+            elseif($operator == '<or>')
             {
                 $dataString = $param[$input_name];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
-                    if($dataString  < (float) $value || $dataString  > (float) $value){
+                    if($dataString  < (int) $value || $dataString  > (int) $value){
                         self::setOperator($operatorError);
                     }
                 }else{
-                    $dataString = (float) $dataString;
-                    if($dataString  < (float) $value || $dataString  > (float) $value){
+                    $dataString = (int) $dataString;
+                    if($dataString  < (int) $value || $dataString  > (int) $value){
                         self::setOperator($operatorError);
                     }
                 }
             }
 
             //less than and greather than to operator
-            elseif($operator == '<&&>')
+            elseif($operator == '<and>')
             {
                 $dataString = $param[$input_name];
                 // if str_len | sl
                 if(in_array($dataType['data_type'], ['str_len', 'sl'])){
                     $dataString = strlen($dataString);
-                    if($dataString  < (float) $value && $dataString  > (float) $value){
+                    if($dataString  < (int) $value && $dataString  > (int) $value){
                         self::setOperator($operatorError);
                     }
                 }else{
-                    $dataString = (float) $dataString;
-                    if($dataString  < (float) $value && $dataString  > (float) $value){
+                    $dataString = (int) $dataString;
+                    if($dataString  < (int) $value && $dataString  > (int) $value){
                         self::setOperator($operatorError);
                     }
                 }

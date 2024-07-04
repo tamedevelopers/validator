@@ -291,8 +291,8 @@ $form->rules([
 | >=   |  Greater than or Equal to     |
 | <    |  Less than                    |
 | <=   |  Less than or Equal to        |
-| <||> |  Less than or Greater than    |
-| <&&> |  Less than and Greater than   |
+| <or> |  Less than or Greater than    |
+| <and>|  Less than and Greater than   |
 
 
 ### noInterface

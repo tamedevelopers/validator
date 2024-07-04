@@ -76,7 +76,7 @@ class Validator implements ValidatorInterface
      * 
      * - Data Types [<int/i/integer>|<float/f>|<email/e>|<url/u/link>|<array/a>|<bool/b>|<enum/en/enm>|<string/s>]
      * 
-     * - Operators [==,===,!=,!==,>,>=,<,<=,<||>,<&&>]
+     * - Operators [==,===,!=,!==,>,>=,<,<=,<or>,<and>]
      * 
      * - example["string:first_name" => "First name is required"]
      * 
