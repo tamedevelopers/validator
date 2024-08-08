@@ -237,7 +237,8 @@ class ValidatorMethod {
     public static function old($key = null, $default = null)
     {
         // in array keys
-        $formData = self::getForm();
+        // $formData = self::getForm();
+        $formData = array_merge($_GET, $_POST);
 
         // Split the key into an array of segments
         $keySegments = explode('.', $key);
