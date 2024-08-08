@@ -111,23 +111,23 @@ $form->post()->rules([
 - Helpers available to assist on easy configuration
     - `config_form()`
 
-| Array Keys  |        Description                      |
+| Keys          |        Description                      |
 |-------------|-----------------------------------------|
 | request     |  String `POST\|GET\|ALL` Default `POST` |
 | error_type  |  Boolean `true\|false` Default `false`  |
 | csrf_token  |  Boolean `true\|false` Default `true`   |
-| class       |  Array `error\|success` error class type to be returned on both success and failure   |
+| class       |  Assoc Array `error\|success` error class type to be returned on both success and failure   |
 
 ```
-config_form([
-    'request'       => 'POST',
-    'error_type'    => true,
-    'csrf_token'    => true,
-    'class'         => [
+config_form(
+    request       : 'POST',
+    error_type    : true,
+    csrf_token    : true,
+    class         : [
         'error'     => 'alert alert-danger',
         'success'   => 'alert alert-success'
     ]
-]); 
+); 
 ```
 
 ## Csrf

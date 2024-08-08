@@ -264,7 +264,7 @@ class ValidatorMethod {
 
         // if not empty and segment count is 1
         if(!empty($data) && count($keySegments) === 1){
-            return $data;
+            return is_array($data) ? $data[0] ?? $data[""] ?? "" : $data;
         }
 
         // return data or default
