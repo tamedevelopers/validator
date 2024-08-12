@@ -237,8 +237,7 @@ class ValidatorMethod {
     public static function old($key = null, $default = null)
     {
         // in array keys
-        // $formData = self::getForm();
-        $formData = array_merge($_GET, $_POST);
+        $formData = self::getAllForm();
 
         // Split the key into an array of segments
         $keySegments = explode('.', $key);
@@ -260,12 +259,14 @@ class ValidatorMethod {
 
         // if not an array
         if(!is_array($data)){
-            return $data;
+            return $data ?? $default;
         }
 
         // if not empty and segment count is 1
         if(!empty($data) && count($keySegments) === 1){
-            return is_array($data) ? $data[0] ?? $data[""] ?? "" : $data;
+            return is_array($data) 
+                    ? $data[0] ?? $default 
+                    : $data ?? $default;
         }
 
         // return data or default
@@ -359,6 +360,17 @@ class ValidatorMethod {
     public static function getForm()
     {
         return self::$validator->param->toArray();
+    }
+
+    /**
+     * Get All Form Data
+     * - POST and GET form data
+     * 
+     * @return array 
+     */
+    public static function getAllForm()
+    {
+        return array_merge($_GET, $_POST);
     }
 
     /**
