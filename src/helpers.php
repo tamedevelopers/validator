@@ -3,6 +3,7 @@
 use Tamedevelopers\Support\Str;
 use Tamedevelopers\Validator\Validator;
 use Tamedevelopers\Validator\Methods\CsrfToken;
+use Tamedevelopers\Validator\Methods\ValidatorMethod;
 
 
 if (! function_exists('form')) {
@@ -33,7 +34,7 @@ if (! AppIsNotCorePHP() && ! function_exists('old')) {
      */
     function old($key = null, $default = null)
     {
-       return form()->old($key, $default);
+       return ValidatorMethod::old($key, $default);
     }
 }
 
