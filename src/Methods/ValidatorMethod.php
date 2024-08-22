@@ -234,7 +234,7 @@ class ValidatorMethod {
      * 
      * @return mixed
      */
-    public static function _old($key = null, $default = null)
+    public static function old($key = null, $default = null)
     {
         // in array keys
         $formData = self::getAllForm();
