@@ -22,6 +22,7 @@
   * [POST](#post)
   * [GET](#get)
   * [ALL](#all)
+  * [ANY](#any)
   * [Rules](#rules)
   * [Validate](#validate)
   * [Save](#save)
@@ -203,6 +204,15 @@ $form->get();
 
 ```
 $form->all()->rules([
+    // 
+])
+```
+
+### Any
+- same as `all`
+
+```
+$form->any()->rules([
     // 
 ])
 ```

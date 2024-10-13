@@ -193,6 +193,16 @@ trait ValidatorTrait {
     }
 
     /**
+     * Convert Form Request to REQUEST_METHOD
+     * 
+     * @return $this
+     */
+    public function any()
+    {
+        return $this->all();
+    }
+
+    /**
      * Convert data to array
      * @param mixed $data
      * 
