@@ -1,8 +1,8 @@
 # PHP Form Validator  - PFV
 
 [![Total Downloads](https://poser.pugx.org/tamedevelopers/validator/downloads)](https://packagist.org/packages/tamedevelopers/validator)
-[![Latest Stable Version](https://poser.pugx.org/tamedevelopers/validator/version.png)](https://packagist.org/packages/tamedevelopers/validator)
-[![License](https://poser.pugx.org/tamedevelopers/validator/license)](https://packagist.org/packages/tamedevelopers/validator/license)
+[![Latest Stable Version](https://poser.pugx.org/tamedevelopers/validator/version)](https://packagist.org/packages/tamedevelopers/validator)
+[![License](https://poser.pugx.org/tamedevelopers/validator/license)](https://packagist.org/packages/tamedevelopers/validator)
 [![Code Coverage](https://codecov.io/gh/tamedevelopers/validator/branch/main/4.2.18/graph/badge.svg)](https://codecov.io/gh/tamedevelopers/validator/branch/main/4.2.18)
 
 ## Documentation
