@@ -117,9 +117,9 @@ class ValidatorMethod {
                     $data[$key] = self::$validator->param[$key];
                 }
             }
-
-            return $data;
         }
+
+        return $data;
     }
 
     /**
@@ -137,9 +137,9 @@ class ValidatorMethod {
                     unset($data[$key]);
                 }
             }
-
-            return $data;
         }
+
+        return $data;
     }
 
     /**
@@ -170,10 +170,11 @@ class ValidatorMethod {
     {
         $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
         $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
+
+        $keys = $keys ?? [];
+        $data = $data ?? [];
         
-        if(is_array($keys) && is_array($data)){
-            return array_merge($keys,  $data);
-        }
+        return array_merge($keys,  $data);
     }
 
     /**
@@ -196,9 +197,9 @@ class ValidatorMethod {
                     $allData[$key] = $data[$key];
                 }
             }
-
-            return $allData;
         }
+
+        return $allData;
     }
 
     /**
@@ -206,7 +207,7 @@ class ValidatorMethod {
      * @param  array|null|Collection  $keys of to remove from parameters
      * @param  array|null|Collection  $data param to check from
      * 
-     * @return mixed
+     * @return array
      */
     public static function exceptData($keys = null, $data = null)
     {
@@ -219,9 +220,9 @@ class ValidatorMethod {
                     unset($data[$key]);
                 }
             }
-
-            return $data;
         }
+
+        return $data ?? [];
     }
 
     /**
