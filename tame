@@ -1,0 +1,33 @@
+#!/usr/bin/env php
+<?php
+
+// Unix timestamp with microseconds
+define('TAME_START', microtime(true));
+
+/*
+|--------------------------------------------------------------------------
+| Ensure <composer autoload> is registered
+|--------------------------------------------------------------------------
+|
+| This file makes sure that composer's autoloader is loaded before any otherthing
+| in this application. It also ensures that all of our dependencies are installed
+| and ready to use by the developer.
+|
+*/
+
+include_once __DIR__ . "/vendor/autoload.php";
+
+/*
+|--------------------------------------------------------------------------
+| Run The Application CLI <dispatcher>
+|--------------------------------------------------------------------------
+|
+| This file is where your <CLI commands> will be dispatched from 
+| using the command line, the response sent back to a terminal
+| or another output device for the developers.
+|
+*/
+
+$artisan = new Tamedevelopers\Support\Capsule\Artisan();
+
+exit($artisan->run($argv));

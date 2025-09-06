@@ -21,7 +21,7 @@ if (! function_exists('form')) {
     }
 }
 
-if (! AppIsNotCorePHP() && ! function_exists('old')) {
+if (! Tame_isAppFramework() && ! function_exists('old')) {
     
     /**
      * Return previously entered value
@@ -83,7 +83,7 @@ if (! function_exists('config_form')) {
     }
 }
 
-if (! AppIsNotCorePHP() && ! function_exists('csrf_token')) {
+if (! Tame_isAppFramework() && ! function_exists('csrf_token')) {
 
     /**
      * Get Csrf Token
@@ -96,7 +96,7 @@ if (! AppIsNotCorePHP() && ! function_exists('csrf_token')) {
     }
 }
 
-if (! AppIsNotCorePHP() && ! function_exists('csrf')) {
+if (! Tame_isAppFramework() && ! function_exists('csrf')) {
 
     /**
      * Generate Input for Csrf Token
