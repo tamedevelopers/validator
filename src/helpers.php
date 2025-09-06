@@ -7,7 +7,7 @@ use Tamedevelopers\Validator\Methods\ValidatorMethod;
 
 
 if (! function_exists('form')) {
-
+    
     /**
      * Get Form Instance \ PHP Form Validator
      * @param mixed $attribute 
