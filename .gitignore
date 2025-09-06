@@ -2,5 +2,5 @@
 /.idea
 /.vscode
 /.github
-./tame
+tame
 composer.lock
