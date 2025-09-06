@@ -84,7 +84,7 @@ if (! function_exists('config_form')) {
 }
 
 if (! Tame_isAppFramework() && ! function_exists('csrf_token')) {
-
+    
     /**
      * Get Csrf Token
      * 
