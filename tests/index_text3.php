@@ -35,7 +35,8 @@ use Tamedevelopers\Support\Hash;
     })->after(function(){
 
         print_r("**after Submit usage example** <br>");
-    })->save(function($response) use ($outsideParam){
+    })
+    ->save(function($response) use ($outsideParam){
         // access the form data
         $param = $response->param;
         

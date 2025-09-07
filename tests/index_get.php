@@ -20,6 +20,7 @@
         "email|email"       => 'Please enter a valid email address',
         "int:age"           => 'Age is required',
         "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
+        "array:activities"  => 'Select one or more activities',
     ])->save(function($response){
         // access the form data
         $param = $response->param;
@@ -34,16 +35,11 @@
             $param->email,
             $param['name'],
             $attribute->occupation,
-            // $response
+            $param->activities
         );
         
         // var_dump( $response->getForm() );
     });
-
-    // dd(
-    //     old('activities.swimming')
-    // );
-
     
 ?>
 
@@ -80,7 +76,7 @@
                 
                 <div class="">
                     <label for="html">Age</label>
-                    <input type="text" name="age" value="<?= old('age'); ?>">
+                    <input type="number" name="age" value="<?= old('age'); ?>">
                 </div>
 
                 <div class="activities">
@@ -90,11 +86,11 @@
 
                     <label for="reading">
                         Reading
-                        <input type="checkbox" name="activities[]" value="reading" id="reading" <?= isset(old('activities')['reading']) ? 'checked' : '' ?> >
+                        <input type="checkbox" name="activities[]" value="reading" id="reading" <?= old('activities.reading') ? 'checked' : '' ?> >
                     </label>
                     <label for="writing">
                         Writing
-                        <input type="checkbox" name="activities[]" value="writing" id="writing" <?= isset(old('activities')['writing']) ? 'checked' : '' ?>>
+                        <input type="checkbox" name="activities[]" value="writing" id="writing" <?= old('activities.writing') ? 'checked' : '' ?>>
                     </label>
                     <label for="running">
                         Running

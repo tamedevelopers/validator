@@ -21,7 +21,7 @@
 
         dump(
             $param,
-            $response->param
+            $response->param->toObject()
         );
     });
 
@@ -60,7 +60,7 @@
                 
                 <div class="">
                     <label for="html">Age</label>
-                    <input type="text" name="age" value="<?= $form->old('age'); ?>">
+                    <input type="number" name="age" value="<?= $form->old('age'); ?>">
                 </div>
 
                 <button type="submit" class="btn mt-2">Submit</button>
