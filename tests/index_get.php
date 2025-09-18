@@ -37,8 +37,8 @@
         $response->message = "Submitted Successfully";
 
         dump(
-            $param->message,
-            $param,
+            // $param->message,
+            $param->toArray(),
             // $param->email,
             // $param['name'],
             // $attribute->occupation,
@@ -61,7 +61,7 @@
 <html>
     <body>
 
-        <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
+        <form method="get" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
             
             <div class="errorMSg mb-5 <?= $form->getClass() ?>">

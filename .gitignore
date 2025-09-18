@@ -2,5 +2,8 @@
 /.idea
 /.vscode
 /.github
+/.env
+/.env.example
+/.htaccess
 tame
 composer.lock
