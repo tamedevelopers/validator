@@ -133,7 +133,7 @@ class Validator implements ValidatorInterface
         if ($this->jsonResponse instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
             // Send headers/body only once and return response for frameworks/tests
             if (!$this->responseSent) {
-                $this->jsonResponse->send();
+                // $this->jsonResponse->send();
                 $this->responseSent = true;
             }
             return $this->jsonResponse;
@@ -144,20 +144,27 @@ class Validator implements ValidatorInterface
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
             
-            $result = $this->callback($closure);
+            $response = $this->callback($closure);
 
             // If user returns a JsonResponse in save, send and return it
-            if ($result instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+            if ($response instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
                 if (!$this->responseSent) {
-                    $result->send();
+                    $response->send();
                     $this->responseSent = true;
                 }
-                return $result;
+                // return $response;
+
+                var_dump(
+                    'sent method'
+                );
+                exit();
             }
             
             // delete csrf session token
             CsrfToken::unsetToken();
         }
+
+        return $this;
     }
     
     /**

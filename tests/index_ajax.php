@@ -90,12 +90,12 @@ include_once __DIR__ . "/include.php";
                 .then(response => response.text())
                 .then(data => {
                     // parse the JSON response
-                    data = JSON.parse(data);
+                    // data = JSON.parse(data);
 
                     console.log(
                         data,
-                        data.response,
-                        data.message
+                        // data.response,
+                        // data.message
                     );
                     return false;
                     // handle success/error response from server
