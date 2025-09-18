@@ -133,7 +133,7 @@ class Validator implements ValidatorInterface
         if ($this->jsonResponse instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
             // Send headers/body only once and return response for frameworks/tests
             if (!$this->responseSent) {
-                // $this->jsonResponse->send();
+                $this->jsonResponse->send();
                 $this->responseSent = true;
             }
             return $this->jsonResponse;

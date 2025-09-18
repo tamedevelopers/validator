@@ -16,9 +16,11 @@ $form->token(true)->error(false)->rules([
     "enum:terms"        => 'Accept terms and condition',
 ])->validate(function($response){
 
-    return $response->json(1, $response->message);
+    // return $response->json(1, $response->message);
+
     var_dump(
         $response->message,
+        'sss'
     );
     exit();
 })->save(function($response){
