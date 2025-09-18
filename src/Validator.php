@@ -131,6 +131,10 @@ class Validator implements ValidatorInterface
     {
         // if validation already failed, return stored JsonResponse
         if ($this->jsonResponse instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+            // Send only if not in Laravel environment to avoid double sending
+            if (!class_exists('Illuminate\Foundation\Application')) {
+                $this->jsonResponse->send();
+            }
             return $this->jsonResponse;
         }
 
@@ -146,6 +150,10 @@ class Validator implements ValidatorInterface
                 // delete csrf session token
                 CsrfToken::unsetToken();
 
+                // Send only if not in Laravel environment to avoid double sending
+                if (!class_exists('Illuminate\Foundation\Application')) {
+                    $response->send();
+                }
                 return $response;
             }
 
