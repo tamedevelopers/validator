@@ -37,6 +37,9 @@ class Validator implements ValidatorInterface
         PropertyTrait,
         ValidateSuccessTrait;
     
+
+    public $jsonResponse = null;
+
     /**
      * @param  mixed $attribute
      * - Any outside parameter you would want to use within the form instance
@@ -109,7 +112,13 @@ class Validator implements ValidatorInterface
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
 
-            $this->callback($closure);
+            // run callback, which should return JsonResponse
+            $response = $this->callback($closure);
+
+            // Instead of returning the JsonResponse, keep chaining
+            if ($response instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+                $this->jsonResponse = $response;
+            }
         }
 
         return $this;
@@ -119,10 +128,15 @@ class Validator implements ValidatorInterface
      * Form save response
      * 
      * @param  Closure  $function
-     * @return $this
+     * @return mixed
      */
     public function save($closure)
     {
+        // if validation already failed, stop here
+        if ($this->jsonResponse instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+            return $this->jsonResponse;
+        }
+
         if($this->isValidated()){
             
             // save into a remembering variable
@@ -133,8 +147,6 @@ class Validator implements ValidatorInterface
             // delete csrf session token
             CsrfToken::unsetToken();
         }
-
-        return $this;
     }
     
     /**

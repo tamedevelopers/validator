@@ -6,12 +6,6 @@ use Tamedevelopers\Validator\Methods\CsrfToken;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
 
 
-/**
- * Helps without calling the method multiple times
- */
-$Tame_isAppFramework = function_exists('Tame_isAppFramework') ? Tame_isAppFramework() : false;
-
-
 if (! function_exists('form')) {
     
     /**
@@ -27,7 +21,7 @@ if (! function_exists('form')) {
     }
 }
 
-if (! $Tame_isAppFramework && ! function_exists('old')) {
+if (! Tame_isAppFramework() && ! function_exists('old')) {
     
     /**
      * Return previously entered value
@@ -89,7 +83,7 @@ if (! function_exists('config_form')) {
     }
 }
 
-if (! $Tame_isAppFramework && ! function_exists('csrf_token')) {
+if (! Tame_isAppFramework() && ! function_exists('csrf_token')) {
     
     /**
      * Get Csrf Token
@@ -102,7 +96,7 @@ if (! $Tame_isAppFramework && ! function_exists('csrf_token')) {
     }
 }
 
-if (! $Tame_isAppFramework && ! function_exists('csrf')) {
+if (! Tame_isAppFramework() && ! function_exists('csrf')) {
 
     /**
      * Generate Input for Csrf Token

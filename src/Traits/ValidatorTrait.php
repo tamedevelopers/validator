@@ -22,7 +22,7 @@ trait ValidatorTrait {
     private function callback($closure = null)
     {
         if(Tame::isClosure($closure)){
-            $closure($this);
+           return $closure($this);
         }
     }
   
@@ -30,11 +30,11 @@ trait ValidatorTrait {
      * Use form methods without actually submitting form
      * 
      * @param  Closure $closure
-     * @return void
+     * @return mixed
      */
     public function noInterface($closure)
     {
-        $this->callback($closure);
+        return $this->callback($closure);
     }
 
     /**
@@ -81,16 +81,40 @@ trait ValidatorTrait {
     }
 
     /**
+     * Return a JSON response with status code and message
+     *
+     * @param  int   $response
+     * @param  mixed $message
+     * @param  int   $statusCode
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public static function json(int $response = 0, $message = null, int $statusCode = 200)
+    {
+        return Tame::json($response, $message, $statusCode);
+    }
+
+    /**
+     * Alias for `echoJson` method
+     * 
+     * @param  int $response
+     * @param  mixed  $message 
+     * @return mixed<json>
+     */
+    public static function jsonEcho(int $response = 0, $message = null)
+    {
+        self::echoJson($response, $message);
+    }
+
+    /**
      * Returns encoded JSON object of response and message
      * 
-     * @param  int|float  $response
+     * @param  int $response
      * @param  mixed  $message 
-     * @return string
-     * - [json]  
+     * @return mixed<json>  
      */
-    public function echoJson(?int $response = 0, $message = null)
+    public static function echoJson(int $response = 0, $message = null)
     {
-        return Tame::echoJson($response, $message);
+        Tame::jsonEcho($response, $message);
     }
 
     /**
