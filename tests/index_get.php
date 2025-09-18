@@ -1,5 +1,6 @@
 <?php
 
+
     include_once __DIR__ . "/../vendor/autoload.php";
 
     $data = [
@@ -15,12 +16,16 @@
 
     $form = form($data)->all();
     $form->token(true)->rules([
-        "string|name|==|4"  => 'Please enter a name',
+        "string|name"       => 'Please enter a name',
         "str_len|name|<|5"  => 'Name should be more than five(5) characters',
         "email|email"       => 'Please enter a valid email address',
         "int:age"           => 'Age is required',
         "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
+        "float:amount"      => 'Enter Loan Amount',
         "array:activities"  => 'Select one or more activities',
+        "array:activities"  => 'Select one or more activities',
+        "string:message"    => 'Message cannot be empty',
+        "enum:terms"        => 'Accept terms and condition',
     ])->save(function($response){
         // access the form data
         $param = $response->param;
@@ -32,10 +37,12 @@
         $response->message = "Submitted Successfully";
 
         dump(
-            $param->email,
-            $param['name'],
-            $attribute->occupation,
-            $param->activities
+            $param->message,
+            $param,
+            // $param->email,
+            // $param['name'],
+            // $attribute->occupation,
+            // $param->activities
         );
         
         // var_dump( $response->getForm() );
@@ -54,7 +61,7 @@
 <html>
     <body>
 
-        <form method="get" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
+        <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
             
             <div class="errorMSg mb-5 <?= $form->getClass() ?>">
@@ -78,6 +85,17 @@
                     <label for="html">Age</label>
                     <input type="number" name="age" value="<?= old('age'); ?>">
                 </div>
+                
+                <div class="">
+                    <label for="html">Loan Amount</label>
+                    <input type="number" step="any" name="amount" value="<?= old('amount'); ?>">
+                </div>
+                
+                <div class="">
+                    <label for="html">Message</label>
+                    <textarea name="message" rows="7" 
+                        cols="81"><?= old('message'); ?></textarea>
+                </div>
 
                 <div class="activities">
                     <p class="title">
@@ -99,6 +117,12 @@
                     <label for="swimming">
                         Swimming
                         <input type="checkbox" name="activities[]" value="swimming" id="swimming" <?= old('activities.swimming') ? 'checked' : '' ?>>
+                    </label>
+
+                    <label for="terms" style="margin-top: 30px;">
+                        Accept terms
+                        <input type="checkbox" name="terms" id="terms" 
+                            value="accepted" <?= old('terms') ? 'checked' : '' ?> >
                     </label>
                 </div>
 

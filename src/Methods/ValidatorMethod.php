@@ -6,6 +6,7 @@ namespace Tamedevelopers\Validator\Methods;
 
 use Tamedevelopers\Support\Str;
 use Tamedevelopers\Validator\Validator;
+use Tamedevelopers\Support\Process\Http;
 use Tamedevelopers\Support\Collections\Collection;
 
 class ValidatorMethod {
@@ -43,6 +44,11 @@ class ValidatorMethod {
         }
         
         return isset($_REQUEST[$param]);
+    }
+
+    public static function updateParamData()
+    {
+        
     }
 
     /**
@@ -92,7 +98,7 @@ class ValidatorMethod {
      */
     public static function isGetRequestBeforeSubmitted()
     {
-        if(Str::lower($_SERVER['REQUEST_METHOD']) === 'get'){
+        if(Str::lower(Http::method()) === 'get'){
             // allow when get TYPE if not submitted
             if(!self::isSubmitted()){
                 return true;
@@ -237,41 +243,34 @@ class ValidatorMethod {
      */
     public static function old($key = null, $default = null)
     {
-        // in array keys
         $formData = self::getAllForm();
 
-        // Split the key into an array of segments
-        $keySegments = explode('.', $key);
+        if ($key === null) {
+            return $formData;
+        }
 
-        // Initialize a variable to keep track of the current data
+        $keySegments = explode('.', $key);
         $data = $formData;
 
-        // Traverse through the key segments to access nested data
-        foreach ($keySegments as $segment) {
-            if (is_array($data) && array_key_exists($segment, $data)) {
-                $data = $data[$segment];
-            } 
+        foreach ($keySegments as $index => $segment) {
+            if (is_array($data)) {
+                // Case 1: checkbox arrays (e.g. activities.reading)
+                if ($index === count($keySegments) - 1 && in_array($segment, $data, true)) {
+                    return true; // means the checkbox was checked
+                }
+
+                // Case 2: nested array
+                if (array_key_exists($segment, $data)) {
+                    $data = $data[$segment];
+                } else {
+                    return $default;
+                }
+            } else {
+                return $default;
+            }
         }
 
-        // Check if the final data is an array
-        if (is_array($data)) {
-            $data = array_combine($data, $data);
-        }
-
-        // if not an array
-        if(!is_array($data)){
-            return $data ?? $default;
-        }
-
-        // if not empty and segment count is 1
-        if(!empty($data) && count($keySegments) === 1){
-            return is_array($data) 
-                    ? $data[0] ?? $default 
-                    : $data ?? $default;
-        }
-
-        // return data or default
-        return $data[end($keySegments)] ?? $default;
+        return $data ?? $default;
     }
 
     /**

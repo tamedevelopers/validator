@@ -23,6 +23,12 @@ trait PropertyTrait {
      */
     public $message;
 
+    /** @var \Symfony\Component\HttpFoundation\JsonResponse|null */
+    public $jsonResponse = null;
+
+    /** Flag to avoid double-sending responses */
+    protected bool $responseSent = false;
+
     /**
      * Defined rules collectors
      *
@@ -36,6 +42,7 @@ trait PropertyTrait {
      * @var bool
      */
     private $isValidatedCalled = false;
+    
 
     /**
      * proceed

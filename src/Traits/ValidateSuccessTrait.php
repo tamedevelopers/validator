@@ -12,14 +12,12 @@ use Tamedevelopers\Validator\Methods\ExceptionMessage;
 
 trait ValidateSuccessTrait {
 
-        
     /**
      * csrf_token
      *
      * @var string
      */
     private $csrf_token = '_token';
-
     
     /**
      * Validate Rules
@@ -89,12 +87,18 @@ trait ValidateSuccessTrait {
                 if($ruleValidator === "indicator")
                 {
                     $this->setErrorTrue();
-                    $this->message  = ExceptionMessage::indicator();
+                    $this->message = ExceptionMessage::indicator();
                     break;
                 }
 
                 // Check response error from input flags
-                $checkDataType = Datatype::validate($ruleValidator);
+                $validateValue = Datatype::validate($ruleValidator);
+
+                // update param data to resolved values
+                $inputName = $ruleValidator['input_name'];
+                $this->param[$inputName] = Datatype::getFormInput(
+                    $inputName, $ruleValidator['data_type'], 
+                );
 
                 // allowed errors handling type
                 // if error is to be handled one by one
@@ -103,13 +107,13 @@ trait ValidateSuccessTrait {
                     // set error to true
                     $this->setErrorTrue();
                     
-                    if($this->isDataTypeNotSet($checkDataType)){
-                        $this->message  = $message;
+                    if($this->isDataTypeNotSet($validateValue)){
+                        $this->message = $message;
                         break;
                     }
-                    elseif($this->isDataTypeNotFound($checkDataType)){
+                    elseif($this->isDataTypeNotFound($validateValue)){
                         // ExceptionMessage::notFound($ruleValidator)
-                        $this->message  = $message;
+                        $this->message = $message;
                         break;
                     } else{
 
@@ -117,7 +121,7 @@ trait ValidateSuccessTrait {
                         $this->setErrorFalse(); 
 
                         //operator function checker
-                        $this->config['operator']     = $this->operatorMethod($ruleValidator);
+                        $this->config['operator'] = $this->operatorMethod($ruleValidator);
 
                         if($this->isOperatorError()){
                             $this->message = ExceptionMessage::comparison($ruleValidator);
@@ -142,15 +146,15 @@ trait ValidateSuccessTrait {
                     
                     $input_name = $ruleValidator['input_name'];
                     
-                    if($this->isDataTypeNotSet($checkDataType)){ 
+                    if($this->isDataTypeNotSet($validateValue)){ 
                         if(!in_array($input_name, array_keys($this->message))){
-                            $this->message[$input_name]    = $message;
+                            $this->message[$input_name] = $message;
                         }
                     }
-                    elseif($this->isDataTypeNotFound($checkDataType)){
+                    elseif($this->isDataTypeNotFound($validateValue)){
                         if(!in_array($input_name, array_keys($this->message))){
                             // ExceptionMessage::notFound($ruleValidator);
-                            $this->message[$input_name]    = $message;
+                            $this->message[$input_name] = $message;
                         }
                     } else{
                         //operator function checker
@@ -158,12 +162,12 @@ trait ValidateSuccessTrait {
 
                         // check error types
                         if($this->isOperatorError()){
-                            $this->message[$input_name]    = ExceptionMessage::comparison($ruleValidator);
+                            $this->message[$input_name] = ExceptionMessage::comparison($ruleValidator);
                             break;
                         }
                         elseif(!is_null($this->config['operator']) && $this->config['operator']){
                             if(!in_array($input_name, array_keys($this->message))){
-                                $this->message[$input_name]    = $message;
+                                $this->message[$input_name] = $message;
                             }
                         }
                         else{

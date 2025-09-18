@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Methods;
 
+use Tamedevelopers\Support\Process\Http;
 use Tamedevelopers\Support\Str;
 
 class GetRequestType {
@@ -25,7 +26,7 @@ class GetRequestType {
         if(!empty($request)){
             // convert any and get needed request
             if($request === 'all'){
-                $requestStatus = self::fetchRequest($_SERVER['REQUEST_METHOD']);
+                $requestStatus = self::fetchRequest(Http::method());
             } else{
                 $requestStatus = self::fetchRequest($request);
             }
@@ -34,7 +35,6 @@ class GetRequestType {
         return $requestStatus;
     }
 
-    
     /**
      * Fetch Requerst
      *

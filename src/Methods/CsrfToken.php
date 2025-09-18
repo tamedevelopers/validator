@@ -6,6 +6,7 @@ namespace Tamedevelopers\Validator\Methods;
 
 
 use Tamedevelopers\Support\Str;
+use Tamedevelopers\Support\Process\Http;
 
 class CsrfToken{
 
@@ -126,7 +127,7 @@ class CsrfToken{
     static private function generateTokenOnPageLoad()
     {
         // if csrf is allowed to be use
-        if(self::$csrf && Str::upper($_SERVER['REQUEST_METHOD']) == 'GET' && empty($_REQUEST[self::$session])){
+        if(self::$csrf && Str::upper(Http::method()) == 'GET' && empty($_REQUEST[self::$session])){
             unset($_SESSION[self::$session]);
             $_SESSION[self::$session] = self::generateOrIgnore();
         }

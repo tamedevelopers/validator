@@ -168,7 +168,6 @@ class Operator {
                     }
                 }
             }
-            
         }
 
         return $operatorError;

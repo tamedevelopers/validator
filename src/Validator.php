@@ -36,9 +36,6 @@ class Validator implements ValidatorInterface
     use ValidatorTrait, 
         PropertyTrait,
         ValidateSuccessTrait;
-    
-
-    public $jsonResponse = null;
 
     /**
      * @param  mixed $attribute
@@ -48,8 +45,8 @@ class Validator implements ValidatorInterface
      */
     public function __construct($attribute = null) 
     {
-        $this->attribute        = new Collection($attribute);
-        $this->message          = [];
+        $this->attribute = new Collection($attribute);
+        $this->message   = [];
 
         // if defined
         if(defined('TAME_VALIDATOR_CONFIG')){
@@ -115,7 +112,7 @@ class Validator implements ValidatorInterface
             // run callback, which should return JsonResponse
             $response = $this->callback($closure);
 
-            // Instead of returning the JsonResponse, keep chaining
+            // Keep chaining but store JsonResponse for later
             if ($response instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
                 $this->jsonResponse = $response;
             }
@@ -132,8 +129,13 @@ class Validator implements ValidatorInterface
      */
     public function save($closure)
     {
-        // if validation already failed, stop here
+        // if validation already failed, send stored JsonResponse now
         if ($this->jsonResponse instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+            // Send headers/body only once and return response for frameworks/tests
+            if (!$this->responseSent) {
+                $this->jsonResponse->send();
+                $this->responseSent = true;
+            }
             return $this->jsonResponse;
         }
 
@@ -142,7 +144,16 @@ class Validator implements ValidatorInterface
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
             
-            $this->callback($closure);
+            $result = $this->callback($closure);
+
+            // If user returns a JsonResponse in save, send and return it
+            if ($result instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+                if (!$this->responseSent) {
+                    $result->send();
+                    $this->responseSent = true;
+                }
+                return $result;
+            }
             
             // delete csrf session token
             CsrfToken::unsetToken();
