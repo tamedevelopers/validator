@@ -137,6 +137,16 @@ trait ValidatorTrait {
     }
 
     /**
+     * Alias form `errorType` method
+     * @param  bool $type
+     * @return $this
+     */
+    public function error(?bool $type = false)
+    {
+        return $this->errorType($type);
+    }
+
+    /**
      * Error type handler
      * @param  bool $type
      * @return $this

@@ -156,7 +156,7 @@ class Datatype {
                 $sanitizeArray = function ($arr) use (&$sanitizeArray) {
                     return array_map(fn($v) =>
                         is_array($v) ? $sanitizeArray($v) :
-                        (is_string($v) ? Purify::string($v) : $v), $arr);
+                        (is_string($v) ? Purify::string((string) $v) : $v), $arr);
                 };
 
                 return (is_array($array) && count($array) > 0)
@@ -177,17 +177,17 @@ class Datatype {
 
             // ---------------- HTML ----------------
             case in_array($ruleFlag, self::RULE_HTML, true):
-                $sanitized = Purify::html($value);
+                $sanitized = Purify::html((string) $value);
                 return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
 
             // ---------------- DEV ----------------
             case in_array($ruleFlag, self::RULE_DEV, true):
-                $sanitized = Purify::dev($value);
+                $sanitized = Purify::dev((string) $value);
                 return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
 
             // ---------------- DEFAULT STRING ----------------
             default:
-                $sanitized = Purify::string($value);
+                $sanitized = Purify::string((string) $value);
                 return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
         }
     }
