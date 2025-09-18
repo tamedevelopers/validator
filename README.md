@@ -59,12 +59,14 @@
 
 Prior to installing `validator package` get the [Composer](https://getcomposer.org) dependency manager for PHP because it'll simplify installation.
 
-```
+```txt
 composer require tamedevelopers/validator
 ```
 
 ## Instantiate — `Instantiate class using`
-```
+- It's helper class can be called, using -- `form()`
+
+```php
 require_once __DIR__ . '/vendor/autoload.php';
 
 use \Tamedevelopers\Validator\Validator;
@@ -72,16 +74,11 @@ use \Tamedevelopers\Validator\Validator;
 $form = new Validator();
 ```
 
-- or -- `Helpers Function`
-```
-$form = form();
-```
-
 ## Laravel Support
 - Now supports Laravel and with same Functionalities no different
     - `use Tamedevelopers\Validator\Validator;`
 
-```
+```php
 public function save(Request $request){
 
     $form = new Validator();
@@ -102,15 +99,14 @@ public function save(Request $request){
 | ->get()       |  Convert Form request to  `GET` only                                      |
 | ->all()       |  Convert Form request to `any`                                            |
 
-```
+```php
 $form->post()->rules([
     // 
 ]);
 ```
 
 ## Global Configuration
-- Helpers available to assist on easy configuration
-    - `config_form()`
+- It's helper class can be called, using -- `config_form()`
 
 | Keys          |        Description                      |
 |-------------|-----------------------------------------|
@@ -119,7 +115,7 @@ $form->post()->rules([
 | csrf_token  |  Boolean `true\|false` Default `true`   |
 | class       |  Assoc Array `error\|success` error class type to be returned on both success and failure   |
 
-```
+```php
 config_form(
     request       : 'POST',
     error_type    : true,
@@ -142,7 +138,7 @@ config_form(
     - It's a function and you don't need to `echo`
         - Use anywhere inside your HTML form
 
-```
+```php
 csrf();
 ```
 ![Sample Csrf Form Input](https://raw.githubusercontent.com/tamedevelopers/validator/main/getErrorMessage.png)
@@ -150,7 +146,7 @@ csrf();
 ### Csrf Token
 - This will return the `csrf token` string
 
-```
+```php
 csrf_token();
 ```
 
@@ -167,7 +163,7 @@ csrf_token();
 | false |  `Default` Errors displayed one after another  |
 | true  |  This allow all errors to be displayed once, `as an array` |
 
-```
+```php
 $form->errorType(false);
 ```
 
@@ -180,7 +176,7 @@ $form->errorType(false);
 | false |  `Default` Will disable `csrf_token` usage    |
 | true  |  This allow `csrf_token` per request only     |
 
-```
+```php
 $form->token(false);
 ```
 
@@ -188,21 +184,21 @@ $form->token(false);
 - Set the Form Request to `POST`
     - This will always override the `config_form()` settings
 
-```
+```php
 $form->post();
 ```
 
 ### GET
 - Set the Form Request to `GET`
 
-```
+```php
 $form->get();
 ```
 
 ### All
 - Will automatically detect if request type is `GET\|POST` and get it's data.
 
-```
+```php
 $form->all()->rules([
     // 
 ])
@@ -211,7 +207,7 @@ $form->all()->rules([
 ### Any
 - same as `all`
 
-```
+```php
 $form->any()->rules([
     // 
 ])
@@ -226,7 +222,7 @@ $form->any()->rules([
 | string    | : country    | :  ==               | : 0              |
 | email     | : email      | :                   |                  |
 
-```
+```php
 $form->rules([
     "string|country|==|0"   => 'Please Select a Country',
     "email:email"           => 'Please enter a valid email address',
@@ -234,7 +230,7 @@ $form->rules([
 ```
 
 - HTML FORM Structure
-```
+```html
 <form>
     <select name="country">
         <option value="0">Select Country</option>
@@ -250,7 +246,7 @@ $form->rules([
 ### Validate
 - Takes an [optional] `closure` function as the param
 
-```
+```php
 $form->rules([
     "s:name" => 'Please enter a name',
 ])->validate(function($response){
@@ -264,7 +260,7 @@ $form->rules([
 - Expects a `closure` function as the param
     - Message property will be empty string on success `$response->message`
 
-```
+```php
 $form->rules([
     "s:name" => 'Please enter a name',
 ])->save(function(){
@@ -280,6 +276,8 @@ $form->rules([
 | email      |  e   |  `Email` data validation      |
 | bool       |  b   |  `Boolean` data validation    |
 | string     |  s   |  `String` data validation     |
+| html       |  -   |  `html` CMS/Blog content validation |
+| dev        |  -   |  `dev` CMS/Blog/Dev like content  validation |
 | str_len    |  sl  |  `String Length` validation   |
 | enum       |  en  |  `Enum` Forms `checkbox \| radio` or any form data that normally has no value when not checked |
 | array      |  a   |  `Array` data validation      |
@@ -309,7 +307,7 @@ $form->rules([
 - Expects a `closure` function as the param
     - have access to form data without any validation
 
-```
+```php
 $form->noInterface(function($response){
 
     if($response->has('amount')){
@@ -418,25 +416,25 @@ $form->isValidated();
 ## Old
 - Takes a param as `string` and return old inserted data
     - Second parameter is [optional] `mixed data`. 
+    - It's helper class can be called, using -- `old()`
 
-```
+```php
 $form->rules([
     "s:password" => 'Please enter a name',
     "s:retype_pass:!==:{$form->old('password')}" => 'Password mismatch, Please enter same password',
 ]);
 ```
 
-- or -- `Helpers Function`
-```
+- or 
+```html
 <input type="email" name="email" value="<?= old('email', 'default_value')>">
 ```
 ![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/validator/main/old.png)
 
-
 ## GetForm
 - Return all submitted form data as an `array`
 
-```
+```php
 ->save(function($response){
 
     $data = $response->getForm();
@@ -448,7 +446,7 @@ $form->rules([
     - Merge two array data together
     - Second data will always repalace any matched key data in the first array
 
-```
+```php
 ->save(function($response){
     
     $data = [
@@ -469,7 +467,7 @@ $form->rules([
 |----------|-----------------------------|
 | `array`  |  Main data to select from   |
 
-```
+```php
 ->save(function($response){
 
     $data = $response->onlyData(['email', 'password'], [
@@ -479,8 +477,7 @@ $form->rules([
         'password'  => 'test',
     ]);
 
-    ---
-    Only ['email', 'password'] will be returned.
+// Only ['email', 'password'] will be returned.
 });
 ```
 
@@ -491,7 +488,7 @@ $form->rules([
 |-----------------|-----------------------------|
 | Keys are array  |  Main data to select from   |
 
-```
+```php
 ->save(function($response){
     
     $data = $response->exceptData(['_token'], [
@@ -500,8 +497,7 @@ $form->rules([
         'password'  => 'test'
     ]);
 
-    ---
-    Return all array element, except ['_token']
+// Return all array element, except ['_token']
 });
 ```
 
@@ -512,7 +508,7 @@ $form->rules([
 | class   | `Class name` Class name on error and success  |
 
 
-```
+```php
 $form->getMessage();
 $form->getClass();
 ```
@@ -523,7 +519,7 @@ $form->getClass();
 - Forms `param` returns a Collection Class
     - This enable us access property as an `object` or `array index`
 
-```
+```php
 $form->rules([
     "string:country:==:0"   => 'Please Select a Country',
     "email:email"           => 'Please enter a valid email address',
@@ -535,9 +531,8 @@ $form->rules([
     $param->country;
     $param['country']
 
-    ---
-    As you can see, we're able to access data in both ways without errors
-})
+// As you can see, we're able to access data in both ways without errors
+});
 ```
 
 ## Collection Methods
@@ -553,7 +548,7 @@ $form->rules([
 - Takes a param as `mixed` data
     - Converts to an `Object` data
 
-```
+```php
 $form->toObject([
     'food' => 'Basmati Rice'
 ]);
@@ -563,7 +558,7 @@ $form->toObject([
 - Takes a param as `mixed` data
     - Converts to an `Array` data
 
-```
+```php
 $form->toArray([
     'food' => 'Basmati Rice'
 ]);
@@ -573,7 +568,7 @@ $form->toArray([
 - Takes a param as `mixed` data
     - Converts to an `Json` data
 
-```
+```php
 $form->toJson([
     'food' => 'Basmati Rice'
 ]);
