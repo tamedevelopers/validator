@@ -123,43 +123,32 @@ class Validator implements ValidatorInterface
     
     /**
      * Form save response
-     * 
+     *
      * @param  Closure  $function
      * @return mixed
      */
     public function save($closure)
     {
-        // if validation already failed, send stored JsonResponse now
+        // if validation already failed, return stored JsonResponse
         if ($this->jsonResponse instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
-            // Send headers/body only once and return response for frameworks/tests
-            if (!$this->responseSent) {
-                $this->jsonResponse->send();
-                $this->responseSent = true;
-            }
             return $this->jsonResponse;
         }
 
         if($this->isValidated()){
-            
+
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
-            
+
             $response = $this->callback($closure);
 
-            // If user returns a JsonResponse in save, send and return it
+            // If user returns a JsonResponse in save, return it
             if ($response instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
-                if (!$this->responseSent) {
-                    $response->send();
-                    $this->responseSent = true;
-                }
-                // return $response;
+                // delete csrf session token
+                CsrfToken::unsetToken();
 
-                var_dump(
-                    'sent method'
-                );
-                exit();
+                return $response;
             }
-            
+
             // delete csrf session token
             CsrfToken::unsetToken();
         }

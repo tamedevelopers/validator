@@ -19,7 +19,7 @@ $form->token(true)->error(false)->rules([
     // return $response->json(1, $response->message);
 
     var_dump(
-        $response->message,
+        $response,
         'sss'
     );
     exit();
