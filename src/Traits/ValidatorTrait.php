@@ -22,7 +22,7 @@ trait ValidatorTrait {
     private function callback($closure = null)
     {
         if(Tame::isClosure($closure)){
-           return $closure($this);
+            return $closure($this);
         }
     }
   
