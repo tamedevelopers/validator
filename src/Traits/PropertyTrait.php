@@ -6,84 +6,49 @@ namespace Tamedevelopers\Validator\Traits;
 
 trait PropertyTrait {
   
-    /**
-     * param
-     */ 
+    /** @var mixed form param data */ 
     public $param; 
 
-    /**
-     * attribute 
-     * @var mixed
-     */
-    public $attribute;
+    /** @var mixed attribute */
+    protected $attribute;
 
-    /**
-     * public message notice
-     * @var mixed
-     */
+    /** @var mixed public message data */
     public $message;
 
+    /** @var array Defined rules collectors */
+    private $rules = [];
+
     /** @var \Symfony\Component\HttpFoundation\JsonResponse|null */
-    public $jsonResponse = null;
+    public $jsonResponse;
 
     /** Flag to avoid double-sending responses */
     protected bool $responseSent = false;
 
-    /**
-     * Defined rules collectors
-     *
-     * @var array
-     */
-    private $rules = [];
-
-    /**
-     * Keep track of manually calling the validate method
-     *
-     * @var bool
-     */
+    /** @var bool Keep track of manually calling the validate method */
     private $isValidatedCalled = false;
     
-
-    /**
-     * proceed
-     * @var bool
-     */
+    /** @var bool proceed */
     public $flashVerify;
 
-    /**
-     * proceed
-     * @var bool
-     */
+    /** @var bool proceed */
     private $proceed;
 
-    /**
-     * error 
-     * @var bool
-     */
+    /** @var bool error */
     private $error = false;
 
-    /**
-     * flash
-     * @var array
-     */
+    /** @var array flash data */
     public $flash = [
         'message'   => [],
         'class'     => '',
     ];
 
-    /**
-     * error class
-     * @var array
-     */
+    /** @var array style class */
     public $class = [
         'success'   => 'alert alert-success',
         'error'     => 'alert alert-danger',
     ];
 
-    /**
-     * error class
-     * @var array
-     */
+    /** @var array error configuration */
     public $config = [
         'csrf'      => true,
         'operator'  => false,

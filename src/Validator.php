@@ -122,29 +122,37 @@ class Validator implements ValidatorInterface
     
     /**
      * Form save response
-     *
+     * 
      * @param  Closure  $function
      * @return mixed
      */
     public function save($closure)
     {
-        // if validation already failed, return stored JsonResponse
+        // If user returns a JsonResponse
         if (ValidatorMethod::isJsonResponse($this->jsonResponse)) {
-            return $this->jsonResponse;
+            return $this->jsonResponse->send();
         }
 
         if($this->isValidated()){
-
+            
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
-
+            
             $response = $this->callback($closure);
 
-            // If user returns a JsonResponse in save, return it
-            if (ValidatorMethod::isJsonResponse($response)) {
-                return $response;
-            }
+            dd(
+                'sss'
+            );
+            exit();
 
+            // If user returns a JsonResponse in save, send and return it
+            if (ValidatorMethod::isJsonResponse($response)) {
+                if (!$this->responseSent) {
+                    $response->send();
+                    $this->responseSent = true;
+                }
+            }
+            
             // delete csrf session token
             CsrfToken::unsetToken();
         }
@@ -263,6 +271,16 @@ class Validator implements ValidatorInterface
     public function merge($keys = null, $data = null)
     {
         return ValidatorMethod::merge($keys, $data);
+    }
+
+    /**
+     * Get Attribute Data
+     * 
+     * @return mixed
+     */
+    public function getAttribute()
+    {
+        return $this->attribute;
     }
 
     /**

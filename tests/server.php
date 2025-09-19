@@ -3,7 +3,7 @@
 include_once __DIR__ . "/include.php";
 
     
-$form->token(true)->error(false)->rules([
+$result = $form->token(true)->error(false)->rules([
     "string|name"       => 'Please enter a name',
     "str_len|name|<|5"  => 'Name should be more than five(5) characters',
     "email|email"       => 'Please enter a valid email address',
@@ -16,13 +16,7 @@ $form->token(true)->error(false)->rules([
     "enum:terms"        => 'Accept terms and condition',
 ])->validate(function($response){
 
-    // return $response->json(1, $response->message);
-
-    var_dump(
-        $response,
-        'sss'
-    );
-    exit();
+    return $response->json(1, $response->message);
 })->save(function($response){
     // access the form data
     $param = $response->param;
@@ -30,12 +24,11 @@ $form->token(true)->error(false)->rules([
     // access parent scope data\ $data
     $attribute = $response->attribute;
 
-    // message
-    $response->message = "Submitted Successfully";
+    // dump(
+    //     // $param->message,
+    //     $param->toArray(),
+    // );
 
-    dump(
-        // $param->message,
-        $param->toArray(),
-    );
+    return $response->json(0, "Submitted Successfully");
 });
 
