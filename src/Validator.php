@@ -27,7 +27,6 @@ use Tamedevelopers\Validator\Methods\CsrfToken;
  * @package   tamedevelopers\validator
  * @author    Tame Developers <tamedevelopers@gmail.com>
  * @copyright 2021-2023 Tame Developers
- * @license   http://www.opensource.org/licenses/MIT The MIT License
  * @link https://github.com/tamedevelopers/validator
  */
 class Validator implements ValidatorInterface
@@ -113,7 +112,7 @@ class Validator implements ValidatorInterface
             $response = $this->callback($closure);
 
             // Keep chaining but store JsonResponse for later
-            if ($response instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+            if (ValidatorMethod::isJsonResponse($response)) {
                 $this->jsonResponse = $response;
             }
         }
@@ -123,40 +122,37 @@ class Validator implements ValidatorInterface
     
     /**
      * Form save response
-     *
+     * 
      * @param  Closure  $function
      * @return mixed
      */
     public function save($closure)
     {
-        // if validation already failed, return stored JsonResponse
-        if ($this->jsonResponse instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
-            // Send only if not in Laravel environment to avoid double sending
-            if (!class_exists('Illuminate\Foundation\Application')) {
+        // if validation already failed, send stored JsonResponse now
+        if (ValidatorMethod::isJsonResponse($this->jsonResponse)) {
+            // Send headers/body only once and return response for frameworks/tests
+            if (!$this->responseSent) {
                 $this->jsonResponse->send();
+                $this->responseSent = true;
             }
             return $this->jsonResponse;
         }
 
         if($this->isValidated()){
-
+            
             // save into a remembering variable
             ValidatorMethod::resolveFlash($this);
-
+            
             $response = $this->callback($closure);
 
-            // If user returns a JsonResponse in save, return it
-            if ($response instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
-                // delete csrf session token
-                CsrfToken::unsetToken();
-
-                // Send only if not in Laravel environment to avoid double sending
-                if (!class_exists('Illuminate\Foundation\Application')) {
+            // If user returns a JsonResponse in save, send and return it
+            if (ValidatorMethod::isJsonResponse($response)) {
+                if (!$this->responseSent) {
                     $response->send();
+                    $this->responseSent = true;
                 }
-                return $response;
             }
-
+            
             // delete csrf session token
             CsrfToken::unsetToken();
         }

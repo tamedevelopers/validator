@@ -17,6 +17,12 @@ $form->token(true)->error(false)->rules([
 ])->validate(function($response){
 
     return $response->json(1, $response->message);
+
+    var_dump(
+        $response,
+        'sss'
+    );
+    exit();
 })->save(function($response){
     // access the form data
     $param = $response->param;
@@ -27,6 +33,9 @@ $form->token(true)->error(false)->rules([
     // message
     $response->message = "Submitted Successfully";
 
-    return $response->json(200, $response->message);
+    dump(
+        // $param->message,
+        $param->toArray(),
+    );
 });
 

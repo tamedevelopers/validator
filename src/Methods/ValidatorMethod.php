@@ -17,6 +17,19 @@ class ValidatorMethod {
      */
     public static $validator;
 
+    
+    /**
+     * isJsonResponse
+     *
+     * @param  mixed $response
+     * @return bool
+     */
+    public static function isJsonResponse($response = null)
+    {
+        return !empty($response) 
+            && $response instanceof \Symfony\Component\HttpFoundation\JsonResponse;
+    }
+
     /**
      * Initialize methods to have access to global validator (self::$validator)
      *
@@ -44,11 +57,6 @@ class ValidatorMethod {
         }
         
         return isset($_REQUEST[$param]);
-    }
-
-    public static function updateParamData()
-    {
-        
     }
 
     /**
