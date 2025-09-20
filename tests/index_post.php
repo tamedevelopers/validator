@@ -33,7 +33,7 @@
     <title>Form validation</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1">
-    <link href="style.css" rel="stylesheet" type="text/css">
+    <link href="include/style.css" rel="stylesheet" type="text/css">
 </head>
 <html>
     <body>
@@ -41,7 +41,7 @@
         <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
 
-            <div class="errorMSg mb-5 <?= $form->getClass() ?>">
+            <div class="errorMsg mb-5 <?= $form->getClass() ?>">
                 <?= $form->getMessage() ?>
             </div>
 

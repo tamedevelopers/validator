@@ -59,7 +59,7 @@ input:focus{
 .mb-5{
     margin-bottom: 20px;
 }
-.errorMSg{
+.errorMsg{
     display: block;
     border-radius: 6px;
     padding: 5px 10px;

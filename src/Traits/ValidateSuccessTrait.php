@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Traits;
 
+use Tamedevelopers\Support\Capsule\Manager;
 use Tamedevelopers\Validator\Methods\Datatype;
 use Tamedevelopers\Validator\Methods\CsrfToken;
 use Tamedevelopers\Validator\Methods\RuleIndicator;
@@ -67,9 +68,13 @@ trait ValidateSuccessTrait {
 
                 if(!$this->param->has($this->csrf_token)){
                     $this->message  = ExceptionMessage::csrfTokenNotFound();
+
+                    $this->json($this->message, 419);
                     return $this;
                 } elseif(!CsrfToken::validateToken($this->param->{$this->csrf_token})){
                     $this->message  = ExceptionMessage::csrfTokenMismatch();
+                    
+                    $this->json($this->message, 419);
                     return $this;
                 }
             }

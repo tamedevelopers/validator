@@ -7,6 +7,7 @@ namespace Tamedevelopers\Validator\Traits;
 use Closure;
 use Tamedevelopers\Support\Tame;
 use Tamedevelopers\Support\Server;
+use Tamedevelopers\Support\ApiResponse;
 use Tamedevelopers\Validator\Methods\Operator;
 use Tamedevelopers\Validator\Methods\GetRequestType;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
@@ -81,16 +82,27 @@ trait ValidatorTrait {
     }
 
     /**
-     * Return a JSON response with status code and message
+     * Return a JSON response
+     * Common HTTP status codes for API responses:
+     * - 200 OK - Request succeeded. Example: Successful login, data fetched successfully.
+     * - 201 Created - Resource created successfully. Example: User registered, item stored.
+     * - 400 Bad Request - Invalid request. Example: Malformed JSON, missing parameters.
+     * - 401 Unauthorized - Authentication failed. Example: Wrong password, invalid token.
+     * - 403 Forbidden - Not allowed. Example: User without permission attempts action.
+     * - 404 Not Found - Resource missing. Example: User ID not found, endpoint invalid.
+     * - 419 Page Expired - CSRF mismatch/session expired. Example: Invalid CSRF token.
+     * - 422 Unprocessable Entity - Validation failed. Example: Invalid email, missing fields.
+     * - 500 Internal Server Error - Server bug. Example: Database failure, fatal exception.
      *
-     * @param  int   $response
-     * @param  mixed $message
-     * @param  int   $statusCode
+     * @param  string $status
+     * @param  string $message
+     * @param  mixed  $data
+     * @param  int    $statusCode
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public static function json(int $response = 0, $message = null, int $statusCode = 200)
+    public static function json($status, $message, $data = null, int $statusCode = 200)
     {
-        return Tame::json($response, $message, $statusCode);
+        return ApiResponse::json($status, $message, $data, $statusCode);
     }
 
     /**

@@ -1,9 +1,9 @@
 <?php
 
-include_once __DIR__ . "/include.php";
+include_once __DIR__ . "/form.php";
 
     
-$result = $form->token(true)->error(false)->rules([
+$result = $form->token(true)->error(true)->rules([
     "string|name"       => 'Please enter a name',
     "str_len|name|<|5"  => 'Name should be more than five(5) characters',
     "email|email"       => 'Please enter a valid email address',
@@ -16,19 +16,18 @@ $result = $form->token(true)->error(false)->rules([
     "enum:terms"        => 'Accept terms and condition',
 ])->validate(function($response){
 
-    return $response->json(1, $response->message);
+    return $response->json('error', $response->getMessage(), [
+        'class' => $response->getClass()
+    ]);
 })->save(function($response){
     // access the form data
     $param = $response->param;
     
     // access parent scope data\ $data
-    $attribute = $response->attribute;
-
-    // dump(
-    //     // $param->message,
-    //     $param->toArray(),
-    // );
-
-    return $response->json(0, "Submitted Successfully");
+    $attribute = $response->getAttribute();
+    
+    return $response->json('success', "Submitted Successfully", [
+        'class' => $response->getClass()
+    ]);
 });
 

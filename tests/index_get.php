@@ -14,8 +14,8 @@
         request: 'all',
     );
 
-    $form = form($data)->all();
-    $form->token(true)->rules([
+    $form = form($data);
+    $form->rules([
         "string|name"       => 'Please enter a name',
         "str_len|name|<|5"  => 'Name should be more than five(5) characters',
         "email|email"       => 'Please enter a valid email address',
@@ -31,7 +31,7 @@
         $param = $response->param;
         
         // access parent scope data\ $data
-        $attribute = $response->attribute;
+        $attribute = $response->getAttribute();
 
         // message
         $response->message = "Submitted Successfully";
@@ -56,7 +56,7 @@
     <title>Form validation</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1">
-    <link href="style.css" rel="stylesheet" type="text/css">
+    <link href="include/style.css" rel="stylesheet" type="text/css">
 </head>
 <html>
     <body>
@@ -64,7 +64,7 @@
         <form method="get" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
             <h2>Form sample</h2>
             
-            <div class="errorMSg mb-5 <?= $form->getClass() ?>">
+            <div class="errorMsg mb-5 <?= $form->getClass() ?>">
                 <?= $form->getMessage() ?>
             </div>
 

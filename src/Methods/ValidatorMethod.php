@@ -343,7 +343,7 @@ class ValidatorMethod {
         // convert to array
         $message = !is_array($message) ? [$message] : $message;
                     
-        return implode(' <br>', $message);
+        return implode('<br>', $message);
     }
 
     /**

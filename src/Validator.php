@@ -140,21 +140,13 @@ class Validator implements ValidatorInterface
             
             $response = $this->callback($closure);
 
-            dd(
-                'sss'
-            );
-            exit();
-
             // If user returns a JsonResponse in save, send and return it
             if (ValidatorMethod::isJsonResponse($response)) {
-                if (!$this->responseSent) {
-                    $response->send();
-                    $this->responseSent = true;
-                }
+                // delete csrf session token
+                // CsrfToken::unsetToken();
+
+                return $response->send();
             }
-            
-            // delete csrf session token
-            CsrfToken::unsetToken();
         }
 
         return $this;

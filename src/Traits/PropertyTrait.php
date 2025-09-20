@@ -21,9 +21,6 @@ trait PropertyTrait {
     /** @var \Symfony\Component\HttpFoundation\JsonResponse|null */
     public $jsonResponse;
 
-    /** Flag to avoid double-sending responses */
-    protected bool $responseSent = false;
-
     /** @var bool Keep track of manually calling the validate method */
     private $isValidatedCalled = false;
     
