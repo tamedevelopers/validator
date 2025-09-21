@@ -62,7 +62,10 @@ class Validator implements ValidatorInterface
         ValidatorMethod::initialize($this);
         
         // set params
-        ValidatorMethod::setParams($this->config['request']);
+        $self = ValidatorMethod::setAndGetParams($this->config['request']);
+
+        // replace with parent params
+        $this->param = $self->param;
     }
 
     /**

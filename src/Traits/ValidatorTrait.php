@@ -191,13 +191,15 @@ trait ValidatorTrait {
      */
     public function post()
     {
-        $this->config['request'] = INPUT_POST;
+        $request = INPUT_POST;
+        $this->config['request'] = $request;
 
         // initialize methods
         ValidatorMethod::initialize($this);
 
         // set params
-        ValidatorMethod::setParams($this->config['request']);
+        $param = ValidatorMethod::setAndGetParams($request);
+        $this->param = $param->param;
 
         return $this;
     }
@@ -209,13 +211,15 @@ trait ValidatorTrait {
      */
     public function get()
     {
-        $this->config['request'] = INPUT_GET;
+        $request = INPUT_GET;
+        $this->config['request'] = $request;
 
         // initialize methods
         ValidatorMethod::initialize($this);
 
         // set params
-        ValidatorMethod::setParams($this->config['request']);
+        $param = ValidatorMethod::setAndGetParams($request);
+        $this->param = $param->param;
 
         return $this;
     }
@@ -227,13 +231,15 @@ trait ValidatorTrait {
      */
     public function all()
     {
-        $this->config['request'] = 2;
+        $request = 6;
+        $this->config['request'] = $request;
 
         // initialize methods
         ValidatorMethod::initialize($this);
 
         // set params
-        ValidatorMethod::setParams($this->config['request']);
+        $param = ValidatorMethod::setAndGetParams($request);
+        $this->param = $param->param;
 
         return $this;
     }

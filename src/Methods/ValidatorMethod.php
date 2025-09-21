@@ -66,24 +66,41 @@ class ValidatorMethod {
      * 
      * @return mixed
      */
-    public static function setParams($request = 1)
+    public static function setAndGetParams($request = 1)
     {
         // if the param is not set then we use request method to 
         // determine data received data from forms
 
         // get Data using POST method
         if($request === INPUT_POST){
-            self::$validator->param = $_POST;
+            self::$validator->param = $_POST ?: [];
         } elseif($request === INPUT_GET){
-            self::$validator->param = $_GET;
+            self::$validator->param = $_GET ?: [];
         } else{
-            self::$validator->param = $_REQUEST;
+            self::$validator->param = self::createFromGlobals();
         }
-
+        
         // convert into a collection of data
         self::$validator->param  = new Collection(self::$validator->param);
         
         return self::$validator;
+    }
+
+    /**
+     * Create Params From Globals
+     *
+     * @return array
+     */
+    public static function createFromGlobals()
+    {
+        $post    = $_POST ?: [];
+        $get     = $_GET ?: [];
+        $request = $_REQUEST ?: [];
+        $cookie  = $_COOKIE ?: [];
+
+        return array_merge(
+            $post, $get, $request, $cookie
+        );
     }
 
     /**
