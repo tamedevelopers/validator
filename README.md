@@ -138,8 +138,10 @@ config_form(
     - It's a function and you don't need to `echo`
         - Use anywhere inside your HTML form
 
-```php
+```html
 csrf();
+
+<input type="hidden" name="_token" value="efef4c9360f26848f0d102b478e51859cfce4c9b197eb9d6473abfcaa2c6da38">
 ```
 ![Sample Csrf Form Input](https://raw.githubusercontent.com/tamedevelopers/validator/main/getErrorMessage.png)
 
@@ -278,6 +280,7 @@ $form->rules([
 | string     |  s   |  `String` data validation     |
 | html       |  -   |  `html` CMS/Blog content validation |
 | dev        |  -   |  `dev` CMS/Blog/Dev like content  validation |
+| raw        |  -   |  `raw` Collect content without validation |
 | str_len    |  sl  |  `String Length` validation   |
 | enum       |  en  |  `Enum` Forms `checkbox \| radio` or any form data that normally has no value when not checked |
 | array      |  a   |  `Array` data validation      |

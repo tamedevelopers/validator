@@ -19,6 +19,7 @@ class Datatype {
     private const RULE_BOOL    = ['bool', 'b'];
     private const RULE_ENUM    = ['enum', 'en', 'enm'];
     private const RULE_HTML    = ['html'];
+    private const RULE_RAW     = ['raw'];
     private const RULE_DEV     = ['dev'];
 
     /**
@@ -178,6 +179,11 @@ class Datatype {
             // ---------------- HTML ----------------
             case in_array($ruleFlag, self::RULE_HTML, true):
                 $sanitized = Purify::html((string) $value);
+                return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
+
+            // ---------------- Raw ----------------
+            case in_array($ruleFlag, self::RULE_RAW, true):
+                $sanitized = Purify::raw((string) $value);
                 return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
 
             // ---------------- DEV ----------------
