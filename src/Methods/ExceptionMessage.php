@@ -23,7 +23,7 @@ class ExceptionMessage {
     */
    public static function comparison(?array $dataType)
    {
-      return sprintf("Comparison Operator error for this variable `%s`", $dataType['variable']);
+      return sprintf("Comparison Operator error for this variable `%s`", $dataType['input_name']);
    }
   
    /**
@@ -33,7 +33,7 @@ class ExceptionMessage {
     */
    public static function notFound(?array $dataType)
    {
-      return sprintf("Input Form `%s` not found with Form Data", $dataType['variable']);
+      return sprintf("Input Form `%s` not found with Form Data", $dataType['input_name']);
    }
   
    /**

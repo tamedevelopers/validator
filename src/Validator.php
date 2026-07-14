@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator;
 
+use Closure;
 use Tamedevelopers\Support\Collections\Collection;
-use Tamedevelopers\Validator\Traits\PropertyTrait;
-use Tamedevelopers\Validator\Traits\ValidatorTrait;
-use Tamedevelopers\Validator\Methods\ValidatorMethod;
-use Tamedevelopers\Validator\Traits\ValidateSuccessTrait;
 use Tamedevelopers\Validator\Interface\ValidatorInterface;
-use Tamedevelopers\Validator\Methods\CsrfToken;
+use Tamedevelopers\Validator\Methods\ValidatorMethod;
+use Tamedevelopers\Validator\Traits\PropertyTrait;
+use Tamedevelopers\Validator\Traits\ValidateSuccessTrait;
+use Tamedevelopers\Validator\Traits\ValidatorTrait;
 
 /**
  * Validator
@@ -31,7 +31,6 @@ use Tamedevelopers\Validator\Methods\CsrfToken;
  */
 class Validator implements ValidatorInterface
 {
-
     use ValidatorTrait, 
         PropertyTrait,
         ValidateSuccessTrait;
@@ -75,7 +74,7 @@ class Validator implements ValidatorInterface
      * - Separator <: or |>
      * - [data_type|input_name|operator|value]
      * 
-     * - Data Types [<int/i/integer>|<float/f>|<email/e>|<url/u/link>|<array/a>|<bool/b>|<enum/en/enm>|<string/s>]
+     * - Data Types [<int/i/integer>|<float/f>|<email/e>|<url/u/link>|<array/a>|<bool/boolean/b>|<enum/en/enm>|<string/s>]
      * 
      * - Operators [==,===,!=,!==,>,>=,<,<=,<or>,<and>]
      * 
@@ -94,7 +93,7 @@ class Validator implements ValidatorInterface
     /**
      * Begin form validation
      * 
-     * @param  Closure|null  $function
+     * @param  Closure|null  $closure
      * @return $this
      */
     public function validate($closure = null)
@@ -126,7 +125,7 @@ class Validator implements ValidatorInterface
     /**
      * Form save response
      * 
-     * @param  Closure  $function
+     * @param  Closure  $closure
      * @return mixed
      */
     public function save($closure)
@@ -145,9 +144,6 @@ class Validator implements ValidatorInterface
 
             // If user returns a JsonResponse in save, send and return it
             if (ValidatorMethod::isJsonResponse($response)) {
-                // delete csrf session token
-                // CsrfToken::unsetToken();
-
                 return $response->send();
             }
         }

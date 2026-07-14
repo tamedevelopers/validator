@@ -41,7 +41,7 @@ trait ValidatorTrait {
     /**
      * Get needed data from array 
      * @param  array|null  $keys of needed data
-     * @param  array|null  $allData param to check from
+     * @param  array|null  $data param to check from
      * 
      * @return array
      */
@@ -71,14 +71,12 @@ trait ValidatorTrait {
     /**
      * Get Form Data
      * 
-     * @param string $type
-     * 
      * @return array|object 
      * - Return form data if isset
      */
-    public function getForm($type = null)
+    public function getForm()
     {
-        return ValidatorMethod::getForm($type);
+        return ValidatorMethod::getForm();
     }
 
     /**
@@ -110,7 +108,7 @@ trait ValidatorTrait {
      * 
      * @param  int $response
      * @param  mixed  $message 
-     * @return mixed<json>
+     * @return mixed
      */
     public static function jsonEcho(int $response = 0, $message = null)
     {
@@ -122,7 +120,7 @@ trait ValidatorTrait {
      * 
      * @param  int $response
      * @param  mixed  $message 
-     * @return mixed<json>  
+     * @return mixed
      */
     public static function echoJson(int $response = 0, $message = null)
     {

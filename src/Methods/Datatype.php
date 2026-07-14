@@ -16,7 +16,7 @@ class Datatype {
     private const RULE_FLOAT   = ['float', 'f'];
     private const RULE_URL     = ['url', 'link', 'u', 'anchor'];
     private const RULE_ARRAY   = ['array', 'a'];
-    private const RULE_BOOL    = ['bool', 'b'];
+    private const RULE_BOOL    = ['bool', 'boolean', 'b'];
     private const RULE_ENUM    = ['enum', 'en', 'enm'];
     private const RULE_HTML    = ['html'];
     private const RULE_RAW     = ['raw'];
@@ -103,12 +103,33 @@ class Datatype {
 
         $validated = self::validateForminput($rulesData);
 
+        // Use strict comparison to check for validation failure
+        // For boolean type, we need special handling
+        if (self::boolComparison($dataType)) {
+            if (!is_bool($validated)) {
+                return $default;
+            }
+
+            return $validated;
+        }
+
         // If validation fails, return default value
         if ($validated === false) {
             return $default;
         }
 
         return $validated;
+    }
+
+    /**
+     * Check if data type is boolean
+     *
+     * @param string|null $dataType Data type to check
+     * @return bool
+     */
+    public static function boolComparison(?string $dataType = null)
+    {
+        return $dataType && in_array(strtolower($dataType), self::RULE_BOOL, true);
     }
 
     /**

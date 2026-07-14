@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Traits;
 
-use Tamedevelopers\Support\Capsule\Manager;
 use Tamedevelopers\Validator\Methods\Datatype;
 use Tamedevelopers\Validator\Methods\CsrfToken;
 use Tamedevelopers\Validator\Methods\RuleIndicator;
@@ -100,9 +99,15 @@ trait ValidateSuccessTrait {
                 $validateValue = Datatype::validate($ruleValidator);
 
                 // update param data to resolved values
-                $inputName = $ruleValidator['input_name'];
+                $inputName  = $ruleValidator['input_name'];
+                $dataType   = $ruleValidator['data_type'];
+
+                // default message
+                $notFoundMsg = ExceptionMessage::notFound($ruleValidator);
+                $comparisonMsg = ExceptionMessage::comparison($ruleValidator);
+
                 $this->param[$inputName] = Datatype::getFormInput(
-                    $inputName, $ruleValidator['data_type'], 
+                    $inputName, $dataType
                 );
 
                 // allowed errors handling type
@@ -112,12 +117,11 @@ trait ValidateSuccessTrait {
                     // set error to true
                     $this->setErrorTrue();
                     
-                    if($this->isDataTypeNotSet($validateValue)){
-                        $this->message = $message;
+                    if($this->isDataTypeNotFound($validateValue, $dataType)){
+                        $this->message = $notFoundMsg;
                         break;
                     }
-                    elseif($this->isDataTypeNotFound($validateValue)){
-                        // ExceptionMessage::notFound($ruleValidator)
+                    elseif($this->isDataTypeNotSet($validateValue, $dataType)){
                         $this->message = $message;
                         break;
                     } else{
@@ -129,13 +133,13 @@ trait ValidateSuccessTrait {
                         $this->config['operator'] = $this->operatorMethod($ruleValidator);
 
                         if($this->isOperatorError()){
-                            $this->message = ExceptionMessage::comparison($ruleValidator);
+                            $this->message = $comparisonMsg;
                             $this->setErrorTrue();
                             break;
                         }
                         else{
                             if(!is_null($this->config['operator']) && $this->config['operator']){
-                                $this->message  = $message;
+                                $this->message = $message;
                                 $this->setErrorTrue();
                                 break;
                             }
@@ -149,17 +153,14 @@ trait ValidateSuccessTrait {
                     // set error to true
                     $this->setErrorTrue();
                     
-                    $input_name = $ruleValidator['input_name'];
-                    
-                    if($this->isDataTypeNotSet($validateValue)){ 
-                        if(!in_array($input_name, array_keys($this->message))){
-                            $this->message[$input_name] = $message;
+                    if($this->isDataTypeNotFound($validateValue, $dataType)){ 
+                        if(!in_array($inputName, array_keys($this->message))){
+                            $this->message[$inputName] = $notFoundMsg;
                         }
                     }
-                    elseif($this->isDataTypeNotFound($validateValue)){
-                        if(!in_array($input_name, array_keys($this->message))){
-                            // ExceptionMessage::notFound($ruleValidator);
-                            $this->message[$input_name] = $message;
+                    elseif($this->isDataTypeNotSet($validateValue, $dataType)){
+                        if(!in_array($inputName, array_keys($this->message))){
+                            $this->message[$inputName] = $message;
                         }
                     } else{
                         //operator function checker
@@ -167,12 +168,12 @@ trait ValidateSuccessTrait {
 
                         // check error types
                         if($this->isOperatorError()){
-                            $this->message[$input_name] = ExceptionMessage::comparison($ruleValidator);
+                            $this->message[$inputName] = $comparisonMsg;
                             break;
                         }
                         elseif(!is_null($this->config['operator']) && $this->config['operator']){
-                            if(!in_array($input_name, array_keys($this->message))){
-                                $this->message[$input_name] = $message;
+                            if(!in_array($inputName, array_keys($this->message))){
+                                $this->message[$inputName] = $message;
                             }
                         }
                         else{
@@ -219,13 +220,20 @@ trait ValidateSuccessTrait {
     }
     
     /**
-     * isDataTypeNotSet
+     * Check Data Type Not Set
      *
      * @param  mixed $type
+     * @param  string|null $dataType
      * @return bool
      */
-    private function isDataTypeNotSet($type)
+    private function isDataTypeNotSet($type, ?string $dataType = null)
     {
+        // For boolean types, false is a valid value, not an error
+        if (Datatype::boolComparison($dataType)) {
+            return !is_bool($type);
+        }
+
+        // For non-boolean types, false means error
         if(($type === false || $type === '!isset')){
             return true;
         } 
@@ -237,10 +245,17 @@ trait ValidateSuccessTrait {
      * isDataTypeNotFound
      *
      * @param  mixed $type
+     * @param  string|null $dataType
      * @return bool
      */
-    private function isDataTypeNotFound($type)
+    private function isDataTypeNotFound($type, ?string $dataType = null)
     {
+        // For boolean types, false is a valid value, not an error
+        if (Datatype::boolComparison($dataType)) {
+            return !is_bool($type);
+        }
+
+        // For non-boolean types, false means error
         if(($type === false || $type === '!found')){
             return true;
         } 
