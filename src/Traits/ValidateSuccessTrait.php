@@ -117,12 +117,12 @@ trait ValidateSuccessTrait {
                     // set error to true
                     $this->setErrorTrue();
                     
-                    if($this->isDataTypeNotFound($validateValue, $dataType)){
-                        $this->message = $notFoundMsg;
+                    if($this->isDataTypeNotSet($validateValue, $dataType)){
+                        $this->message = $message;
                         break;
                     }
-                    elseif($this->isDataTypeNotSet($validateValue, $dataType)){
-                        $this->message = $message;
+                    elseif($this->isDataTypeNotFound($validateValue, $dataType)){
+                        $this->message = $notFoundMsg;
                         break;
                     } else{
 
@@ -153,14 +153,14 @@ trait ValidateSuccessTrait {
                     // set error to true
                     $this->setErrorTrue();
                     
-                    if($this->isDataTypeNotFound($validateValue, $dataType)){ 
-                        if(!in_array($inputName, array_keys($this->message))){
-                            $this->message[$inputName] = $notFoundMsg;
-                        }
-                    }
-                    elseif($this->isDataTypeNotSet($validateValue, $dataType)){
+                    if($this->isDataTypeNotSet($validateValue, $dataType)){ 
                         if(!in_array($inputName, array_keys($this->message))){
                             $this->message[$inputName] = $message;
+                        }
+                    }
+                    elseif($this->isDataTypeNotFound($validateValue, $dataType)){
+                        if(!in_array($inputName, array_keys($this->message))){
+                            $this->message[$inputName] = $notFoundMsg;
                         }
                     } else{
                         //operator function checker
