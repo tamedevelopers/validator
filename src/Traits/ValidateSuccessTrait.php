@@ -122,7 +122,7 @@ trait ValidateSuccessTrait {
                         break;
                     }
                     elseif($this->isDataTypeNotFound($validateValue, $dataType)){
-                        $this->message = $notFoundMsg;
+                        $this->message = $message;
                         break;
                     } else{
 
@@ -160,7 +160,7 @@ trait ValidateSuccessTrait {
                     }
                     elseif($this->isDataTypeNotFound($validateValue, $dataType)){
                         if(!in_array($inputName, array_keys($this->message))){
-                            $this->message[$inputName] = $notFoundMsg;
+                            $this->message[$inputName] = $message;
                         }
                     } else{
                         //operator function checker
