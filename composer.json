@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=8.0",
-        "tamedevelopers/support": "^5.0"
+        "tamedevelopers/support": "*"
     },
     "autoload": {
         "files": [
