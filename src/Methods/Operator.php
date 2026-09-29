@@ -7,6 +7,8 @@ namespace Tamedevelopers\Validator\Methods;
 
 class Operator {
   
+    private const RULE_STRLEN  = ['str_len', 'strlen', 'sl'];
+
     /**
      * Checking for flag type error
      * Returns true on error found and false is no error is found
@@ -18,15 +20,15 @@ class Operator {
     public static function validate($validator, $dataType = [])
     {
         $operatorError  = false;
-        $operator       = $dataType['operator'];
+        $operator       = trim((string) $dataType['operator']);
         $value          = $dataType['value'];
         $input_name     = $dataType['input_name'];
         $param          = $validator->param;
 
-        if(ValidatorMethod::checkIfParamIsset($input_name)){
+        if(ValidatorMethod::isParamSet($input_name)){
 
-            //equal to operator
-            if($operator == '==')
+            // equal to operator
+            if($operator === '==')
             {
                 $dataString = $param[$input_name];
                 if($dataString == $value){
@@ -34,8 +36,8 @@ class Operator {
                 }
             }
 
-            //strictly equal to operator
-            elseif($operator == '===')
+            // strictly equal to operator
+            elseif($operator === '===')
             {
                 $dataString = $param[$input_name];
                 if($dataString === $value){
@@ -43,8 +45,8 @@ class Operator {
                 }
             }
 
-            //not equal to operator
-            elseif($operator == '!=')
+            // not equal to operator
+            elseif($operator === '!=')
             {
                 $dataString = $param[$input_name];
                 if($dataString != $value){
@@ -52,8 +54,8 @@ class Operator {
                 }
             }
 
-            //strictly not equal to operator
-            elseif($operator == '!==')
+            // strictly not equal to operator
+            elseif($operator === '!==')
             {
                 $dataString = $param[$input_name];
                 if($dataString !== $value){ 
@@ -61,12 +63,11 @@ class Operator {
                 }
             }
 
-            //greater than operator
-            elseif($operator == '>')
+            // greater than operator
+            elseif($operator === '>')
             {
                 $dataString = $param[$input_name];
-                // if str_len | sl
-                if(in_array($dataType['data_type'], ['str_len', 'sl'])){
+                if(in_array($dataType['data_type'], self::RULE_STRLEN)){
                     $dataString = strlen($dataString);
                     if($dataString > (float) $value){
                         self::setOperator($operatorError);
@@ -79,12 +80,11 @@ class Operator {
                 }
             }
 
-            //greater than or equal to operator
-            elseif($operator == '>=')
+            // greater than or equal to operator
+            elseif($operator === '>=')
             {
                 $dataString = $param[$input_name];
-                // if str_len | sl
-                if(in_array($dataType['data_type'], ['str_len', 'sl'])){
+                if(in_array($dataType['data_type'], self::RULE_STRLEN)){
                     $dataString = strlen($dataString);
                     if($dataString >= (float) $value){
                         self::setOperator($operatorError);
@@ -97,12 +97,11 @@ class Operator {
                 }
             }
 
-            //less than operator
-            elseif($operator == '<')
+            // less than operator
+            elseif($operator === '<')
             {
                 $dataString = $param[$input_name];
-                // if str_len | sl
-                if(in_array($dataType['data_type'], ['str_len', 'sl'])){
+                if(in_array($dataType['data_type'], self::RULE_STRLEN)){
                     $dataString = strlen($dataString);
                     if($dataString  < (float) $value){
                         self::setOperator($operatorError);
@@ -115,12 +114,11 @@ class Operator {
                 }
             }
 
-            //less than or equal to operator
-            elseif($operator == '<=')
+            // less than or equal to operator
+            elseif($operator === '<=')
             {
                 $dataString = $param[$input_name];
-                // if str_len | sl
-                if(in_array($dataType['data_type'], ['str_len', 'sl'])){
+                if(in_array($dataType['data_type'], self::RULE_STRLEN)){
                     $dataString = strlen($dataString);
                     if($dataString  <= (float) $value){
                         self::setOperator($operatorError);
@@ -133,12 +131,11 @@ class Operator {
                 }
             }
 
-            //less than or greather than to operator
-            elseif($operator == '<or>')
+            // less than or greather than to operator
+            elseif($operator === '<or>')
             {
                 $dataString = $param[$input_name];
-                // if str_len | sl
-                if(in_array($dataType['data_type'], ['str_len', 'sl'])){
+                if(in_array($dataType['data_type'], self::RULE_STRLEN)){
                     $dataString = strlen($dataString);
                     if($dataString  < (int) $value || $dataString  > (int) $value){
                         self::setOperator($operatorError);
@@ -151,12 +148,11 @@ class Operator {
                 }
             }
 
-            //less than and greather than to operator
-            elseif($operator == '<and>')
+            // less than and greather than to operator
+            elseif($operator === '<and>')
             {
                 $dataString = $param[$input_name];
-                // if str_len | sl
-                if(in_array($dataType['data_type'], ['str_len', 'sl'])){
+                if(in_array($dataType['data_type'], self::RULE_STRLEN)){
                     $dataString = strlen($dataString);
                     if($dataString  < (int) $value && $dataString  > (int) $value){
                         self::setOperator($operatorError);

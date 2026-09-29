@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Tamedevelopers\Validator\Traits;
 
 use Closure;
-use Tamedevelopers\Support\Tame;
-use Tamedevelopers\Support\Server;
 use Tamedevelopers\Support\ApiResponse;
-use Tamedevelopers\Validator\Methods\Operator;
+use Tamedevelopers\Support\Collections\Collection;
+use Tamedevelopers\Support\Server;
+use Tamedevelopers\Support\Tame;
+use Tamedevelopers\Validator\Methods\Constant;
 use Tamedevelopers\Validator\Methods\GetRequestType;
+use Tamedevelopers\Validator\Methods\Operator;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
 
 trait ValidatorTrait {
@@ -40,9 +42,9 @@ trait ValidatorTrait {
 
     /**
      * Get needed data from array 
+     * 
      * @param  array|null  $keys of needed data
      * @param  array|null  $data param to check from
-     * 
      * @return array
      */
     public function onlyData($keys = null, $data = null)
@@ -55,9 +57,9 @@ trait ValidatorTrait {
 
     /**
      * Get all needed params except the removed onces
+     * 
      * @param  array|null  $keys of data to remove from parameters
      * @param  array|null  $data param to check from
-     * 
      * @return array 
      */
     public function exceptData($keys = null, $data = null)
@@ -71,12 +73,23 @@ trait ValidatorTrait {
     /**
      * Get Form Data
      * 
-     * @return array|object 
-     * - Return form data if isset
+     * @param string|null $key
+     * @return Collection
      */
-    public function getForm()
+    public function getForm($key = null)
     {
-        return ValidatorMethod::getForm();
+        return ValidatorMethod::getForm($key);
+    }
+
+    /**
+     * Alias for `getForm` method
+     * 
+     * @param string|null $key
+     * @return mixed|Collection
+     */
+    public static function param($key = null)
+    {
+        return ValidatorMethod::param($key);
     }
 
     /**
@@ -189,14 +202,12 @@ trait ValidatorTrait {
      */
     public function post()
     {
-        $request = INPUT_POST;
-        $this->config['request'] = $request;
+        $this->config['request'] = Constant::POST;
 
-        // initialize methods
-        ValidatorMethod::initialize($this);
+        $this->initalizeAfterRequestSet();
 
         // set params
-        $param = ValidatorMethod::setAndGetParams($request);
+        $param = ValidatorMethod::getAndSetSourceParam(Constant::POST);
         $this->param = $param->param;
 
         return $this;
@@ -204,19 +215,15 @@ trait ValidatorTrait {
 
     /**
      * Convert Form Request to GET
-     * 
-     * @return $this
      */
-    public function get()
+    public function get(): self
     {
-        $request = INPUT_GET;
-        $this->config['request'] = $request;
+        $this->config['request'] = Constant::GET;
 
-        // initialize methods
-        ValidatorMethod::initialize($this);
+        $this->initalizeAfterRequestSet();
 
         // set params
-        $param = ValidatorMethod::setAndGetParams($request);
+        $param = ValidatorMethod::getAndSetSourceParam(Constant::GET);
         $this->param = $param->param;
 
         return $this;
@@ -224,19 +231,16 @@ trait ValidatorTrait {
 
     /**
      * Convert Form Request to REQUEST_METHOD
-     * 
      * @return $this
      */
     public function all()
     {
-        $request = 6;
-        $this->config['request'] = $request;
-
-        // initialize methods
-        ValidatorMethod::initialize($this);
+        $this->config['request'] = Constant::REQUEST;
+        
+        $this->initalizeAfterRequestSet();
 
         // set params
-        $param = ValidatorMethod::setAndGetParams($request);
+        $param = ValidatorMethod::getAndSetSourceParam(Constant::REQUEST);
         $this->param = $param->param;
 
         return $this;
@@ -244,7 +248,6 @@ trait ValidatorTrait {
 
     /**
      * Convert Form Request to REQUEST_METHOD
-     * 
      * @return $this
      */
     public function any()
@@ -254,8 +257,8 @@ trait ValidatorTrait {
 
     /**
      * Convert data to array
-     * @param mixed $data
      * 
+     * @param mixed $data
      * @return array
      */ 
     public function toArray($data = null)
@@ -265,8 +268,8 @@ trait ValidatorTrait {
     
     /**
      * Convert data to object
-     * @param mixed $data
      * 
+     * @param mixed $data
      * @return object
      */ 
     public function toObject($data = null)
@@ -276,8 +279,8 @@ trait ValidatorTrait {
     
     /**
      * Convert data to json
-     * @param mixed $data
      * 
+     * @param mixed $data
      * @return string
      */ 
     public function toJson($data = null)
@@ -286,9 +289,18 @@ trait ValidatorTrait {
     }
 
     /**
+     * Initalize Method Instance After Request has been set
+     */
+    private function initalizeAfterRequestSet(): void
+    {
+        ValidatorMethod::initialize($this);
+    }
+
+    /**
+     * Operator Method
+     * 
      * @param  array|null $dataType  array.
      * @return bool 
-     * - [true or false].
      */
     private function operatorMethod($dataType = null)
     {
@@ -307,8 +319,8 @@ trait ValidatorTrait {
 
     /**
      * Get Form Request
-     * @param string|null $request
      * 
+     * @param string|null $request
      * @return int
      */
     private function getFormRequest($request = null)
@@ -325,8 +337,8 @@ trait ValidatorTrait {
 
     /**
      * Convert message error type
-     * @param  bool $errorType.
      * 
+     * @param  bool $errorType.
      * @return $this
      */
     private function setMessageErrorType(?bool $errorType = false)

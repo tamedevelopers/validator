@@ -36,12 +36,11 @@ class Validator implements ValidatorInterface
         ValidateSuccessTrait;
 
     /**
-     * @param  mixed $attribute
-     * - Any outside parameter you would want to use within the form instance
+     * @param  mixed $attribute     Additional Data usable within the form
      * 
      * @return void
      */
-    public function __construct($attribute = null) 
+    public function __construct($attribute = null)
     {
         $this->attribute = new Collection($attribute);
         $this->message   = [];
@@ -57,11 +56,10 @@ class Validator implements ValidatorInterface
             $this->config['request'] = $this->getFormRequest();
         }
 
-        // initialize methods
-        ValidatorMethod::initialize($this);
+        $this->initalizeAfterRequestSet();
         
         // set params
-        $self = ValidatorMethod::setAndGetParams($this->config['request']);
+        $self = ValidatorMethod::getAndSetSourceParam($this->config['request']);
 
         // replace with parent params
         $this->param = $self->param;
@@ -70,20 +68,44 @@ class Validator implements ValidatorInterface
     /**
      * Create validation rules
      * 
-     * @param  array $rules
-     * - Separator <: or |>
-     * - [data_type|input_name|operator|value]
+     * @param  array{
+     *  i: "['i|name'] => 'Int value is required'", 
+     *  int: "['int|name'] => 'Int value is required'", 
+     *  integer: "['integer|name'] => 'Int value is required'", 
+     *  u: "['u|name'] => 'URL link is required'", 
+     *  url: "['url|name'] => 'URL link is required'", 
+     *  link: "['link|name'] => 'URL link is required'", 
+     *  anchor: "['anchor|name'] => 'URL link is required'",
+     *  e: "['e|name'] => 'Email address is required'", 
+     *  email: "['email|name'] => 'Email address is required'", 
+     *  a: "['a|name'] => 'Array value is required'", 
+     *  array: "['array|name'] => 'Array value is required'", 
+     *  b: "['b|name'] => 'Boolean value is required'", 
+     *  bool: "['bool|name'] => 'Boolean value is required'", 
+     *  boolean: "['boolean|name'] => 'Boolean value is required'", 
+     *  en: "['en|name'] => 'Enum value is required'", 
+     *  enum: "['enum|name'] => 'Enum value is required'", 
+     *  s: "['s|name'] => 'String value is required'",
+     *  string: "['string|name'] => 'String value is required'",
+     *  html: "['html|name'] => 'HTML string value is required'", 
+     *  raw: "['raw|name'] => 'Raw HTML string is required'", 
+     *  dev: "['dev|name'] => 'Developer IDE-Raw string is required'", 
+     *  sl: "['sl|name'] => 'String length is required'", 
+     *  strlen: "['strlen|name'] => 'String length is required'", 
+     *  str_len: "['str_len|name'] => 'String length is required'"
+     * }|array<string, string> $rules Data Types
      * 
-     * - Data Types [<int/i/integer>|<float/f>|<email/e>|<url/u/link>|<array/a>|<bool/boolean/b>|<enum/en/enm>|<string/s>]
-     * 
-     * - Operators [==,===,!=,!==,>,>=,<,<=,<or>,<and>]
-     * 
-     * - example["string:first_name" => "First name is required"]
+     * - Separator 
+     *      (pipe) | or (colon) :
+     * - Operators  
+     *      (==, ===, !=, !==, >, >=, <, <=, <or>, <and>)
      * 
      * @return $this
+     * @example ["string:first_name" => "First name is required"]
+     * @example [data_type|input_name|operator|value]
      * @link https://github.com/tamedevelopers/validator
      */
-    public function rules(?array $rules = []) 
+    public function rules(?array $rules = [])
     {
         $this->rules = $rules;
 
@@ -153,7 +175,6 @@ class Validator implements ValidatorInterface
     
     /**
      * Before form submission 
-     * - [GET] request type only allowed
      * 
      * @param  Closure  $closure.
      * @return $this
@@ -171,8 +192,7 @@ class Validator implements ValidatorInterface
     }
 
     /**
-     * After form submission
-     * - [All] request type allowed
+     * After form has been submitted
      * 
      * @param  Closure  $closure.
      * @return $this
@@ -190,16 +210,10 @@ class Validator implements ValidatorInterface
 
     /**
      * Check if Form has validation errors
-     * 
-     * @return bool
      */
-    public function hasError()
+    public function hasError(): bool
     {
-        if(!is_null($this->proceed) && $this->proceed === false){
-            return true;
-        }
-
-        return false;
+        return (!is_null($this->proceed) && $this->proceed === false);
     }
 
     /**
@@ -211,11 +225,7 @@ class Validator implements ValidatorInterface
     {
         $this->ignoreIfValidatorHasBeenCalled();
 
-        if(!is_null($this->proceed) && $this->proceed){
-            return true;
-        }
-
-        return false;
+        return (!is_null($this->proceed) && $this->proceed);
     }
 
     /**
@@ -233,7 +243,7 @@ class Validator implements ValidatorInterface
      * Remove value of param from Form
      *
      * @param array|null $keys
-     * @return array|null
+     * @return array
      */
     public function except($keys = null)
     {
@@ -278,10 +288,7 @@ class Validator implements ValidatorInterface
      * Return previously entered value
      * 
      * @param string $key of param name
-     * 
      * @param mixed $default
-     * [optional] 
-     * 
      * @return mixed
      */
     public function old($key = null, $default = null)

@@ -136,7 +136,7 @@ class CsrfToken{
     /**
      * Generate Csrf Token on Page Load
      * 
-     * @return void
+     * @return string|null
      */
     static private function generateOrIgnore()
     {

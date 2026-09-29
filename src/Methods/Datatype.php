@@ -33,8 +33,7 @@ class Datatype {
      * Validate if form data is set 
      * And if data type is correct
      * 
-     * @param array $rulesData 
-     * - [data_type|input_name|operator|value]
+     * @param array $rulesData  [data_type|input_name|operator|value]
      * 
      * - !isset if param is not set
      * - false if expected data type is not correct
@@ -49,17 +48,16 @@ class Datatype {
 
         // if input parameter is isset -- proceed to error validating
         $type = true;
+        $formValidated = self::validateForminput($rulesData);
 
         // check for ENUM types
         if(self::checkEnum($rulesData)){
-            $type = self::validateForminput($rulesData);
-        }
-
-        else{
+            $type = $formValidated;
+        } else{
             
             // check if value param isset
-            if(ValidatorMethod::checkIfParamIsset($rulesData['input_name'])){
-                $type = self::validateForminput($rulesData);
+            if(ValidatorMethod::isParamSet($rulesData['input_name'])){
+                $type = $formValidated;
             } 
             
             // if data passes is not in form elements
@@ -101,24 +99,24 @@ class Datatype {
             'input_name' => $inputName,
         ];
 
-        $validated = self::validateForminput($rulesData);
+        $formValidated = self::validateForminput($rulesData);
 
         // Use strict comparison to check for validation failure
         // For boolean type, we need special handling
         if (self::boolComparison($dataType)) {
-            if (!is_bool($validated)) {
+            if (!is_bool($formValidated)) {
                 return $default;
             }
 
-            return $validated;
+            return $formValidated;
         }
 
         // If validation fails, return default value
-        if ($validated === false) {
+        if ($formValidated === false) {
             return $default;
         }
 
-        return $validated;
+        return $formValidated;
     }
 
     /**
@@ -135,10 +133,8 @@ class Datatype {
     /**
      * Validate form input
      *
-     * @param array $rulesData
-     * - [data_type|input_name|operator|value]
-     *
-     * @return string|int|float|bool|array
+     * @param array $rulesData  [data_type|input_name|operator|value]
+     * @return mixed
      */
     protected static function validateFormInput(array $rulesData)
     {
@@ -147,7 +143,7 @@ class Datatype {
         $value     = self::$validator->param[$ruleInput] ?? null;
 
         switch (true) {
-
+            
             // ---------------- EMAIL ----------------
             case in_array($ruleFlag, self::RULE_EMAIL, true):
                 $valid = Utility::validateEmail($value);
@@ -205,6 +201,7 @@ class Datatype {
             // ---------------- Raw ----------------
             case in_array($ruleFlag, self::RULE_RAW, true):
                 $sanitized = Purify::raw((string) $value);
+
                 return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
 
             // ---------------- DEV ----------------
@@ -224,9 +221,7 @@ class Datatype {
      * If either of those input type is not checked yet, input not send along form
      * So we need determine if it should be set by the system, or not.
      * 
-     * @param  array $rulesData
-     * - [data_type|input_name|operator|value]
-     * 
+     * @param  array $rulesData  [data_type|input_name|operator|value]
      * @return bool
      */
     protected static function checkEnum($rulesData)

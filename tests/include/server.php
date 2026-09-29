@@ -1,5 +1,7 @@
 <?php
 
+use Tamedevelopers\Validator\Validator;
+
 include_once __DIR__ . "/form.php";
 
     
@@ -11,15 +13,14 @@ $result = $form->token(true)->error(true)->rules([
     "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
     "float:amount"      => 'Enter Loan Amount',
     "array:activities"  => 'Select one or more activities',
-    "array:activities"  => 'Select one or more activities',
     "string:message"    => 'Message cannot be empty',
     "enum:terms"        => 'Accept terms and condition',
-])->validate(function($response){
+])->validate(function(Validator $response){
 
     return $response->json('error', $response->getMessage(), [
         'class' => $response->getClass()
     ]);
-})->save(function($response){
+})->save(function(Validator $response){
     // access the form data
     $param = $response->param;
     

@@ -42,6 +42,7 @@
 * [Only Data](#only-data)
 * [Except Data](#except-data)
 * [GetForm](#getForm)
+* [Param](#param)
 * [Get Message and Class](#get-message-and-class)
 * [Collection](#collection)
 * [Collection Methods](#collection-methods)
@@ -435,12 +436,26 @@ $form->rules([
 ![Sample Session Schema](https://raw.githubusercontent.com/tamedevelopers/validator/main/old.png)
 
 ## GetForm
-- Return all submitted form data as an `array`
+- Return all submitted form data as an `mixed|\Collection`
+    - Accepts an optional param as `$key`
 
 ```php
 ->save(function($response){
 
     $data = $response->getForm();
+
+    // $response->getForm('name')
+});
+```
+
+## Param
+- Alias for `GetForm` method
+
+```php
+->save(function($response){
+
+    $data = $response->param();
+    // $response->param('name')
 });
 ```
 

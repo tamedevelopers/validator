@@ -15,10 +15,9 @@ $Tame_isAppFramework = function_exists('Tame_isAppFramework') ? Tame_isAppFramew
 if (! function_exists('form')) {
     
     /**
-     * Get Form Instance \ PHP Form Validator
-     * @param mixed $attribute 
-     * - Any outside parameter you would want to use within the form instance
+     * Get Form Instance - PHP Form Validator
      * 
+     * @param  mixed $attribute     Additional Data usable within the form
      * @return \Tamedevelopers\Validator\Validator
      */
     function form($attribute = null)
@@ -32,10 +31,8 @@ if (! $Tame_isAppFramework && ! function_exists('old')) {
     /**
      * Return previously entered value
      * 
-     * @param string $key of param name
+     * @param string|null $key Input name
      * @param mixed $default
-     * [optional] 
-     * 
      * @return mixed
      */
     function old($key = null, $default = null)
@@ -51,13 +48,8 @@ if (! function_exists('config_form')) {
      *
      * @param  bool $error_type
      * @param  bool $csrf_token
-     * 
-     * @param  string|null $request
-     * - [post|get|all]
-     * 
-     * @param  array $class
-     * - [error|success]
-     * 
+     * @param 'post'|'get'|'all'|null $request
+     * @param  array{error: string, success: string} $class
      * @return void
      */
     function config_form($error_type = false, $csrf_token = true, $request = null, $class = [])
@@ -93,10 +85,8 @@ if (! $Tame_isAppFramework && ! function_exists('csrf_token')) {
     
     /**
      * Get Csrf Token
-     * 
-     * @return string
      */
-    function csrf_token()
+    function csrf_token(): string
     {
         return (new CsrfToken)->getToken();
     }
@@ -106,10 +96,8 @@ if (! $Tame_isAppFramework && ! function_exists('csrf')) {
 
     /**
      * Generate Input for Csrf Token
-     * 
-     * @return string
      */
-    function csrf()
+    function csrf(): string|null
     {
         return (new CsrfToken)->generateCSRFInputToken();
     }

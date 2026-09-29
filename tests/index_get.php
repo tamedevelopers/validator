@@ -23,7 +23,6 @@
         "int:age:<:16"      => 'Sorry! you must be 16yrs and above to use this site',
         "float:amount"      => 'Enter Loan Amount',
         "array:activities"  => 'Select one or more activities',
-        "array:activities"  => 'Select one or more activities',
         "string:message"    => 'Message cannot be empty',
         "enum:terms"        => 'Accept terms and condition',
     ])->save(function($response){

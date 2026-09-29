@@ -7,19 +7,20 @@ namespace Tamedevelopers\Validator\Methods;
 use Tamedevelopers\Support\Str;
 use Tamedevelopers\Validator\Validator;
 use Tamedevelopers\Support\Process\Http;
+use Tamedevelopers\Validator\Methods\Constant;
 use Tamedevelopers\Support\Collections\Collection;
 
 class ValidatorMethod {
 
     /**
-     * Private instance of parent validator
-     * @var mixed
+     * Instance of parent validator
+     * 
+     * @var Validator|null
      */
-    public static $validator;
-
+    public static ?Validator $validator = null;
     
     /**
-     * isJsonResponse
+     * Check if response is a JsonResponse instance.
      *
      * @param  mixed $response
      * @return bool
@@ -31,260 +32,205 @@ class ValidatorMethod {
     }
 
     /**
-     * Initialize methods to have access to global validator (self::$validator)
-     *
-     * @return \Tamedevelopers\Validator\Validator
+     * Initialize methods to have access to global validator
      */
-    public static function initialize($validator)
+    public static function initialize(Validator $validator): void
     {
         self::$validator = $validator;
-
-        return self::$validator;
     }
 
     /**
-     * Return value of needed parameters form objects
+     * Check if incoming param is set in superglobals.
      *
-     * @param  string|null $param  form input name.
+     * @param string|null $param
      * @return bool
      */
-    public static function checkIfParamIsset($param = null)
+    public static function isParamSet($param = null)
     {
-        if(self::$validator->config['request'] == INPUT_POST){
-            return isset($_POST[$param]);
-        } elseif(self::$validator->config['request'] == INPUT_GET){
-            return isset($_GET[$param]);
-        }
-        
-        return isset($_REQUEST[$param]);
+        $request = self::$validator->config['request'];
+
+        return match ($request) {
+            Constant::POST    => isset($_POST[$param]),
+            Constant::GET     => isset($_GET[$param]),
+            Constant::COOKIE  => isset($_COOKIE[$param]),
+            Constant::SERVER  => isset($_SERVER[$param]),
+            default => isset($_REQUEST[$param]),
+        };
     }
 
     /**
-     * Set default params on load 
+     * Get and set the source parameter collection.
+     *  
      * @param string|int $request
-     * - Default type is INPUT_GET as value 1
-     * 
-     * @return mixed
+     * @return Validator
      */
-    public static function setAndGetParams($request = 1)
+    public static function getAndSetSourceParam($request = Constant::GET)
     {
-        // if the param is not set then we use request method to 
-        // determine data received data from forms
-
-        // get Data using POST method
-        if($request === INPUT_POST){
-            self::$validator->param = $_POST ?: [];
-        } elseif($request === INPUT_GET){
-            self::$validator->param = $_GET ?: [];
-        } else{
-            self::$validator->param = self::createFromGlobals();
-        }
+        $param = match ($request) {
+            Constant::POST    => $_POST,
+            Constant::GET     => $_GET,
+            Constant::COOKIE  => $_COOKIE,
+            Constant::SERVER  => $_SERVER,
+            Constant::REQUEST => $_REQUEST,
+            default => self::createFromGlobals(),
+        };
         
-        // convert into a collection of data
-        self::$validator->param  = new Collection(self::$validator->param);
+        // Convert param to collection
+        self::$validator->param  = new Collection($param);
         
         return self::$validator;
     }
 
     /**
-     * Create Params From Globals
-     *
-     * @return array
+     * Create parameters from superglobals array.
      */
-    public static function createFromGlobals()
+    public static function createFromGlobals(): array
     {
-        $post    = $_POST ?: [];
-        $get     = $_GET ?: [];
-        $request = $_REQUEST ?: [];
-        $cookie  = $_COOKIE ?: [];
-
         return array_merge(
-            $post, $get, $request, $cookie
+            $_POST,
+            $_GET,
+            $_REQUEST,
+            $_COOKIE
         );
     }
 
     /**
-     * Check if Form has been submitted
-     * @return bool
+     * Check if form data has been submitted.
      */
-    public static function isSubmitted()
+    public static function isSubmitted(): bool
     {
-        $items = self::$validator->param;
-        if($items && $items->count() > 0){
-            return true;
-        }
+        $glob = self::globParam();
 
-        return false;
+        return $glob instanceof Collection && $glob->count() > 0;
     }
 
     /**
-     * Allow data performaceon `GET` Request before submit
-     * @return bool
+     * Check if request is GET prior to form submission.
      */
-    public static function isGetRequestBeforeSubmitted()
+    public static function isGetRequestBeforeSubmitted(): bool
     {
-        if(Str::lower(Http::method()) === 'get'){
-            // allow when get TYPE if not submitted
-            if(!self::isSubmitted()){
-                return true;
-            }
-        }
-
-        return false;
+        return Str::lower(Http::method()) === 'get' && !self::isSubmitted();
     }
 
     /**
-     * Needed input values from submited form object
-     * @param  array|null  $keys of input
+     * Extract specified keys from submitted params.
      * 
+     * @param  array|null  $keys of input
      * @return array
      */
     public static function only($keys = null)
     {
-        $data = [];
-        if(is_array($keys)){
-            foreach($keys as $key){
-                if(in_array($key, array_keys(self::$validator->param->toArray()))){
-                    $data[$key] = self::$validator->param[$key];
-                }
-            }
+        if ((!is_array($keys) || empty($keys))) {
+            return [];
         }
 
-        return $data;
+        return array_intersect_key(self::globParam(true), array_flip($keys));
     }
 
     /**
-     * Remove input values from submited form object
-     * @param  array|null  $keys of input
+     * Get all submitted params except specified keys.
      * 
+     * @param  array|null $keys
      * @return array
      */
     public static function except($keys = null)
     {
-        $data = self::$validator->param->toArray();
-        if(is_array($keys)){
-            foreach($keys as $key){
-                if(in_array($key, array_keys($data))){
-                    unset($data[$key]);
-                }
-            }
+        $glob = self::globParam(true);
+
+        if ((!is_array($keys) || empty($keys))) {
+            return $glob;
         }
 
-        return $data;
+        return array_diff_key($glob, array_flip($keys));
     }
 
     /**
-     * Check if param is set in parent param
+     * Check if key exists in parameters collection.
      *
      * @param string|null $key
-     *
      * @return bool
      */
     public static function has($key = null)
     {
-        if(in_array($key, array_keys(self::$validator->param->toArray()))){
-            return true;
+        if (is_null($key)) {
+            return false;
         }
 
-        return false;
+        return in_array($key, array_keys(self::globParam(true)));
     }
 
      /**
-     * Remove value of parameters form objects
+     * Merge two collections or arrays.
      *
-     * @param array|null|Collection $keys
-     * @param array|null|Collection $data
-     *
+     * @param array|Collection|null $keys
+     * @param array|Collection|null $data
      * @return array
      */
     public static function merge($keys = null, $data = null)
     {
-        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
-        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
-
-        $keys = $keys ?? [];
-        $data = $data ?? [];
+        $keys = self::isCollectionInstance($keys) ? $keys->toArray() : ($keys ?? []);
+        $data = self::isCollectionInstance($data) ? $data->toArray() : ($data ?? []);
         
         return array_merge($keys,  $data);
     }
 
     /**
-     * Get needed data from array 
-     * @param  array|null|Collection  $keys of needed data
-     * @param  array|null|Collection  $allData param to check from
+     * Extract specific keys from target dataset.
      * 
+     * @param  array|Collection|null  $keys of needed data
+     * @param  array|Collection|null  $data param to check from
      * @return array
      */
     public static function onlyData($keys = null, $data = null)
     {
-        $allData = [];
+        $keys = self::isCollectionInstance($keys) ? $keys->toArray() : ($keys ?? []);
+        $data = self::isCollectionInstance($data) ? $data->toArray() : ($data ?? []);
 
-        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
-        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
-
-        if(is_array($keys) && is_array($data)){
-            foreach($keys as $key){
-                if(in_array($key, array_keys($data))){
-                    $allData[$key] = $data[$key];
-                }
-            }
-        }
-
-        return $allData;
+        return array_intersect_key($data, array_flip($keys));
     }
 
     /**
-     * Get all needed params except the removed onces
-     * @param  array|null|Collection  $keys of to remove from parameters
-     * @param  array|null|Collection  $data param to check from
+     * Filter out specific keys from target dataset.
      * 
+     * @param  array|Collection|null  $keys of data to remove from parameters
+     * @param  array|Collection|null  $data param to check from
      * @return array
      */
     public static function exceptData($keys = null, $data = null)
     {
-        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
-        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
+        $keys = self::isCollectionInstance($keys) ? $keys->toArray() : ($keys ?? []);
+        $data = self::isCollectionInstance($data) ? $data->toArray() : ($data ?? []);
         
-        if(is_array($keys) && is_array($data)){
-            foreach($keys as $key){
-                if(in_array($key, array_keys($data))){
-                    unset($data[$key]);
-                }
-            }
-        }
-
-        return $data ?? [];
+        return array_diff_key($data, array_flip($keys));
     }
 
     /**
-     * Return previously entered value
+     * Return previously entered value using dot notation or checkbox checks.
      * 
-     * @param string $key of param name
-     * 
+     * @param string|null $key
      * @param mixed $default
-     * [optional] 
-     * 
      * @return mixed
      */
     public static function old($key = null, $default = null)
     {
-        $formData = self::getAllForm();
+        $data = self::getForm();
+        $data = self::isCollectionInstance($data) ? $data->toArray() : $data;
 
         if ($key === null) {
-            return $formData;
+            return $data;
         }
 
         $keySegments = explode('.', $key);
-        $data = $formData;
 
         foreach ($keySegments as $index => $segment) {
             if (is_array($data)) {
-                // Case 1: checkbox arrays (e.g. activities.reading)
+                // Case 1: Checkbox or indexed array check (e.g., old('activities.reading'))
+                // If we're at the last segment and it exists as a VALUE inside $data
                 if ($index === count($keySegments) - 1 && in_array($segment, $data, true)) {
                     return true; // means the checkbox was checked
                 }
 
-                // Case 2: nested array
+                // Case 2: Standard nested associative array traversal (e.g., old('user.name'))
                 if (array_key_exists($segment, $data)) {
                     $data = $data[$segment];
                 } else {
@@ -300,8 +246,8 @@ class ValidatorMethod {
 
     /**
      * Resolve flash message and save in memory
-     * @param \Tamedevelopers\Validator\Validator|mixed $validator
      * 
+     * @param \Tamedevelopers\Validator\Validator|mixed $validator
      * @return mixed
      */
     public static function resolveFlash(Validator $validator)
@@ -331,8 +277,8 @@ class ValidatorMethod {
 
     /**
      * Reset flash data to default values
-     * @param \Tamedevelopers\Validator\Validator|mixed $validator
      * 
+     * @param \Tamedevelopers\Validator\Validator|mixed $validator
      * @return mixed
      */
     public static function resetFlash(Validator $validator)
@@ -346,16 +292,13 @@ class ValidatorMethod {
     }
 
     /**
-     * Return error message in the form of converted string
-     * 
-     * @return string
+     * Get concatenated error message string.
      */
-    public static function getMessage()
+    public static function getMessage(): string
     {
-        // get message
         $message = !empty(self::$validator->message)
-                    ? self::$validator->message
-                    : self::$validator->flash['message'];
+                ? self::$validator->message
+                : self::$validator->flash['message'];
 
         // convert to array
         $message = !is_array($message) ? [$message] : $message;
@@ -364,42 +307,54 @@ class ValidatorMethod {
     }
 
     /**
-     * Return error class
-     * 
-     * @return string
+     * Get flash error class.
      */
-    public static function getClass()
+    public static function getClass(): string
     {
-        return self::$validator->flash['class'];
+        return (string) self::$validator->flash['class'];
     }
 
     /**
-     * Get Form Data
-     * Return form data if isset
+     * Retrieve single key or full form Collection.
      * 
-     * @param string $type |attribute|attributes
-     * .ie form (array) of param | attributes (object) of param 
-     * 
-     * @return mixed 
+     * @param string|null $key
+     * @return mixed|Collection
      */
-    public static function getForm()
+    public static function getForm($key = null)
     {
-        return self::$validator->param->toArray();
+        $param = self::globParam();
+
+        if ($key === null) {
+            return $param;
+        }
+
+        return $param[$key] ?? $param;
     }
 
     /**
-     * Get All Form Data
-     * - POST and GET form data
+     * Alias for `getForm` method
      * 
-     * @return array 
+     * @param string|null $key
+     * @return mixed|Collection
      */
-    public static function getAllForm()
+    public static function param($key = null)
     {
-        return array_merge($_GET, $_POST);
+        return self::getForm($key);
     }
 
     /**
-     * If instance of collection
+     * Get combined $_GET and$_POST Collection.
+     */
+    public static function getAllForm(): Collection
+    {
+        return new Collection(array_merge(
+            $_GET, $_POST
+        ));
+    }
+
+    /**
+     * Check if payload is an instance of Collection.
+     * 
      * @param mixed $data
      * @return bool
      */ 
@@ -409,12 +364,29 @@ class ValidatorMethod {
     }
 
     /**
-     * configErrorClass
+     * Return global param if set
+     * 
+     * @param bool $toArray
+     * @return null|array|Collection
+     */
+    private static function globParam($toArray = false)
+    {
+        $param = self::$validator?->param ?? null;
+
+        if(self::isCollectionInstance($param) && $toArray){
+            return $param->toArray();
+        }
+
+        return $param;
+    }
+
+    /**
+     * Load error class configuration from global constant if defined.
      *
      * @param  mixed $validator
      * @return mixed
      */
-    static private function configErrorClass(&$validator)
+    private static function configErrorClass(&$validator)
     {
         if(defined('TAME_VALIDATOR_CONFIG')){
             $validator->class = TAME_VALIDATOR_CONFIG['class'];

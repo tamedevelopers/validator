@@ -1,18 +1,21 @@
 <?php
 
+    use Tamedevelopers\Validator\Validator;
+
     include_once __DIR__ . "/../vendor/autoload.php";
 
     // it use $_SERVER['REQUEST_METHOD'] as default if not passed to the handler
     $form = new \Tamedevelopers\Validator\Validator();
 
     $form->token(false)->rules([
-        "s:name"        => 'Please enter a name',
-        "sl:name:<:5"   => 'Name should be more than five(5) characters',
-        "e:email"       => 'Please enter a valid email address',
-        "float:age"       => 'Age is required',
-        // "i:age:<:16"    => 'Sorry! you must be 16yrs and above to use this site',
-        // "i:age:>:36"    => 'Sorry! Age limit is 36 in other to use this site',
-    ])->save(function($response){
+        "s:name"            => 'Please enter a name',
+        "sl:name:<:5"       => 'Name should be more than five(5) characters',
+        "e:email"           => 'Please enter a valid email address',
+        "float:age"         => 'Age is required',
+        "i:age:<:16"        => 'Sorry! you must be 16yrs and above to use this site',
+        "i:age:>:36"        => 'Age limit must be less than 36yrs to use this site',
+        "dev:description"  => 'Description is required',
+    ])->save(function(Validator $response){
         // access the form data
         $param = $response->except(['_token']);
 
@@ -20,10 +23,18 @@
         $response->message = "Submitted Successfully";
 
         dump(
-            $param,
-            $response->param->toObject()
+            // $param,
+            $response->getForm('name'),
+            $response->param('email'),
+            // $response->toObject()
         );
     });
+
+    // dd(
+    //     $form->has('description'),
+    //     // $form->param('description'),
+    //     // $form->old('description')
+    // );
 
 ?>
 
@@ -61,6 +72,24 @@
                 <div class="">
                     <label for="html">Age</label>
                     <input type="number" name="age" value="<?= $form->old('age'); ?>">
+                </div>
+
+                <label for="reading">
+                    Reading
+                    <input type="checkbox" name="activities[]" 
+                        value="reading" id="reading" <?= old('activities.reading') ? 'checked' : '' ?> >
+                </label>
+                <label for="writing">
+                    Writing
+                    <input type="checkbox" name="activities[]" 
+                        value="writing" id="writing" <?= old('activities.writing') ? 'checked' : '' ?>>
+                </label>
+                
+                <div class="">
+                    <label for="html">Description</label>
+                    <textarea name="description" 
+                        rows="6"
+                        style="resize: none; width: 100%;"><?= $form->old('description'); ?></textarea>
                 </div>
 
                 <button type="submit" class="btn mt-2">Submit</button>
