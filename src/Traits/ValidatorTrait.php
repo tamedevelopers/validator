@@ -82,10 +82,10 @@ trait ValidatorTrait {
     }
 
     /**
-     * Alias for `getForm` method
+     * Get param data directly
      * 
      * @param string|null $key
-     * @return mixed|Collection
+     * @return mixed
      */
     public static function param($key = null)
     {

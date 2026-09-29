@@ -332,14 +332,20 @@ class ValidatorMethod {
     }
 
     /**
-     * Alias for `getForm` method
+     * Get param data directly
      * 
      * @param string|null $key
-     * @return mixed|Collection
+     * @return mixed
      */
     public static function param($key = null)
     {
-        return self::getForm($key);
+        $param = self::getForm($key);
+
+        if(self::isCollectionInstance($param)){
+            return $param->{$key};
+        }
+
+        return $param;
     }
 
     /**
