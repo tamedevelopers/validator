@@ -26,7 +26,7 @@ use Tamedevelopers\Validator\Traits\ValidatorTrait;
  *
  * @package   tamedevelopers\validator
  * @author    Tame Developers <tamedevelopers@gmail.com>
- * @copyright 2021-2023 Tame Developers
+ * @copyright 2021-2026 Tame Developers
  * @link https://github.com/tamedevelopers/validator
  */
 class Validator implements ValidatorInterface
