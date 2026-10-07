@@ -97,8 +97,41 @@ class Validator implements ValidatorInterface
      * 
      * - Separator 
      *      (pipe) | or (colon) :
-     * - Operators  
-     *      (==, ===, !=, !==, >, >=, <, <=, <or>, <and>)
+     * 
+     * Supported operators
+     * -------------------
+     *  Equality:
+     *      ==          loose equality
+     *      ===         strict equality
+     *      !=          loose inequality
+     *      !==         strict inequality
+     *
+     *  Single comparison (numeric):
+     *      >           greater than
+     *      >=          greater than or equal
+     *      <           less than
+     *      <=          less than or equal
+     *
+     *  Exclusive range (bounds not included):
+     *      <and>       lower < value < upper        (inside range)
+     *      <or>        value < lower OR value > upper (outside range)
+     *
+     *  Inclusive range (bounds included):
+     *      <=and>=     lower <= value <= upper      (inside range)
+     *      <=or>=      value <= lower OR value >= upper (outside range)
+     *
+     *  Mixed bounds:
+     *      <and>=      lower <  value <= upper
+     *      <=and>      lower <= value <  upper
+     *
+     *  Step / multiple:
+     *      step        value must be a multiple of the given step
+     *      multiple    alias of `step`
+     *
+     *  Range + step (min,max,step):
+     *      <and>step
+     *      <and>:step
+     *      steprange
      * 
      * @return $this
      * @example ["string:first_name" => "First name is required"]
@@ -135,8 +168,8 @@ class Validator implements ValidatorInterface
             // run callback, which should return JsonResponse
             $response = $this->callback($closure);
 
-            // Keep chaining but store JsonResponse for later
-            if (ValidatorMethod::isJsonResponse($response)) {
+            // Store whatever response-like object we got back,
+            if (!is_null($response)) {
                 $this->jsonResponse = $response;
             }
         }
@@ -154,7 +187,7 @@ class Validator implements ValidatorInterface
     {
         // If user returns a JsonResponse
         if (ValidatorMethod::isJsonResponse($this->jsonResponse)) {
-            return $this->jsonResponse->send();
+            return $this->jsonResponse;
         }
 
         if($this->isValidated()){
@@ -164,13 +197,18 @@ class Validator implements ValidatorInterface
             
             $response = $this->callback($closure);
 
-            // If user returns a JsonResponse in save, send and return it
+            // If user returns a JsonResponse in save, return it directly
             if (ValidatorMethod::isJsonResponse($response)) {
-                return $response->send();
+                return $response;
+            }
+
+            // If the callback returned something else (a Response, string, array)
+            if (!is_null($response)) {
+                return $response;
             }
         }
 
-        return $this;
+        return null;
     }
     
     /**

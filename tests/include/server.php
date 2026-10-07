@@ -4,8 +4,8 @@ use Tamedevelopers\Validator\Validator;
 
 include_once __DIR__ . "/form.php";
 
-    
-$result = $form->token(true)->error(true)->rules([
+
+return $form->token(true)->error(true)->rules([
     "string|name"       => 'Please enter a name',
     "str_len|name|<|5"  => 'Name should be more than five(5) characters',
     "email|email"       => 'Please enter a valid email address',
@@ -16,9 +16,10 @@ $result = $form->token(true)->error(true)->rules([
     "string:message"    => 'Message cannot be empty',
     "enum:terms"        => 'Accept terms and condition',
 ])->validate(function(Validator $response){
-
-    return $response->json('error', $response->getMessage(), [
-        'class' => $response->getClass()
+    return $response->json([
+        'status'    => 'error',
+        'message'   => $response->getMessage(),
+        'class'     => $response->getClass()
     ]);
 })->save(function(Validator $response){
     // access the form data
@@ -27,8 +28,10 @@ $result = $form->token(true)->error(true)->rules([
     // access parent scope data\ $data
     $attribute = $response->getAttribute();
     
-    return $response->json('success', "Submitted Successfully", [
-        'class' => $response->getClass()
+    return $response->json([
+        'status'    => 'success',
+        'message'   => "Submitted Successfully",
+        'class'     => $response->getClass()
     ]);
 });
 

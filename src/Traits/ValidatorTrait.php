@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace Tamedevelopers\Validator\Traits;
 
 use Closure;
-use Tamedevelopers\Support\ApiResponse;
-use Tamedevelopers\Support\Collections\Collection;
-use Tamedevelopers\Support\Server;
 use Tamedevelopers\Support\Tame;
-use Tamedevelopers\Validator\Methods\Constant;
-use Tamedevelopers\Validator\Methods\GetRequestType;
+use Tamedevelopers\Support\Server;
 use Tamedevelopers\Validator\Methods\Operator;
+use Tamedevelopers\Validator\Methods\Constant;
+use Tamedevelopers\Support\Collections\Collection;
+use Tamedevelopers\Validator\Methods\GetRequestType;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
 
 trait ValidatorTrait {
+
+    /**
+     * @var ValidatorMethod Static Validator Instance 
+     */
+    private static $validtorStaticMethod;
 
     /**
      * Run a callback 
@@ -39,6 +43,20 @@ trait ValidatorTrait {
     {
         return $this->callback($closure);
     }
+  
+    /**
+     * Calling validator method
+     */
+    private static function vaMtd(): ValidatorMethod
+    {
+        if(self::$validtorStaticMethod){
+            return self::$validtorStaticMethod;
+        }
+
+        self::$validtorStaticMethod = new ValidatorMethod();
+
+        return self::$validtorStaticMethod;
+    }
 
     /**
      * Get needed data from array 
@@ -49,10 +67,12 @@ trait ValidatorTrait {
      */
     public function onlyData($keys = null, $data = null)
     {
-        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
-        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
+        $method = self::vaMtd();
 
-        return ValidatorMethod::onlyData($keys, $data);
+        $keys = $method->isCollectionInstance($keys) ? $keys?->toArray() : $keys;
+        $data = $method->isCollectionInstance($data) ? $data?->toArray() : $data;
+
+        return $method->onlyData($keys, $data);
     }
 
     /**
@@ -64,10 +84,12 @@ trait ValidatorTrait {
      */
     public function exceptData($keys = null, $data = null)
     {
-        $keys = ValidatorMethod::isCollectionInstance($keys) ? $keys?->toArray() : $keys;
-        $data = ValidatorMethod::isCollectionInstance($data) ? $data?->toArray() : $data;
+        $method = self::vaMtd();
 
-        return ValidatorMethod::exceptData($keys, $data);
+        $keys = $method->isCollectionInstance($keys) ? $keys?->toArray() : $keys;
+        $data = $method->isCollectionInstance($data) ? $data?->toArray() : $data;
+
+        return $method->exceptData($keys, $data);
     } 
 
     /**
@@ -78,7 +100,7 @@ trait ValidatorTrait {
      */
     public function getForm($key = null)
     {
-        return ValidatorMethod::getForm($key);
+        return self::vaMtd()->getForm($key);
     }
 
     /**
@@ -89,31 +111,32 @@ trait ValidatorTrait {
      */
     public static function param($key = null)
     {
-        return ValidatorMethod::param($key);
+        return self::vaMtd()->param($key);
     }
 
     /**
-     * Return a JSON response
-     * Common HTTP status codes for API responses:
-     * - 200 OK - Request succeeded. Example: Successful login, data fetched successfully.
-     * - 201 Created - Resource created successfully. Example: User registered, item stored.
-     * - 400 Bad Request - Invalid request. Example: Malformed JSON, missing parameters.
-     * - 401 Unauthorized - Authentication failed. Example: Wrong password, invalid token.
-     * - 403 Forbidden - Not allowed. Example: User without permission attempts action.
-     * - 404 Not Found - Resource missing. Example: User ID not found, endpoint invalid.
-     * - 419 Page Expired - CSRF mismatch/session expired. Example: Invalid CSRF token.
-     * - 422 Unprocessable Entity - Validation failed. Example: Invalid email, missing fields.
-     * - 500 Internal Server Error - Server bug. Example: Database failure, fatal exception.
+     * Return a new response from the application.
      *
-     * @param  string $status
-     * @param  string $message
-     * @param  mixed  $data
-     * @param  int    $statusCode
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @param  mixed  $content
+     * @param  int    $status
+     * @param  array  $headers
+     * @return mixed
      */
-    public static function json($status, $message, $data = null, int $statusCode = 200)
+    public static function json($content = [], int $status = 200, array $headers = [])
     {
-        return ApiResponse::json($status, $message, $data, $statusCode);
+        $response = Tame::json($content, $status, $headers);
+
+        if(Tame::isAppFramework()){
+            return $response;
+        }
+
+        // If not in a framework and JsonResponse
+        // we send response automatically
+        if (self::vaMtd()->isJsonResponse($response)) {
+            return $response->send();
+        }
+
+        return $response;
     }
 
     /**
@@ -125,7 +148,7 @@ trait ValidatorTrait {
      */
     public static function jsonEcho(int $response = 0, $message = null)
     {
-        self::echoJson($response, $message);
+        return self::echoJson($response, $message);
     }
 
     /**
@@ -137,7 +160,7 @@ trait ValidatorTrait {
      */
     public static function echoJson(int $response = 0, $message = null)
     {
-        Tame::jsonEcho($response, $message);
+        return Tame::jsonEcho($response, $message);
     }
 
     /**
@@ -146,7 +169,7 @@ trait ValidatorTrait {
      */
     public function getMessage()
     {
-        return ValidatorMethod::getMessage();
+        return self::vaMtd()->getMessage();
     }
 
     /**
@@ -156,7 +179,7 @@ trait ValidatorTrait {
      */
     public function getClass()
     {
-        return ValidatorMethod::getClass();
+        return self::vaMtd()->getClass();
     }
 
     /**
@@ -207,7 +230,7 @@ trait ValidatorTrait {
         $this->initalizeAfterRequestSet();
 
         // set params
-        $param = ValidatorMethod::getAndSetSourceParam(Constant::POST);
+        $param = self::vaMtd()->getAndSetSourceParam(Constant::POST);
         $this->param = $param->param;
 
         return $this;
@@ -223,7 +246,7 @@ trait ValidatorTrait {
         $this->initalizeAfterRequestSet();
 
         // set params
-        $param = ValidatorMethod::getAndSetSourceParam(Constant::GET);
+        $param = self::vaMtd()->getAndSetSourceParam(Constant::GET);
         $this->param = $param->param;
 
         return $this;
@@ -240,7 +263,7 @@ trait ValidatorTrait {
         $this->initalizeAfterRequestSet();
 
         // set params
-        $param = ValidatorMethod::getAndSetSourceParam(Constant::REQUEST);
+        $param = self::vaMtd()->getAndSetSourceParam(Constant::REQUEST);
         $this->param = $param->param;
 
         return $this;
@@ -293,7 +316,7 @@ trait ValidatorTrait {
      */
     private function initalizeAfterRequestSet(): void
     {
-        ValidatorMethod::initialize($this);
+        self::vaMtd()->initialize($this);
     }
 
     /**

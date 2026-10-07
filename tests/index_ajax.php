@@ -17,7 +17,7 @@ include_once __DIR__ . "/include/form.php";
         onsubmit="return submitForm(this)">
         <h2>Form sample</h2>
         
-        <div class="errorMsg mb-5 <?= $form->getClass() ?>">
+        <div class="errorMsg <?= $form->getClass() ?>" style="margin-bottom: 20px;">
             <?= $form->getMessage() ?>
         </div>
 
@@ -88,14 +88,14 @@ include_once __DIR__ . "/include/form.php";
             })
             .then(response => response.text())
             .then(data => {
+
                 // parse the JSON response
                 data = JSON.parse(data);
-
                 let msg = data.message;
                 let div = document.querySelector('.errorMsg');
 
                 div.innerHTML = data.message;
-                div.className = "errorMsg " + data.data.class; 
+                div.className = "errorMsg " + data.class; 
                 
                 // handle success/error response from server
                 if(data.status === "success"){
