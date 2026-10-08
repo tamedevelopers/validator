@@ -9,6 +9,15 @@ use Tamedevelopers\Support\Process\Http;
 use Tamedevelopers\Validator\Methods\Constant;
 
 class GetRequestType {
+
+
+    /**
+     * If Request is GET
+     */
+    public static function isGetRequest(): bool
+    {
+        return in_array(Http::method(), ['GET', 'HEAD', 'OPTIONS']);
+    }
   
     /**
      * The value of request type.

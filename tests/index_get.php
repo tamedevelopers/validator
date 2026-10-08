@@ -66,9 +66,7 @@
             <div class="errorMsg mb-5 <?= $form->getClass() ?>">
                 <?= $form->getMessage() ?>
             </div>
-
-            <?php csrf() ?>
-
+            
             <div class="row">
                 <div class="">
                     <label for="html">Name</label>

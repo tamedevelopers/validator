@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Traits;
 
-use Tamedevelopers\Validator\Methods\Datatype;
 use Tamedevelopers\Validator\Methods\CsrfToken;
+use Tamedevelopers\Validator\Methods\Datatype;
+use Tamedevelopers\Validator\Methods\ExceptionMessage;
+use Tamedevelopers\Validator\Methods\GetRequestType;
 use Tamedevelopers\Validator\Methods\RuleIndicator;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
-use Tamedevelopers\Validator\Methods\ExceptionMessage;
 
 trait ValidateSuccessTrait {
 
@@ -61,19 +62,15 @@ trait ValidateSuccessTrait {
              * If Csrf Token is allowed to be used, then we Check if found along with form
              * Or If token not correct for encrypted token in the session
              */
-            if($this->config['csrf']){
+            if($this->config['csrf'] && !GetRequestType::isGetRequest()){
                 // set error to true
                 $this->setErrorTrue();
 
                 if(!$this->param->has($this->csrf_token)){
                     $this->message  = ExceptionMessage::csrfTokenNotFound();
-
-                    $this->json($this->message, 419);
                     return $this;
                 } elseif(!CsrfToken::validateToken($this->param->{$this->csrf_token})){
                     $this->message  = ExceptionMessage::csrfTokenMismatch();
-                    
-                    $this->json($this->message, 419);
                     return $this;
                 }
             }

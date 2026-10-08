@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Methods;
 
-use Tamedevelopers\Support\Str;
-use Tamedevelopers\Validator\Validator;
-use Tamedevelopers\Support\Process\Http;
-use Tamedevelopers\Validator\Methods\Constant;
 use Tamedevelopers\Support\Collections\Collection;
+use Tamedevelopers\Support\Process\Http;
+use Tamedevelopers\Support\Str;
+use Tamedevelopers\Support\Tame;
+use Tamedevelopers\Validator\Methods\Constant;
+use Tamedevelopers\Validator\Validator;
 
 class ValidatorMethod {
 
@@ -18,6 +19,14 @@ class ValidatorMethod {
      * @var Validator|null
      */
     public static ?Validator $validator = null;
+
+    /**
+     * Initialize methods to have access to global validator
+     */
+    public static function initialize(Validator $validator): void
+    {
+        self::$validator = $validator;
+    }
     
     /**
      * Check if response is a JsonResponse instance.
@@ -27,16 +36,170 @@ class ValidatorMethod {
      */
     public static function isJsonResponse($response = null)
     {
-        return !empty($response) 
-            && $response instanceof \Symfony\Component\HttpFoundation\JsonResponse;
+        if (empty($response) || !is_object($response)) {
+            return false;
+        }
+
+        $tame = new Tame();
+
+        if($tame->isAppFramework()){
+            $framework = $tame->getFramework();
+
+            if ($framework['isLaravel'])     return self::isLaravelJsonResponse($response);
+            if ($framework['isSymfony'])     return self::isSymfonyJsonResponse($response);
+            if ($framework['isCodeIgniter']) return self::isCodeIgniterJsonResponse($response);
+            if ($framework['isCakePhp'])     return self::isCakePhpJsonResponse($response);
+            if ($framework['isYii'])         return self::isYiiJsonResponse($response);
+            if ($framework['isSlim'])        return self::isSlimJsonResponse($response);
+        }
+
+        // Fallback — no framework detected. Inspect the object directly.
+        return self::isGenericJsonResponse($response);
     }
 
     /**
-     * Initialize methods to have access to global validator
+     * Laravel — JsonResponse
      */
-    public static function initialize(Validator $validator): void
+    protected static function isLaravelJsonResponse(object $response): bool
     {
-        self::$validator = $validator;
+        if ($response instanceof \Illuminate\Http\JsonResponse 
+            || $response instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+            return true;
+        }
+
+        if ($response instanceof \Illuminate\Http\Response) {
+            return self::contentTypeIsJson($response->headers->get('Content-Type'));
+        }
+
+        return false;
+    }
+
+    /**
+     * Symfony — native JsonResponse.
+     */
+    protected static function isSymfonyJsonResponse(object $response): bool
+    {
+        return $response instanceof \Symfony\Component\HttpFoundation\JsonResponse;
+    }
+
+    /**
+     * CodeIgniter v3 (CI_Output) or v4 (CodeIgniter\HTTP\Response).
+     */
+    protected static function isCodeIgniterJsonResponse(object $response): bool
+    {
+        $outputName = '\CI_Output';
+        $className  = '\CodeIgniter\HTTP\Response';
+
+        // CodeIgniter 4
+        if ($response instanceof $className) {
+            return self::contentTypeIsJson($response->getHeaderLine('Content-Type'));
+        }
+
+        // CodeIgniter 3
+        if ($response instanceof $outputName) {
+            return self::contentTypeIsJson($response->mime_type ?? null);
+        }
+
+        return false;
+    }
+
+    /**
+     * CakePHP — Cake\Http\Response.
+     */
+    protected static function isCakePhpJsonResponse(object $response): bool
+    {
+        $className = '\Cake\Http\Response';
+        if ($response instanceof $className) {
+            return self::contentTypeIsJson($response->getHeaderLine('Content-Type'));
+        }
+
+        return false;
+    }
+
+    /**
+     * Yii v2 (yii\web\Response) or v1 (CJSON / CJsonResponse).
+     */
+    protected static function isYiiJsonResponse(object $response): bool
+    {
+        $className      = '\yii\web\Response';
+        $classFJson     = '\yii\web\Response::FORMAT_JSON';
+        $classFJsonp    = '\yii\web\Response::FORMAT_JSONP';
+        $classCJson     = '\CJSON';
+
+
+        // Yii 2
+        if ($response instanceof $className) {
+            return in_array($response->format, [$classFJson, $classFJsonp], true);
+        }
+
+        // Yii 1
+        if ($response instanceof $classCJson) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Slim — PSR-7 response carrying a JSON content type.
+     */
+    protected static function isSlimJsonResponse(object $response): bool
+    {
+        if ($response instanceof \Psr\Http\Message\ResponseInterface) {
+            return self::contentTypeIsJson($response->getHeaderLine('Content-Type'));
+        }
+
+        return false;
+    }
+
+    /**
+     * Check whether a Content-Type header value represents JSON.
+     */
+    protected static function contentTypeIsJson(?string $contentType): bool
+    {
+        if ($contentType === null || $contentType === '') {
+            return false;
+        }
+
+        $contentType = strtolower($contentType);
+
+        return str_contains($contentType, 'application/json')
+            || str_contains($contentType, '+json');
+    }
+
+    /**
+     * Fallback detection for plain-PHP usage where no framework is detected.
+     *
+     * Handles:
+     *  - Standalone Symfony HttpFoundation JsonResponse (installed without a framework)
+     *  - Any PSR-7 response carrying a JSON Content-Type
+     *  - Any object exposing getHeaderLine('Content-Type') or headers->get('Content-Type')
+     */
+    protected static function isGenericJsonResponse(object $response): bool
+    {
+        // Standalone Symfony HttpFoundation (micro-tools, custom scripts)
+        if ($response instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+            return true;
+        }
+
+        // PSR-7 — covers Nyholm, Guzzle, Laminas, Slim-standalone, etc.
+        if ($response instanceof \Psr\Http\Message\ResponseInterface) {
+            return self::contentTypeIsJson($response->getHeaderLine('Content-Type'));
+        }
+
+        // Symfony-style HeaderBag accessor (Response, Request, custom classes)
+        if (isset($response->headers) && is_object($response->headers)
+            && method_exists($response->headers, 'get')
+        ) {
+            return self::contentTypeIsJson($response->headers->get('Content-Type'));
+        }
+
+        // PSR-style getHeaderLine on non-PSR-7 objects (defensive)
+        if (method_exists($response, 'getHeaderLine')) {
+            return self::contentTypeIsJson($response->getHeaderLine('Content-Type'));
+        }
+
+        return false;
     }
 
     /**

@@ -7,13 +7,13 @@
     // it use $_SERVER['REQUEST_METHOD'] as default if not passed to the handler
     $form = new \Tamedevelopers\Validator\Validator();
 
-    $form->token(false)->rules([
+    $form->token(true)->rules([
         "s:name"            => 'Please enter a name',
         "sl:name:<:5"       => 'Name should be more than five(5) characters',
         "e:email"           => 'Please enter a valid email address',
         "float:age"         => 'Age is required',
         "i:age:<:16"        => 'Sorry! you must be 16yrs and above to use this site',
-        "i:age:>:36"        => 'Age limit must be less than 36yrs to use this site',
+        "i:age:>:36"        => 'Age limit must not be more than 36yrs to use this site',
         "dev:description"  => 'Description is required',
     ])->save(function(Validator $response){
         // access the form data
@@ -35,7 +35,6 @@
     //     // $form->param('description'),
     //     // $form->old('description')
     // );
-
 ?>
 
 
