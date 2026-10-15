@@ -14,8 +14,10 @@ declare(strict_types=1);
 namespace Tamedevelopers\Validator;
 
 use Closure;
+use Tamedevelopers\File\File;
 use Tamedevelopers\Support\Collections\Collection;
 use Tamedevelopers\Validator\Interface\ValidatorInterface;
+use Tamedevelopers\Validator\Methods\Datatype;
 use Tamedevelopers\Validator\Methods\ValidatorMethod;
 use Tamedevelopers\Validator\Traits\PropertyTrait;
 use Tamedevelopers\Validator\Traits\ValidateSuccessTrait;
@@ -66,6 +68,17 @@ class Validator implements ValidatorInterface
     }
 
     /**
+     * Input File Handler
+     *
+     * @param string $name
+     * @return \Tamedevelopers\File\File
+     */
+    public function file($name)
+    {
+        return Datatype::getFiles($name);
+    }
+
+    /**
      * Create validation rules
      * 
      * @param  array{
@@ -92,7 +105,8 @@ class Validator implements ValidatorInterface
      *  dev: "['dev|name'] => 'Developer IDE-Raw string is required'", 
      *  sl: "['sl|name'] => 'String length is required'", 
      *  strlen: "['strlen|name'] => 'String length is required'", 
-     *  str_len: "['str_len|name'] => 'String length is required'"
+     *  str_len: "['str_len|name'] => 'String length is required'",
+     *  file: "size:500kb|limit:3|label:Attachment|required:true|width:200, false",
      * }|array<string, string> $rules Data Types
      * 
      * - Separator 
@@ -137,6 +151,7 @@ class Validator implements ValidatorInterface
      * @example ["string:first_name" => "First name is required"]
      * @example [data_type|input_name|operator|value]
      * @link https://github.com/tamedevelopers/validator
+     * @link https://github.com/tamedevelopers/file
      */
     public function rules(?array $rules = [])
     {
@@ -310,6 +325,16 @@ class Validator implements ValidatorInterface
     public function merge($keys = null, $data = null)
     {
         return ValidatorMethod::merge($keys, $data);
+    }
+
+    /**
+     * Get rules Data
+     * 
+     * @return mixed
+     */
+    public function getRules()
+    {
+        return $this->rules;
     }
 
     /**

@@ -4,30 +4,40 @@ declare(strict_types=1);
 
 namespace Tamedevelopers\Validator\Methods;
 
-use Tamedevelopers\Support\Str;
+use Tamedevelopers\File\File;
 use Tamedevelopers\Support\Purify;
+use Tamedevelopers\Support\Str;
 use Tamedevelopers\Support\Utility;
+use Tamedevelopers\Validator\Validator;
 
 class Datatype {
   
     // Rule name groups (constants instead of magic strings)
     private const RULE_EMAIL   = ['email', 'e'];
     private const RULE_INT     = ['int', 'integer', 'i'];
-    private const RULE_FLOAT   = ['float', 'f'];
+    private const RULE_FLOAT   = ['float', 'f', 'fl'];
     private const RULE_URL     = ['url', 'link', 'u', 'anchor'];
     private const RULE_ARRAY   = ['array', 'a'];
     private const RULE_BOOL    = ['bool', 'boolean', 'b'];
     private const RULE_ENUM    = ['enum', 'en', 'enm'];
     private const RULE_HTML    = ['html'];
+    private const RULE_FILE    = ['file'];
     private const RULE_RAW     = ['raw'];
     private const RULE_DEV     = ['dev'];
 
     /**
      * Private instance of parent validator
      * 
-     * @var mixed
+     * @var mixed|Validator
      */
     private static $validator;
+
+    /**
+     * File Validator Message
+     * 
+     * @var array
+     */
+    private static ?array $files;
 
     /**
      * Validate if form data is set 
@@ -47,8 +57,10 @@ class Datatype {
         self::$validator = ValidatorMethod::$validator;
 
         // if input parameter is isset -- proceed to error validating
-        $type = true;
-        $formValidated = self::validateForminput($rulesData);
+        $type           = true;
+        $formValidated  = self::validateForminput($rulesData);
+        $flagType       = Str::lower($rulesData['data_type']);
+        $inputName      = $rulesData['input_name'];
 
         // check for ENUM types
         if(self::checkEnum($rulesData)){
@@ -56,13 +68,17 @@ class Datatype {
         } else{
             
             // check if value param isset
-            if(ValidatorMethod::isParamSet($rulesData['input_name'])){
+            if(ValidatorMethod::isParamSet($inputName)){
                 $type = $formValidated;
             } 
             
             // if data passes is not in form elements
-            elseif(!in_array($rulesData['input_name'], array_keys(self::$validator->param->toArray()))){
-                $type = '!found';
+            elseif(!in_array($inputName, array_keys(self::$validator->param->toArray()))){
+
+                // if file has error or not file
+                if(!($flagType === 'file') || self::$files[$inputName]['error']){
+                    $type = '!found';
+                }
             }
 
             // else if not isset
@@ -120,6 +136,38 @@ class Datatype {
     }
 
     /**
+     * Get Files
+     * 
+     * @param string $name
+     * @return \Tamedevelopers\File\File
+     */
+    public static function getFiles($name)
+    {
+        if(isset(self::$files[$name])){
+            return self::$files[$name]['file'];
+        }
+
+        return File::name($name);
+    }
+
+    /**
+     * Normalize Message
+     *
+     * @param mixed $message
+     * @param mixed $dataType
+     * @param mixed $inputName
+     * @return string|null
+     */
+    public static function normalizeMessage($message, $dataType, $inputName)
+    {
+        if($dataType === 'file' && self::$files[$inputName]['error']){
+            return self::$files[$inputName]['message'];
+        }
+
+        return $message;
+    }
+
+    /**
      * Check if data type is boolean
      *
      * @param string|null $dataType Data type to check
@@ -138,29 +186,59 @@ class Datatype {
      */
     protected static function validateFormInput(array $rulesData)
     {
-        $ruleFlag  = Str::lower($rulesData['data_type']);
-        $ruleInput = $rulesData['input_name'];
-        $value     = self::$validator->param[$ruleInput] ?? null;
+        $flagType  = Str::lower($rulesData['data_type']);
+        $inputName = $rulesData['input_name'];
+        $value     = self::$validator->param[$inputName] ?? null;
 
         switch (true) {
-            
+            // ---------------- FILE ----------------
+            case in_array($flagType, self::RULE_FILE, true):
+                return self::fileValidator($inputName);
+
             // ---------------- EMAIL ----------------
-            case in_array($ruleFlag, self::RULE_EMAIL, true):
+            case in_array($flagType, self::RULE_EMAIL, true):
                 $valid = Utility::validateEmail($value);
                 return $valid ? Purify::string((string) $value) : false;
 
             // ---------------- INTEGER ----------------
-            case in_array($ruleFlag, self::RULE_INT, true):
-                $valid = filter_var($value, FILTER_VALIDATE_INT);
-                return $valid !== false ? intval($valid) : false;
+            case in_array($flagType, self::RULE_INT, true):
+                // strip everything except digits (add \- if you want negatives)
+                $clean = preg_replace('/[^0-9]/', '', (string) $value);
+
+                if ($clean === '') {
+                    return false;
+                }
+
+                // FILTER_VALIDATE_INT still guards against overflow / huge strings
+                $valid = filter_var($clean, FILTER_VALIDATE_INT);
+                return $valid !== false ? (int) $valid : false;
 
             // ---------------- FLOAT ----------------
-            case in_array($ruleFlag, self::RULE_FLOAT, true):
-                $valid = filter_var($value, FILTER_VALIDATE_FLOAT);
-                return $valid !== false ? floatval($valid) : false;
+            case in_array($flagType, self::RULE_FLOAT, true):
+                // keep digits, dot, minus
+                $clean = preg_replace('/[^0-9.\-]/', '', (string) $value);
+
+                // ensure only one leading minus
+                $negative = str_starts_with($clean, '-');
+                $clean    = str_replace('-', '', $clean);
+
+                // ensure only one dot
+                $parts = explode('.', $clean);
+                $clean = $parts[0] . (isset($parts[1]) ? '.' . $parts[1] : '');
+
+                if ($clean === '' || $clean === '.') {
+                    return false;
+                }
+
+                if ($negative) {
+                    $clean = '-' . $clean;
+                }
+
+                $valid = filter_var($clean, FILTER_VALIDATE_FLOAT);
+                return $valid !== false ? (float) $valid : false;
 
             // ---------------- URL ----------------
-            case in_array($ruleFlag, self::RULE_URL, true):
+            case in_array($flagType, self::RULE_URL, true):
                 if ($value && !preg_match('/^https?:\/\//i', $value)) {
                     $value = 'http://' . $value;
                 }
@@ -168,7 +246,7 @@ class Datatype {
                 return $valid ? Purify::string((string) $valid) : false;
 
             // ---------------- ARRAY ----------------
-            case in_array($ruleFlag, self::RULE_ARRAY, true):
+            case in_array($flagType, self::RULE_ARRAY, true):
                 $array = is_string($value) ? json_decode($value, true) : $value;
 
                 $sanitizeArray = function ($arr) use (&$sanitizeArray) {
@@ -182,30 +260,30 @@ class Datatype {
                     : false;
 
             // ---------------- BOOLEAN ----------------
-            case in_array($ruleFlag, self::RULE_BOOL, true):
+            case in_array($flagType, self::RULE_BOOL, true):
                 $valid = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
                 return $valid === null ? false : $valid;
 
             // ---------------- ENUM ----------------
-            case in_array($ruleFlag, self::RULE_ENUM, true):
+            case in_array($flagType, self::RULE_ENUM, true):
                 if ($value === null || ($value === '' && $value !== '0')) {
                     return false;
                 }
                 return Purify::string((string) $value);
 
             // ---------------- HTML ----------------
-            case in_array($ruleFlag, self::RULE_HTML, true):
+            case in_array($flagType, self::RULE_HTML, true):
                 $sanitized = Purify::html((string) $value);
                 return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
 
             // ---------------- Raw ----------------
-            case in_array($ruleFlag, self::RULE_RAW, true):
+            case in_array($flagType, self::RULE_RAW, true):
                 $sanitized = Purify::raw((string) $value);
 
                 return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
 
             // ---------------- DEV ----------------
-            case in_array($ruleFlag, self::RULE_DEV, true):
+            case in_array($flagType, self::RULE_DEV, true):
                 $sanitized = Purify::dev((string) $value);
                 return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
 
@@ -214,6 +292,90 @@ class Datatype {
                 $sanitized = Purify::string((string) $value);
                 return (empty($sanitized) && $sanitized !== '0') ? false : $sanitized;
         }
+    }
+
+    /**
+     * Validate file error only
+     *
+     * @param mixed $inputName
+     * @return bool
+     */
+    protected static function fileValidator($inputName)
+    {
+        $file       = self::$validator->file($inputName);
+        $formRules  = self::normalizeFileRules()[$inputName] ?? [];
+        $isRequired = $formRules['required'] ?? false;
+
+        foreach ($formRules as $method => $methodValue) {
+            if ($method === 'required') {
+                continue;
+            }
+
+            if (method_exists($file, $method)) {
+                $params = is_array($methodValue) ? $methodValue : [$methodValue];
+
+                $file->$method(...$params);
+            }
+        }
+
+        if (!$isRequired) {
+            $file->filter(401);
+        }
+
+        // Validate without saving the file
+        $validate = $file->validate();
+
+        // Store validation result
+        self::$files[$inputName] = [
+            'file'    => $file,
+            'error'   => $validate->hasError(),
+            'message' => $validate->getMessage(),
+        ];
+
+        return self::$files[$inputName]['error'];
+    }
+
+    /**
+     * Normalize File Rules
+     */
+    protected static function normalizeFileRules(): array
+    {
+        $fileRules = [];
+
+        foreach (self::$validator->getRules() as $key => $value) {
+            if (!str_starts_with($key, 'file:')) {
+                continue;
+            }
+
+            $field = substr($key, strlen('file:'));
+
+            foreach (explode('|', $value) as $rule) {
+                if (!str_contains($rule, ':')) {
+                    continue;
+                }
+
+                [$name, $params] = explode(':', $rule, 2);
+
+                $params = array_map(
+                    static function ($param) {
+                        $param = trim($param);
+
+                        return match (strtolower($param)) {
+                            'true'  => true,
+                            'false' => false,
+                            default => is_numeric($param) ? $param + 0 : $param,
+                        };
+                    },
+                    explode(',', $params)
+                );
+
+                $fileRules[$field][$name] = count($params) === 1
+                    ? $params[0]
+                    : $params;
+            }
+        }
+
+        return $fileRules;
     }
 
     /**

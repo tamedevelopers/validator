@@ -8,13 +8,15 @@
     $form = new \Tamedevelopers\Validator\Validator();
 
     $form->token(true)->rules([
+        "file:avatar"       => 'size:500kb|limit:1|generate:false|mime:pdf',
+        "file:attachment"   => 'size:500kb|limit:3|label:Attachment|required:true|width:200, false',
         "s:name"            => 'Please enter a name',
         "sl:name:<:5"       => 'Name should be more than five(5) characters',
         "e:email"           => 'Please enter a valid email address',
         "float:age"         => 'Age is required',
         "i:age:<:16"        => 'Sorry! you must be 16yrs and above to use this site',
         "i:age:>:36"        => 'Age limit must not be more than 36yrs to use this site',
-        "dev:description"  => 'Description is required',
+        "dev:description"   => 'Description is required',
     ])->save(function(Validator $response){
         // access the form data
         $param = $response->except(['_token']);
@@ -22,8 +24,11 @@
         // message
         $response->message = "Submitted Successfully";
 
+        // save validated file
+        // $response->file('attachment')->save();
+        
         dump(
-            // $param,
+            $response,
             $response->getForm('name'),
             $response->param('email'),
             // $response->toObject()
@@ -48,7 +53,7 @@
 <html>
     <body>
 
-        <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form">
+        <form method="post" action="<?= $_SERVER["PHP_SELF"];?>" class="form" enctype="multipart/form-data">
             <h2>Form sample</h2>
 
             <div class="errorMsg mb-5 <?= $form->getClass() ?>">
@@ -73,16 +78,39 @@
                     <input type="number" name="age" value="<?= $form->old('age'); ?>">
                 </div>
 
-                <label for="reading">
-                    Reading
-                    <input type="checkbox" name="activities[]" 
-                        value="reading" id="reading" <?= old('activities.reading') ? 'checked' : '' ?> >
-                </label>
-                <label for="writing">
-                    Writing
-                    <input type="checkbox" name="activities[]" 
-                        value="writing" id="writing" <?= old('activities.writing') ? 'checked' : '' ?>>
-                </label>
+                <!--file upload-->
+                <div class="col-sm-12 mt-3" style="margin: 10px 0 30px;">
+                    <div class="form-group">
+                        <label for="upload" style="display: block; margin-bottom: 10px;">
+                            Image Avatar
+                        </label>
+                        <input type="file" class="form-control-file" name="avatar">
+                    </div>
+                </div>
+
+                <!--file attachment-->
+                <div class="col-sm-12 mt-3" style="margin: 10px 0 30px;">
+                    <div class="form-group">
+                        <label for="upload" style="display: block; margin-bottom: 10px;">
+                            File Attachment
+                        </label>
+                        <input type="file" class="form-control-file" name="attachment[]" multiple>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="reading">
+                        Reading
+                        <input type="checkbox" name="activities[]" 
+                            value="reading" id="reading" <?= old('activities.reading') ? 'checked' : '' ?> >
+                    </label>
+
+                    <label for="writing">
+                        Writing
+                        <input type="checkbox" name="activities[]" 
+                            value="writing" id="writing" <?= old('activities.writing') ? 'checked' : '' ?>>
+                    </label>
+                </div>
                 
                 <div class="">
                     <label for="html">Description</label>

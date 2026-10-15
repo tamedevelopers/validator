@@ -12,6 +12,9 @@ trait PropertyTrait {
     /** @var mixed attribute */
     protected $attribute;
 
+    /** @var mixed files */
+    protected $files;
+
     /** @var mixed public message data */
     public $message;
 

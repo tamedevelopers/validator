@@ -107,6 +107,9 @@ trait ValidateSuccessTrait {
                     $inputName, $dataType
                 );
 
+                // get between file-error message and Normal form message
+                $message = Datatype::normalizeMessage($message, $dataType, $inputName);
+
                 // allowed errors handling type
                 // if error is to be handled one by one
                 if($this->config['errorType'] === false)
