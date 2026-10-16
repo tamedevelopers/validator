@@ -12,7 +12,7 @@ use Tamedevelopers\Validator\Validator;
         ->limit(3)
         ->label('Attachment')
         ->width('200px', false)
-        ->mime('general_media');
+        ->mime('image');
 
 
     $form->token(true)->rules([
