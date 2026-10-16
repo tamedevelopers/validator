@@ -143,7 +143,7 @@ class Datatype {
      */
     public static function getFiles($name)
     {
-        if(isset(self::$files[$name])){
+        if(isset(self::$files[$name]['file'])){
             return self::$files[$name]['file'];
         }
 
