@@ -1,19 +1,27 @@
 <?php
 
-    use Tamedevelopers\Validator\Validator;
+use Tamedevelopers\File\File;
+use Tamedevelopers\Validator\Validator;
 
     include_once __DIR__ . "/../vendor/autoload.php";
 
     // it use $_SERVER['REQUEST_METHOD'] as default if not passed to the handler
     $form = new \Tamedevelopers\Validator\Validator();
+    $attachment = File::name('attachment')
+        ->size('1mb')
+        ->limit(3)
+        ->label('Attachment')
+        ->width('200px', false)
+        ->mime('general_media');
+
 
     $form->token(true)->rules([
-        "file:avatar"       => 'size:500kb|limit:1|generate:false|mime:pdf',
-        "file:attachment"   => 'size:500kb|limit:3|label:Attachment|required:true|width:200, false',
         "s:name"            => 'Please enter a name',
         "sl:name:<:5"       => 'Name should be more than five(5) characters',
         "e:email"           => 'Please enter a valid email address',
         "float:age"         => 'Age is required',
+        "file:avatar"       => 'size:500kb|limit:1|generate:false|mime:pdf|width:200, false|required:false',
+        "file:attachment"   => $attachment,
         "i:age:<:16"        => 'Sorry! you must be 16yrs and above to use this site',
         "i:age:>:36"        => 'Age limit must not be more than 36yrs to use this site',
         "dev:description"   => 'Description is required',
@@ -93,6 +101,9 @@
                     <div class="form-group">
                         <label for="upload" style="display: block; margin-bottom: 10px;">
                             File Attachment
+                            <span style="font-size: 12px; display: block; margin-top: 5px;">
+                                <?= $attachment->getValidationMessage() ?>
+                            </span>
                         </label>
                         <input type="file" class="form-control-file" name="attachment[]" multiple>
                     </div>

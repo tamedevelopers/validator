@@ -106,7 +106,7 @@ class Validator implements ValidatorInterface
      *  sl: "['sl|name'] => 'String length is required'", 
      *  strlen: "['strlen|name'] => 'String length is required'", 
      *  str_len: "['str_len|name'] => 'String length is required'",
-     *  file: "size:500kb|limit:3|label:Attachment|required:true|width:200, false",
+     *  file: "size:500kb|limit:3|label:Attachment|required:true|width:200, false"|File,
      * }|array<string, string> $rules Data Types
      * 
      * - Separator 

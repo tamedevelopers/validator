@@ -304,22 +304,22 @@ class Datatype {
     {
         $file       = self::$validator->file($inputName);
         $formRules  = self::normalizeFileRules()[$inputName] ?? [];
-        $isRequired = $formRules['required'] ?? false;
 
-        foreach ($formRules as $method => $methodValue) {
-            if ($method === 'required') {
-                continue;
+        // if the incoming request is File instance
+        $isFileInstance = isset($formRules['fileInstance']) 
+            && isset($formRules['file']) 
+            && self::fileInstance($formRules['file']);
+
+        if($isFileInstance){
+            $file = $formRules['file'];
+        } else{
+            foreach ($formRules as $method => $methodValue) {
+                if (method_exists($file, $method)) {
+                    $params = is_array($methodValue) ? $methodValue : [$methodValue];
+    
+                    $file->$method(...$params);
+                }
             }
-
-            if (method_exists($file, $method)) {
-                $params = is_array($methodValue) ? $methodValue : [$methodValue];
-
-                $file->$method(...$params);
-            }
-        }
-
-        if (!$isRequired) {
-            $file->filter(401);
         }
 
         // Validate without saving the file
@@ -349,6 +349,15 @@ class Datatype {
 
             $field = substr($key, strlen('file:'));
 
+            // if instance of File
+            if(self::fileInstance($value)){
+                $fileRules[$field] = [
+                    'file' => $value,
+                    'fileInstance' => true,
+                ];
+                continue;
+            }
+
             foreach (explode('|', $value) as $rule) {
                 if (!str_contains($rule, ':')) {
                     continue;
@@ -376,6 +385,19 @@ class Datatype {
         }
 
         return $fileRules;
+    }
+
+    /**
+     * File Instance
+     *
+     * @param mixed $value
+     * @return bool
+     */
+    protected static function fileInstance($value): bool
+    {
+        $fileClass = 'Tamedevelopers\File\File';
+
+        return $value instanceof $fileClass;
     }
 
     /**
